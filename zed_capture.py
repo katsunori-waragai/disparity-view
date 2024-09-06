@@ -15,7 +15,7 @@ import argparse
 import cv2
 import numpy as np
 
-from util_depth_view import depth_as_colorimage
+from depthview.util_depth_view import depth_as_colorimage
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 

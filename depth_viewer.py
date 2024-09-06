@@ -2,7 +2,7 @@
 A tool to view depth(as npy file) and left image.
 In --disp3d case, use open3d to show 3D point cloud.
 """
-from util_depth_view import view_by_colormap, view3d
+from depthview.util_depth_view import view_by_colormap, view3d
 
 if __name__ == "__main__":
     import argparse
