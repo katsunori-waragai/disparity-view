@@ -20,7 +20,7 @@ from depthview.util_depth_view import depth_as_colorimage
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
 
-def parse_args(init_params):
+def parse_args_to_params(init_params):
     global opt
     if len(opt.input_svo_file) > 0 and opt.input_svo_file.endswith(".svo"):
         init_params.set_from_svo_file(opt.input_svo_file)
@@ -75,7 +75,7 @@ def capture_main(opt):
     zed = sl.Camera()
     init_params = sl.InitParameters()
 
-    parse_args(init_params)
+    parse_args_to_params(init_params)
     init_params.depth_mode = sl.DEPTH_MODE.ULTRA
     init_params.camera_resolution = sl.RESOLUTION.HD2K
 
