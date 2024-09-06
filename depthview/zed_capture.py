@@ -20,8 +20,7 @@ from depthview.util_depth_view import depth_as_colorimage
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
 
-def parse_args_to_params(init_params):
-    global args
+def parse_args_to_params(args, init_params):
     if len(args.input_svo_file) > 0 and args.input_svo_file.endswith(".svo"):
         init_params.set_from_svo_file(args.input_svo_file)
         print("[Sample] Using SVO File input: {0}".format(args.input_svo_file))
@@ -75,7 +74,7 @@ def capture_main(args):
     zed = sl.Camera()
     init_params = sl.InitParameters()
 
-    parse_args_to_params(init_params)
+    parse_args_to_params(args, init_params)
     init_params.depth_mode = sl.DEPTH_MODE.ULTRA
     init_params.camera_resolution = sl.RESOLUTION.HD2K
 
@@ -179,7 +178,6 @@ def main():
         default="outdir",
     )
 
-    global args
     args = parser.parse_args()
     if len(args.input_svo_file) > 0 and len(args.ip_address) > 0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
