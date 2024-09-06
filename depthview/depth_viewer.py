@@ -4,7 +4,7 @@ In --disp3d case, use open3d to show 3D point cloud.
 """
 from depthview.util_depth_view import view_by_colormap, view3d
 
-if __name__ == "__main__":
+def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="depth npy file viewer")

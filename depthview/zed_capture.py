@@ -21,6 +21,7 @@ MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
 
 def parse_args(init):
+    global opt
     if len(opt.input_svo_file) > 0 and opt.input_svo_file.endswith(".svo"):
         init.set_from_svo_file(opt.input_svo_file)
         print("[Sample] Using SVO File input: {0}".format(opt.input_svo_file))
@@ -62,7 +63,7 @@ def parse_args(init):
         print("[Sample] Using default resolution")
 
 
-def main(opt):
+def capture_main(opt):
     outdir = Path(opt.outdir)
     leftdir = outdir / "left"
     rightdir = outdir / "right"
@@ -143,7 +144,7 @@ def main(opt):
         zed.close()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="capture stereo pairs")
     parser.add_argument(
         "--input_svo_file",
@@ -174,8 +175,10 @@ if __name__ == "__main__":
         help="image pair output",
         default="outdir",
     )
+
+    global opt
     opt = parser.parse_args()
     if len(opt.input_svo_file) > 0 and len(opt.ip_address) > 0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
         exit()
-    main(opt)
+    capture_main(opt)

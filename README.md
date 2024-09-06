@@ -5,8 +5,8 @@ viewer for depth data in npy file format
 ## tools
 
 ```
-python3 depth_viewer.py -h
-usage: depth_viewer.py [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--gray] [--jet] [--inferno] captured_dir
+depth_viewer -h
+usage: depth_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--gray] [--jet] [--inferno] captured_dir
 
 depth npy file viewer
 
@@ -28,8 +28,8 @@ colormap:
 
 
 ```
-python3 zed_capture.py -h
-usage: zed_capture.py [-h] [--input_svo_file INPUT_SVO_FILE] [--ip_address IP_ADDRESS] [--resolution RESOLUTION] [--confidence_threshold CONFIDENCE_THRESHOLD] [--outdir OUTDIR]
+zed_capture -h
+usage: zed_capture [-h] [--input_svo_file INPUT_SVO_FILE] [--ip_address IP_ADDRESS] [--resolution RESOLUTION] [--confidence_threshold CONFIDENCE_THRESHOLD] [--outdir OUTDIR]
 
 capture stereo pairs
 
