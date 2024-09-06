@@ -32,14 +32,9 @@ def parse_args(init):
             and len(ip_str.split(".")) == 4
             and len(ip_str.split(":")) == 2
         ):
-            init.set_from_stream(
-                ip_str.split(":")[0], int(ip_str.split(":")[1])
-            )
+            init.set_from_stream(ip_str.split(":")[0], int(ip_str.split(":")[1]))
             print("[Sample] Using Stream input, IP : ", ip_str)
-        elif (
-            ip_str.replace(":", "").replace(".", "").isdigit()
-            and len(ip_str.split(".")) == 4
-        ):
+        elif ip_str.replace(":", "").replace(".", "").isdigit() and len(ip_str.split(".")) == 4:
             init.set_from_stream(ip_str)
             print("[Sample] Using Stream input, IP : ", ip_str)
         else:
@@ -187,8 +182,6 @@ def main():
     global opt
     opt = parser.parse_args()
     if len(opt.input_svo_file) > 0 and len(opt.ip_address) > 0:
-        print(
-            "Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program"
-        )
+        print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
         exit()
     capture_main(opt)

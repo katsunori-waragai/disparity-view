@@ -36,4 +36,4 @@ Repository = "https://github.com/katsunori-waragai/depth-view"
 packages = ["depthview"]
 
 [tool.black]
-line-length = 80
+line-length = 120
