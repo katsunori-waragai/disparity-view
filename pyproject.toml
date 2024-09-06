@@ -25,6 +25,9 @@ dev = [
     "pytest",
     "black",
 ]
+[project.scripts]
+depth_viewer = "depthview.depth_viewer:main"
+zed_capture = "depthview.zed_capture:main"
 
 [project.urls]
 Repository = "https://github.com/katsunori-waragai/depth-view"
