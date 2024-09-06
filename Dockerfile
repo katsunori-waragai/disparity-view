@@ -5,10 +5,6 @@ RUN apt-get update
 RUN apt install sudo
 RUN apt install -y zip
 RUN apt install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-RUN apt install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev
-RUN apt install -y libv4l-dev v4l-utils qv4l2
-RUN apt install -y curl
-RUN apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 RUN apt install zstd
 # only for development
 RUN apt update && apt install -y eog nano
