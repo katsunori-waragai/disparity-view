@@ -1,16 +1,17 @@
 """
-capture script using zed2i
+capture script using zed2i (StereoLabs Camera)
 
 requirement:
     ZED2i camera
+        https://www.stereolabs.com/en-jp
     ZED SDK
+        https://github.com/stereolabs/zed-sdk
 """
 
-from pathlib import Path
-
-
 import pyzed.sl as sl
+
 import argparse
+from pathlib import Path
 
 import cv2
 import numpy as np
