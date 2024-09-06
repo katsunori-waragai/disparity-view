@@ -21,12 +21,12 @@ MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
 
 def parse_args_to_params(init_params):
-    global opt
-    if len(opt.input_svo_file) > 0 and opt.input_svo_file.endswith(".svo"):
-        init_params.set_from_svo_file(opt.input_svo_file)
-        print("[Sample] Using SVO File input: {0}".format(opt.input_svo_file))
-    elif len(opt.ip_address) > 0:
-        ip_str = opt.ip_address
+    global args
+    if len(args.input_svo_file) > 0 and args.input_svo_file.endswith(".svo"):
+        init_params.set_from_svo_file(args.input_svo_file)
+        print("[Sample] Using SVO File input: {0}".format(args.input_svo_file))
+    elif len(args.ip_address) > 0:
+        ip_str = args.ip_address
         if (
             ip_str.replace(":", "").replace(".", "").isdigit()
             and len(ip_str.split(".")) == 4
@@ -39,32 +39,32 @@ def parse_args_to_params(init_params):
             print("[Sample] Using Stream input, IP : ", ip_str)
         else:
             print("Unvalid IP format. Using live stream")
-    if "HD2K" in opt.resolution:
+    if "HD2K" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.HD2K
         print("[Sample] Using Camera in resolution HD2K")
-    elif "HD1200" in opt.resolution:
+    elif "HD1200" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.HD1200
         print("[Sample] Using Camera in resolution HD1200")
-    elif "HD1080" in opt.resolution:
+    elif "HD1080" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.HD1080
         print("[Sample] Using Camera in resolution HD1080")
-    elif "HD720" in opt.resolution:
+    elif "HD720" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.HD720
         print("[Sample] Using Camera in resolution HD720")
-    elif "SVGA" in opt.resolution:
+    elif "SVGA" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.SVGA
         print("[Sample] Using Camera in resolution SVGA")
-    elif "VGA" in opt.resolution:
+    elif "VGA" in args.resolution:
         init_params.camera_resolution = sl.RESOLUTION.VGA
         print("[Sample] Using Camera in resolution VGA")
-    elif len(opt.resolution) > 0:
+    elif len(args.resolution) > 0:
         print("[Sample] No valid resolution entered. Using default")
     else:
         print("[Sample] Using default resolution")
 
 
-def capture_main(opt):
-    outdir = Path(opt.outdir)
+def capture_main(args):
+    outdir = Path(args.outdir)
     leftdir = outdir / "left"
     rightdir = outdir / "right"
     zeddepthdir = outdir / "zed-depth"
@@ -90,7 +90,7 @@ def capture_main(opt):
     depth_image = sl.Mat()
     runtime_parameters = sl.RuntimeParameters()
     runtime_parameters.measure3D_reference_frame = sl.REFERENCE_FRAME.WORLD
-    runtime_parameters.confidence_threshold = opt.confidence_threshold
+    runtime_parameters.confidence_threshold = args.confidence_threshold
     print(f"### {runtime_parameters.confidence_threshold=}")
 
     title = f"Depth {init_params.depth_mode=}"
@@ -179,9 +179,9 @@ def main():
         default="outdir",
     )
 
-    global opt
-    opt = parser.parse_args()
-    if len(opt.input_svo_file) > 0 and len(opt.ip_address) > 0:
+    global args
+    args = parser.parse_args()
+    if len(args.input_svo_file) > 0 and len(args.ip_address) > 0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
         exit()
-    capture_main(opt)
+    capture_main(args)
