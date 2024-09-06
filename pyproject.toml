@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "depanyzed"
+description = "depth anything with ZED SDK"
+readme = "README.md"
+version = "0.0.2"
+authors = [
+    {name = "katsunori-waragai", email="waragai.katsunori@borgroid.co.jp"},
+    {name = "zhang chao", email = "zhang.chao@borgroid.co.jp"},
+]
+
+requires-python = ">= 3.8"
+
+dependencies = [
+    "huggingface_hub",
+    "matplotlib",
+    "numpy<2",
+    "opencv-python==3.4.18.65",
+    "open3d",
+    "onnxruntime",
+    "onnx",
+    "scikit-image",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+]
+
+[project.urls]
+Repository = "https://github.com/katsunori-waragai/depth-anything-zed"
+
+[tool.setuptools]
+packages = ["depanyzed"]
+
+[tool.black]
+line-length = 120
