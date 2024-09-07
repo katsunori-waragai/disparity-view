@@ -131,8 +131,8 @@ def capture_main(args):
             continue
         assert cv_left_image.shape[2] == 3
         assert cv_left_image.dtype == np.uint8
-        zed.retrieve_measure(depth, sl.MEASURE.DEPTH)  # depthの数値データ
-        zed_depth = depth.get_data()  # np.ndarray 型
+        zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
+        zed_depth = depth.get_data()
         print("done depth.get_data()")
         colored_depth_image = depth_as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
