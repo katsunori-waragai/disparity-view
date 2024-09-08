@@ -4,7 +4,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import open3d as o3d
-
+from tqdm import tqdm
 
 def finitemax(depth: np.ndarray):
     return np.nanmax(depth[np.isfinite(depth)])
@@ -62,7 +62,7 @@ def view_by_colormap(args):
     left_images = sorted(leftdir.glob("**/*.png"))
     depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
 
-    for leftname, depth_name in zip(left_images, depth_npys):
+    for leftname, depth_name in tqdm(zip(left_images, depth_npys)):
         print(leftname, depth_name)
         image = cv2.imread(str(leftname))
         depth = np.load(str(depth_name))
