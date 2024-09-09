@@ -30,7 +30,7 @@ def normalize_image(depth_raw: np.ndarray, vmax=None, vmin=None) -> np.ndarray:
     return depth_raw
 
 
-def depth_as_colorimage(depth_raw: np.ndarray, vmin=None, vmax=None, colormap=cv2.COLORMAP_INFERNO) -> np.ndarray:
+def as_colorimage(depth_raw: np.ndarray, vmin=None, vmax=None, colormap=cv2.COLORMAP_INFERNO) -> np.ndarray:
     """
     apply color mapping with vmin, vmax
     """
@@ -38,7 +38,7 @@ def depth_as_colorimage(depth_raw: np.ndarray, vmin=None, vmax=None, colormap=cv
     return cv2.applyColorMap(depth_raw, colormap)
 
 
-def depth_as_gray(depth_raw: np.ndarray, vmin=None, vmax=None) -> np.ndarray:
+def as_gray(depth_raw: np.ndarray, vmin=None, vmax=None) -> np.ndarray:
     """
     apply color mapping with vmin, vmax
     """
@@ -74,13 +74,13 @@ def view_by_colormap(args):
         depth = np.load(str(depth_name))
 
         if args.gray:
-            colored_depth = depth_as_gray(depth)
+            colored_depth = as_gray(depth)
         elif args.jet:
-            colored_depth = depth_as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
+            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
         elif args.inferno:
-            colored_depth = depth_as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_INFERNO)
+            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_INFERNO)
         else:
-            colored_depth = depth_as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
+            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
 
         assert image.shape == colored_depth.shape
         assert image.dtype == colored_depth.dtype

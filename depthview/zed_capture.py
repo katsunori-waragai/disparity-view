@@ -16,7 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from depthview.depth_view import depth_as_colorimage
+from depthview.depth_view import as_colorimage
 from depthview.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
@@ -137,7 +137,7 @@ def capture_main(args):
         assert cv_left_image.dtype == np.uint8
         zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
         zed_depth = depth.get_data()
-        colored_depth_image = depth_as_colorimage(zed_depth)
+        colored_depth_image = as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
 
         cv2.imshow(title, results)
