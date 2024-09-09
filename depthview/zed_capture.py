@@ -69,10 +69,10 @@ def capture_main(args):
     leftdir = outdir / "left"
     rightdir = outdir / "right"
     zeddepthdir = outdir / "zed-depth"
-    zeddisparitydir = outdir / "zed-disparity"
+    disparity_dir = outdir / "zed-disparity"
     leftdir.mkdir(exist_ok=True, parents=True)
     rightdir.mkdir(exist_ok=True, parents=True)
-    zeddisparitydir.mkdir(exist_ok=True, parents=True)
+    disparity_dir.mkdir(exist_ok=True, parents=True)
 
     zed = sl.Camera()
     init_params = sl.InitParameters()
@@ -139,6 +139,11 @@ def capture_main(args):
         assert cv_left_image.dtype == np.uint8
         zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
         zed_depth = depth.get_data()
+        baseline = camera_pzeddisparitydirarameter.baseline
+        focal_length = camera_parameter.fx
+        disparity = baseline * focal_length / zed_depth
+        disparitynpyname = disparity_dir / f"zeddisparity_{counter:05d}.npy"
+        np.save(disparitynpyname, disparity)
         colored_depth_image = as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
 
