@@ -11,7 +11,7 @@ import open3d as o3d
 from tqdm import tqdm
 
 
-from depthview.zed_camerainfo import CameraParmeter
+from depthview.zed_camerainfo import CameraParameter
 
 
 def finitemax(depth: np.ndarray) -> float:
@@ -101,7 +101,7 @@ def view3d(args):
     depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
 
     json_file = captured_dir / "camera_param.json"
-    camera_parameter = CameraParmeter.load_json(json_file)
+    camera_parameter = CameraParameter.load_json(json_file)
 
     width = camera_parameter.width
     height = camera_parameter.height

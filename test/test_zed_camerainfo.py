@@ -1,6 +1,6 @@
 import pyzed.sl as sl
 
-from depthview.zed_camerainfo import get_width_height_fx_fy_cx_cy, get_baseline, CameraParmeter
+from depthview.zed_camerainfo import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
 
 
 def test_get_baseline():
@@ -58,7 +58,7 @@ def test_camera_param_create():
         exit(1)
 
     cam_info = zed.get_camera_information()
-    camera_parameter = CameraParmeter.create(cam_info)
+    camera_parameter = CameraParameter.create(cam_info)
     print(f"{camera_parameter=}")
     assert isinstance(camera_parameter.width, int)
     assert isinstance(camera_parameter.height, int)

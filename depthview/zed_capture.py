@@ -17,7 +17,7 @@ import cv2
 import numpy as np
 
 from depthview.depth_view import depth_as_colorimage
-from depthview.zed_camerainfo import CameraParmeter
+from depthview.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
@@ -98,7 +98,7 @@ def capture_main(args):
     cv2.namedWindow(title, cv2.WINDOW_NORMAL)
 
     cam_info = zed.get_camera_information()
-    camera_parameter = CameraParmeter.create(cam_info)
+    camera_parameter = CameraParameter.create(cam_info)
     json_name = outdir / "camera_param.json"
     camera_parameter.save_json(json_name)
 
