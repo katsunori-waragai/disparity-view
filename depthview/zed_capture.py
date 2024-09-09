@@ -1,16 +1,17 @@
 """
-capture script using zed2i
+capture script using zed2i (StereoLabs Camera)
 
 requirement:
     ZED2i camera
+        https://www.stereolabs.com/en-jp
     ZED SDK
+        https://github.com/stereolabs/zed-sdk
 """
 
-from pathlib import Path
-
-
 import pyzed.sl as sl
+
 import argparse
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -20,51 +21,50 @@ from depthview.util_depth_view import depth_as_colorimage
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
 
 
-def parse_args(init):
-    global opt
-    if len(opt.input_svo_file) > 0 and opt.input_svo_file.endswith(".svo"):
-        init.set_from_svo_file(opt.input_svo_file)
-        print("[Sample] Using SVO File input: {0}".format(opt.input_svo_file))
-    elif len(opt.ip_address) > 0:
-        ip_str = opt.ip_address
+def parse_args_to_params(args, init_params):
+    if len(args.input_svo_file) > 0 and args.input_svo_file.endswith(".svo"):
+        init_params.set_from_svo_file(args.input_svo_file)
+        print("[Sample] Using SVO File input: {0}".format(args.input_svo_file))
+    elif len(args.ip_address) > 0:
+        ip_str = args.ip_address
         if (
             ip_str.replace(":", "").replace(".", "").isdigit()
             and len(ip_str.split(".")) == 4
             and len(ip_str.split(":")) == 2
         ):
-            init.set_from_stream(ip_str.split(":")[0], int(ip_str.split(":")[1]))
+            init_params.set_from_stream(ip_str.split(":")[0], int(ip_str.split(":")[1]))
             print("[Sample] Using Stream input, IP : ", ip_str)
         elif ip_str.replace(":", "").replace(".", "").isdigit() and len(ip_str.split(".")) == 4:
-            init.set_from_stream(ip_str)
+            init_params.set_from_stream(ip_str)
             print("[Sample] Using Stream input, IP : ", ip_str)
         else:
             print("Unvalid IP format. Using live stream")
-    if "HD2K" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.HD2K
+    if "HD2K" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.HD2K
         print("[Sample] Using Camera in resolution HD2K")
-    elif "HD1200" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.HD1200
+    elif "HD1200" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.HD1200
         print("[Sample] Using Camera in resolution HD1200")
-    elif "HD1080" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.HD1080
+    elif "HD1080" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.HD1080
         print("[Sample] Using Camera in resolution HD1080")
-    elif "HD720" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.HD720
+    elif "HD720" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.HD720
         print("[Sample] Using Camera in resolution HD720")
-    elif "SVGA" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.SVGA
+    elif "SVGA" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.SVGA
         print("[Sample] Using Camera in resolution SVGA")
-    elif "VGA" in opt.resolution:
-        init.camera_resolution = sl.RESOLUTION.VGA
+    elif "VGA" in args.resolution:
+        init_params.camera_resolution = sl.RESOLUTION.VGA
         print("[Sample] Using Camera in resolution VGA")
-    elif len(opt.resolution) > 0:
+    elif len(args.resolution) > 0:
         print("[Sample] No valid resolution entered. Using default")
     else:
         print("[Sample] Using default resolution")
 
 
-def capture_main(opt):
-    outdir = Path(opt.outdir)
+def capture_main(args):
+    outdir = Path(args.outdir)
     leftdir = outdir / "left"
     rightdir = outdir / "right"
     zeddepthdir = outdir / "zed-depth"
@@ -75,7 +75,7 @@ def capture_main(opt):
     zed = sl.Camera()
     init_params = sl.InitParameters()
 
-    parse_args(init_params)
+    parse_args_to_params(args, init_params)
     init_params.depth_mode = sl.DEPTH_MODE.ULTRA
     init_params.camera_resolution = sl.RESOLUTION.HD2K
 
@@ -90,7 +90,7 @@ def capture_main(opt):
     depth_image = sl.Mat()
     runtime_parameters = sl.RuntimeParameters()
     runtime_parameters.measure3D_reference_frame = sl.REFERENCE_FRAME.WORLD
-    runtime_parameters.confidence_threshold = opt.confidence_threshold
+    runtime_parameters.confidence_threshold = args.confidence_threshold
     print(f"### {runtime_parameters.confidence_threshold=}")
 
     title = f"Depth {init_params.depth_mode=}"
@@ -121,15 +121,18 @@ def capture_main(opt):
             depthnpyname = zeddepthdir / f"zeddepth_{counter:05d}.npy"
             cv2.imwrite(str(leftname), cv_left_image)
             cv2.imwrite(str(rightname), cv_right_image)
-            cv2.imwrite(str(depthname), cv2.applyColorMap(cv_depth_img, cv2.COLORMAP_JET))
+            cv2.imwrite(
+                str(depthname),
+                cv2.applyColorMap(cv_depth_img, cv2.COLORMAP_JET),
+            )
             np.save(depthnpyname, depth_data)
             print(f"saved {leftname} {rightname}")
         else:
             continue
         assert cv_left_image.shape[2] == 3
         assert cv_left_image.dtype == np.uint8
-        zed.retrieve_measure(depth, sl.MEASURE.DEPTH)  # depthの数値データ
-        zed_depth = depth.get_data()  # np.ndarray 型
+        zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
+        zed_depth = depth.get_data()
         print("done depth.get_data()")
         colored_depth_image = depth_as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
@@ -176,9 +179,8 @@ def main():
         default="outdir",
     )
 
-    global opt
-    opt = parser.parse_args()
-    if len(opt.input_svo_file) > 0 and len(opt.ip_address) > 0:
+    args = parser.parse_args()
+    if len(args.input_svo_file) > 0 and len(args.ip_address) > 0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
         exit()
-    capture_main(opt)
+    capture_main(args)
