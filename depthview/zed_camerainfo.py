@@ -36,7 +36,8 @@ class CameraParmeter:
     cy: float = 0.0
     baseline: float = 0.0
 
-    def get_current_setting(self, left_cam_params):
+    def get_current_setting(self, cam_info):
+        left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
         self.fx, self.fy, self.cx, self.cy = get_fx_fy_cx_cy(left_cam_params)
         self.baseline = get_baseline(cam_info)
 
@@ -48,7 +49,8 @@ class CameraParmeter:
         return cls.from_json(open(name, "rt").read())
 
     @classmethod
-    def create(cls, left_cam_params):
+    def create(cls, cam_info):
+        left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
         fx, fy, cx, cy = get_fx_fy_cx_cy(left_cam_params)
         baseline = get_baseline(cam_info)
 
@@ -75,7 +77,7 @@ if __name__ == "__main__":
 
     print(f"{cam_info.camera_configuration=}")
     print(f"{cam_info.sensors_configuration=}")
-
+    left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
     for k, v in inspect.getmembers(cam_info.camera_configuration):
         print(k, v)
 
@@ -127,8 +129,8 @@ if __name__ == "__main__":
     print(f"{parameter=}")
 
     camera_parameter2 = CameraParmeter()
-    camera_parameter2.get_current_setting(left_cam_params)
+    camera_parameter2.get_current_setting(cam_info)
     print(f"{camera_parameter2=}")
 
-    camera_parameter3 = CameraParmeter.create(left_cam_params)
+    camera_parameter3 = CameraParmeter.create(cam_info)
     print(f"{camera_parameter3=}")
