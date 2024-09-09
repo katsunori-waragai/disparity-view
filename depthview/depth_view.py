@@ -11,7 +11,8 @@ import open3d as o3d
 from tqdm import tqdm
 
 
-from depthview.zed_camerainfo import CameraParmeter
+from depthview.zed_camerainfo import CameraParameter
+
 
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
@@ -100,7 +101,7 @@ def view3d(args):
     depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
 
     json_file = captured_dir / "camera_param.json"
-    camera_parameter = CameraParmeter.load_json(json_file)
+    camera_parameter = CameraParameter.load_json(json_file)
 
     width = camera_parameter.width
     height = camera_parameter.height
@@ -109,10 +110,6 @@ def view3d(args):
     cx = camera_parameter.cx
     cy = camera_parameter.cy
 
-    # fx = 532.41
-    # fy = 532.535
-    # cx = 636.025  # [pixel]
-    # cy = 362.4065  # [pixel]
     left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
 
     vis = o3d.visualization.Visualizer()
