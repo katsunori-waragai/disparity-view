@@ -1,4 +1,7 @@
-import inspect
+"""
+module to get zed2i camera by StereoLabs
+"""
+
 import pyzed.sl as sl
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
@@ -49,6 +52,10 @@ class CameraParmeter:
     baseline: float = 0.0
 
     def get_current_setting(self, cam_info):
+        """
+        Note:
+            cam_info = zed.get_camera_information()
+        """
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
         self.width, self.height, self.fx, self.fy, self.cx, self.cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         self.baseline = get_baseline(cam_info)
@@ -62,6 +69,10 @@ class CameraParmeter:
 
     @classmethod
     def create(cls, cam_info):
+        """
+        Note:
+            cam_info = zed.get_camera_information()
+        """
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
         width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         baseline = get_baseline(cam_info)
@@ -69,19 +80,17 @@ class CameraParmeter:
 
 
 if __name__ == "__main__":
-    # Create a ZED camera object
+    import inspect
+
     zed = sl.Camera()
 
-    # Set up initial parameters for the camera
     init_params = sl.InitParameters()
 
-    # Open the camera
     status = zed.open(init_params)
     if status != sl.ERROR_CODE.SUCCESS:
         print(f"Error opening camera: {status}")
         exit(1)
 
-    # Retrieve camera information
     cam_info = zed.get_camera_information()
 
     for k, v in inspect.getmembers(cam_info):
@@ -99,7 +108,6 @@ if __name__ == "__main__":
     for k, v in inspect.getmembers(cam_info.camera_configuration.calibration_parameters):
         print(k, v)
 
-    # Access left and right camera parameters
     left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
     right_cam_params = cam_info.camera_configuration.calibration_parameters.right_cam
 
@@ -128,7 +136,6 @@ if __name__ == "__main__":
     width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
     print(f"{get_baseline(cam_info)}")
     baseline = get_baseline(cam_info)
-    # Close the camera
     zed.close()
 
     camera_parameter = CameraParmeter(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
