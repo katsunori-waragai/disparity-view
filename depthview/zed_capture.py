@@ -68,10 +68,11 @@ def capture_main(args):
     outdir = Path(args.outdir)
     leftdir = outdir / "left"
     rightdir = outdir / "right"
-    zeddepthdir = outdir / "zed-depth"
+    depth_dir = outdir / "zed-depth"
     disparity_dir = outdir / "zed-disparity"
     leftdir.mkdir(exist_ok=True, parents=True)
     rightdir.mkdir(exist_ok=True, parents=True)
+    depth_dir.mkdir(exist_ok=True, parents=True)
     disparity_dir.mkdir(exist_ok=True, parents=True)
 
     zed = sl.Camera()
@@ -124,15 +125,15 @@ def capture_main(args):
         depth_data = depth.get_data()
         leftname = leftdir / f"left_{counter:05d}.png"
         rightname = rightdir / f"right_{counter:05d}.png"
-        depthname = zeddepthdir / f"zeddepth_{counter:05d}.png"
-        depthnpyname = zeddepthdir / f"zeddepth_{counter:05d}.npy"
+        depthname = depth_dir / f"zeddepth_{counter:05d}.png"
+        depth_npyname = depth_dir / f"zeddepth_{counter:05d}.npy"
         cv2.imwrite(str(leftname), cv_left_image)
         cv2.imwrite(str(rightname), cv_right_image)
         cv2.imwrite(
             str(depthname),
             cv2.applyColorMap(cv_depth_img, cv2.COLORMAP_JET),
         )
-        np.save(depthnpyname, depth_data)
+        np.save(depth_npyname, depth_data)
         print(f"saved {leftname} {rightname}")
 
         assert cv_left_image.shape[2] == 3
