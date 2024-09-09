@@ -60,31 +60,31 @@ def view_by_colormap(args):
     captured_dir = Path(args.captured_dir)
     leftdir = captured_dir / "left"
     rightdir = captured_dir / "right"
-    zeddepthdir = captured_dir / "zed-depth"
+    disparity_dir = captured_dir / "zed-disparity"
     sec = args.sec
     vmax = args.vmax
     vmin = args.vmin
 
     left_images = sorted(leftdir.glob("**/*.png"))
-    depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
+    disparity_npys = sorted(disparity_dir.glob("**/*.npy"))
 
-    for leftname, depth_name in tqdm(zip(left_images, depth_npys)):
-        print(leftname, depth_name)
+    for leftname, disparity_name in tqdm(zip(left_images, disparity_npys)):
+        print(leftname, disparity_name)
         image = cv2.imread(str(leftname))
-        depth = np.load(str(depth_name))
+        disparity = np.load(str(disparity_name))
 
         if args.gray:
-            colored_depth = as_gray(depth)
+            colored = as_gray(disparity)
         elif args.jet:
-            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
+            colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
         elif args.inferno:
-            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_INFERNO)
+            colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_INFERNO)
         else:
-            colored_depth = as_colorimage(depth, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
+            colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
 
-        assert image.shape == colored_depth.shape
-        assert image.dtype == colored_depth.dtype
-        results = np.concatenate((image, colored_depth), axis=1)
+        assert image.shape == colored.shape
+        assert image.dtype == colored.dtype
+        results = np.concatenate((image, colored), axis=1)
         cv2.imshow("left depth", results)
         cv2.waitKey(10)
         time.sleep(sec)
@@ -94,11 +94,11 @@ def view3d(args):
     captured_dir = Path(args.captured_dir)
     leftdir = captured_dir / "left"
     rightdir = captured_dir / "right"
-    zeddepthdir = captured_dir / "zed-depth"
+    disparity_dir = captured_dir / "zed-disparity"
     sec = args.sec
 
     left_images = sorted(leftdir.glob("**/*.png"))
-    depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
+    disparity_npys = sorted(disparity_dir.glob("**/*.npy"))
 
     json_file = captured_dir / "camera_param.json"
     camera_parameter = CameraParameter.load_json(json_file)
@@ -114,10 +114,13 @@ def view3d(args):
 
     vis = o3d.visualization.Visualizer()
     vis.create_window()
-    for leftname, depth_name in zip(left_images, depth_npys):
-        print(leftname, depth_name)
+    for leftname, disparity_name in zip(left_images, disparity_npys):
+        print(leftname, disparity_name)
         image = cv2.imread(str(leftname))
-        depth = np.load(str(depth_name))
+        disparity = np.load(str(disparity_name))
+        baseline = camera_parameter.baseline
+        focal_length = camera_parameter.fx
+        depth = baseline * focal_length / disparity
 
         rgb = o3d.io.read_image(str(leftname))
         open3d_depth = o3d.geometry.Image(depth)
