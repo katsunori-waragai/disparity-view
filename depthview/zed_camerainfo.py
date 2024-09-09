@@ -4,12 +4,20 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from pathlib import Path
 
+
 def get_width_height_fx_fy_cx_cy(left_cam_params):
     """
     Note:
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
     """
-    return left_cam_params.image_size.width, left_cam_params.image_size.height, left_cam_params.fx, left_cam_params.fy, left_cam_params.cx, left_cam_params.cy
+    return (
+        left_cam_params.image_size.width,
+        left_cam_params.image_size.height,
+        left_cam_params.fx,
+        left_cam_params.fy,
+        left_cam_params.cx,
+        left_cam_params.cy,
+    )
 
 
 def get_baseline(cam_info) -> float:
@@ -23,9 +31,11 @@ def get_baseline(cam_info) -> float:
 def load_settings():
     from pathlib import Path
     import toml
+
     tomlname = sorted(Path("/usr/local/lib/zed/settings").glob("SN*.conf"))[0]
     zed_settings = toml.load(tomlname)
     print(zed_settings["STEREO"])
+
 
 @dataclass_json
 @dataclass
@@ -56,6 +66,7 @@ class CameraParmeter:
         width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         baseline = get_baseline(cam_info)
         return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
+
 
 if __name__ == "__main__":
     # Create a ZED camera object

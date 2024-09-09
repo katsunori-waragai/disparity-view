@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from depthview.zed_camerainfo import CameraParmeter
 
+
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
 
