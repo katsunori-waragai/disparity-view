@@ -1,9 +1,13 @@
 """
 module to get zed2i camera by StereoLabs
+
+- Camera parameters are obtained by zed sdk.
+- Camera parameters are saved in /usr/local/zed/settings/SN*.conf
+    The file format is toml.
 """
 
-import pyzed.sl as sl
-from dataclasses import dataclass, field
+import pyzed.sl as sl  # ZED-SDK
+from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from pathlib import Path
 

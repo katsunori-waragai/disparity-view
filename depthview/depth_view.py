@@ -110,10 +110,6 @@ def view3d(args):
     cx = camera_parameter.cx
     cy = camera_parameter.cy
 
-    # fx = 532.41
-    # fy = 532.535
-    # cx = 636.025  # [pixel]
-    # cy = 362.4065  # [pixel]
     left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
 
     vis = o3d.visualization.Visualizer()
