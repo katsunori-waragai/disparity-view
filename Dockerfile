@@ -21,6 +21,8 @@ RUN cd /root/depth-view
 WORKDIR /root/depth-view
 RUN mkdir depthview/
 COPY depthview/* depthview/
-COPY pyproject.toml *.py ./
+RUN mkdir test
+COPY test/* test/
+COPY pyproject.toml Makefile *.py ./
 RUN python3 -m pip install .[dev]
 
