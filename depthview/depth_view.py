@@ -10,6 +10,7 @@ import numpy as np
 import open3d as o3d
 from tqdm import tqdm
 
+
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
 
