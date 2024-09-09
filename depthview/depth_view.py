@@ -8,7 +8,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import open3d as o3d
-
+from tqdm import tqdm
 
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
@@ -18,14 +18,19 @@ def finitemin(depth: np.ndarray) -> float:
     return np.nanmin(depth[np.isfinite(depth)])
 
 
-def depth_as_colorimage(depth_raw: np.ndarray, vmin=None, vmax=None, colormap=cv2.COLORMAP_INFERNO) -> np.ndarray:
-    """
-    apply color mapping with vmin, vmax
-    """
+def normalize_image(depth_raw: np.ndarray, vmax=None, vmin=None) -> np.ndarray:
     vmin = finitemin(depth_raw) if vmin is None else vmin
     vmax = finitemax(depth_raw) if vmax is None else vmax
     depth_raw = (depth_raw - vmin) / (vmax - vmin) * 255.0
     depth_raw = depth_raw.astype(np.uint8)  # depth_raw might have NaN, PosInf, NegInf.
+    return depth_raw
+
+
+def depth_as_colorimage(depth_raw: np.ndarray, vmin=None, vmax=None, colormap=cv2.COLORMAP_INFERNO) -> np.ndarray:
+    """
+    apply color mapping with vmin, vmax
+    """
+    depth_raw = normalize_image(depth_raw, vmax, vmin)
     return cv2.applyColorMap(depth_raw, colormap)
 
 
@@ -33,10 +38,7 @@ def depth_as_gray(depth_raw: np.ndarray, vmin=None, vmax=None) -> np.ndarray:
     """
     apply color mapping with vmin, vmax
     """
-    vmin = finitemin(depth_raw) if vmin is None else vmin
-    vmax = finitemax(depth_raw) if vmax is None else vmax
-    depth_raw = (depth_raw - vmin) / (vmax - vmin) * 255.0
-    gray = depth_raw.astype(np.uint8)  # depth_raw might have NaN, PosInf, NegInf.
+    gray = normalize_image(depth_raw, vmax, vmin)
     return cv2.merge((gray, gray, gray))
 
 
@@ -62,7 +64,7 @@ def view_by_colormap(args):
     left_images = sorted(leftdir.glob("**/*.png"))
     depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
 
-    for leftname, depth_name in zip(left_images, depth_npys):
+    for leftname, depth_name in tqdm(zip(left_images, depth_npys)):
         print(leftname, depth_name)
         image = cv2.imread(str(leftname))
         depth = np.load(str(depth_name))
@@ -121,3 +123,27 @@ def view3d(args):
         time.sleep(sec)
 
     vis.destroy_window()
+
+
+def depth_viewer_main():
+    """
+    A tool to view depth(as npy file) and left image.
+    In --disp3d case, use open3d to show 3D point cloud.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description="depth npy file viewer")
+    parser.add_argument("captured_dir", help="captured directory by capture.py")
+    parser.add_argument("--sec", type=int, default=1, help="wait sec")
+    parser.add_argument("--vmax", type=float, default=5000, help="max depth [mm]")
+    parser.add_argument("--vmin", type=float, default=0, help="min depth [mm]")
+    parser.add_argument("--disp3d", action="store_true", help="display 3D")
+    group = parser.add_argument_group("colormap")
+    group.add_argument("--gray", action="store_true", help="gray colormap")
+    group.add_argument("--jet", action="store_true", help="jet colormap")
+    group.add_argument("--inferno", action="store_true", help="inferno colormap")
+    args = parser.parse_args()
+    if args.disp3d:
+        view3d(args)
+    else:
+        view_by_colormap(args)

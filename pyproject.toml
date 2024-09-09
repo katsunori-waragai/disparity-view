@@ -18,6 +18,7 @@ dependencies = [
     "numpy<2",
     "opencv-python==3.4.18.65",
     "open3d",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
@@ -26,7 +27,7 @@ dev = [
     "black",
 ]
 [project.scripts]
-depth_viewer = "depthview.depth_viewer:main"
+depth_viewer = "depthview.depth_view:depth_viewer_main"
 zed_capture = "depthview.zed_capture:main"
 
 [project.urls]
