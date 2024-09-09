@@ -11,6 +11,8 @@ import open3d as o3d
 from tqdm import tqdm
 
 
+from depthview.zed_camerainfo import CameraParmeter
+
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
 
@@ -97,6 +99,22 @@ def view3d(args):
     left_images = sorted(leftdir.glob("**/*.png"))
     depth_npys = sorted(zeddepthdir.glob("**/*.npy"))
 
+    json_file = captured_dir / "camera_param.json"
+    camera_parameter = CameraParmeter.load_json(json_file)
+
+    width = camera_parameter.width
+    height = camera_parameter.height
+    fx = camera_parameter.fx
+    fy = camera_parameter.fy
+    cx = camera_parameter.cx
+    cy = camera_parameter.cy
+
+    # fx = 532.41
+    # fy = 532.535
+    # cx = 636.025  # [pixel]
+    # cy = 362.4065  # [pixel]
+    left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
+
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     for leftname, depth_name in zip(left_images, depth_npys):
@@ -109,11 +127,6 @@ def view3d(args):
         rgbd_image = o3d.geometry.RGBDImage.create_from_color_and_depth(rgb, open3d_depth)
         # [LEFT_CAM_HD]
         height, width = image.shape[:2]
-        fx = 532.41
-        fy = 532.535
-        cx = 636.025  # [pixel]
-        cy = 362.4065  # [pixel]
-        left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
 
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image, left_cam_intrinsic)
         pcd.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])

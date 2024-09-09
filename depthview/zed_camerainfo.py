@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from pathlib import Path
 
-def get_fx_fy_cx_cy(left_cam_params):
+def get_width_height_fx_fy_cx_cy(left_cam_params):
     """
     Note:
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
     """
-    return left_cam_params.fx, left_cam_params.fy, left_cam_params.cx, left_cam_params.cy
+    return left_cam_params.image_size.width, left_cam_params.image_size.height, left_cam_params.fx, left_cam_params.fy, left_cam_params.cx, left_cam_params.cy
 
 
 def get_baseline(cam_info) -> float:
@@ -30,15 +30,17 @@ def load_settings():
 @dataclass_json
 @dataclass
 class CameraParmeter:
+    width: int = 0  # [pixel]
+    height: int = 0  # [pixel]
     fx: float = 0.0
     fy: float = 0.0
-    cx: float = 0.0
-    cy: float = 0.0
+    cx: float = 0.0  # [pixel]
+    cy: float = 0.0  # [pixel]
     baseline: float = 0.0
 
     def get_current_setting(self, cam_info):
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
-        self.fx, self.fy, self.cx, self.cy = get_fx_fy_cx_cy(left_cam_params)
+        self.width, self.height, self.fx, self.fy, self.cx, self.cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         self.baseline = get_baseline(cam_info)
 
     def save_json(self, name: Path):
@@ -51,10 +53,9 @@ class CameraParmeter:
     @classmethod
     def create(cls, cam_info):
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
-        fx, fy, cx, cy = get_fx_fy_cx_cy(left_cam_params)
+        width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         baseline = get_baseline(cam_info)
-
-        return cls(fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
+        return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
 
 if __name__ == "__main__":
     # Create a ZED camera object
@@ -112,14 +113,14 @@ if __name__ == "__main__":
     print("\n")
     print(f"{cam_info.camera_configuration.calibration_parameters.get_camera_baseline()=}")
 
-    print(f"{get_fx_fy_cx_cy(left_cam_params)=}")
-    fx, fy, cx, cy = get_fx_fy_cx_cy(left_cam_params)
+    print(f"{get_width_height_fx_fy_cx_cy(left_cam_params)=}")
+    width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
     print(f"{get_baseline(cam_info)}")
     baseline = get_baseline(cam_info)
     # Close the camera
     zed.close()
 
-    camera_parameter = CameraParmeter(fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
+    camera_parameter = CameraParmeter(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
     print(camera_parameter)
     print(camera_parameter.to_json())
 
