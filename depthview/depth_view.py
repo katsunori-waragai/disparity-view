@@ -11,7 +11,7 @@ import open3d as o3d
 from tqdm import tqdm
 
 
-from zed_camerainfo import CameraParmeter
+from depthview.zed_camerainfo import CameraParmeter
 
 def finitemax(depth: np.ndarray) -> float:
     return np.nanmax(depth[np.isfinite(depth)])
