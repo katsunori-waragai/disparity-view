@@ -48,6 +48,7 @@ def test_get_fx_fy_cx_cy():
 
     zed.close()
 
+
 def test_camera_param_create():
     zed = sl.Camera()
 

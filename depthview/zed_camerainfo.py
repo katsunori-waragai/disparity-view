@@ -60,6 +60,7 @@ class CameraParameter:
 
     camera_parameter3 = CameraParameter.create(cam_info)
     """
+
     width: int = 0  # [pixel]
     height: int = 0  # [pixel]
     fx: float = 0.0
