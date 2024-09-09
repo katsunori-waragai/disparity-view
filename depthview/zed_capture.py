@@ -11,6 +11,7 @@ requirement:
 import pyzed.sl as sl
 
 import argparse
+import sys
 from pathlib import Path
 
 import cv2
@@ -78,12 +79,11 @@ def capture_main(args):
 
     parse_args_to_params(args, init_params)
     init_params.depth_mode = sl.DEPTH_MODE.ULTRA
-    init_params.camera_resolution = sl.RESOLUTION.HD2K
 
     err = zed.open(init_params)
     if err != sl.ERROR_CODE.SUCCESS:
         print(err)
-        exit(1)
+        sys.exit(1)
 
     left_image = sl.Mat()
     right_image = sl.Mat()
@@ -145,7 +145,7 @@ def capture_main(args):
         key = cv2.waitKey(1)
         counter += 1
         if key == ord("q"):
-            exit()
+            sys.exit()
 
     if "zed" in locals():
         zed.close()
@@ -169,7 +169,7 @@ def main():
         "--resolution",
         type=str,
         help="Resolution, can be either HD2K, HD1200, HD1080, HD720, SVGA or VGA",
-        default="",
+        default="HD1200",
     )
     parser.add_argument(
         "--confidence_threshold",
@@ -186,5 +186,5 @@ def main():
     args = parser.parse_args()
     if len(args.input_svo_file) > 0 and len(args.ip_address) > 0:
         print("Specify only input_svo_file or ip_address, or none to use wired camera, not both. Exit program")
-        exit()
+        sys.exit()
     capture_main(args)
