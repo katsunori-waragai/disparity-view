@@ -126,6 +126,10 @@ def view3d(args):
 
 
 def depth_viewer_main():
+    """
+    A tool to view depth(as npy file) and left image.
+    In --disp3d case, use open3d to show 3D point cloud.
+    """
     import argparse
 
     parser = argparse.ArgumentParser(description="depth npy file viewer")
