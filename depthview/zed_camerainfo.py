@@ -1,6 +1,6 @@
 import inspect
 import pyzed.sl as sl
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from pathlib import Path
 
@@ -30,13 +30,13 @@ def load_settings():
 @dataclass_json
 @dataclass
 class CameraParmeter:
-    fx: float
-    fy: float
-    cx: float
-    cy: float
-    baseline: float
+    fx: float = 0.0
+    fy: float = 0.0
+    cx: float = 0.0
+    cy: float = 0.0
+    baseline: float = 0.0
 
-    def get_current_setting(self):
+    def get_current_setting(self, left_cam_params):
         self.fx, self.fy, self.cx, self.cy = get_fx_fy_cx_cy(left_cam_params)
         self.baseline = get_baseline(cam_info)
 
@@ -46,6 +46,13 @@ class CameraParmeter:
     @classmethod
     def load_json(cls, name: Path):
         return cls.from_json(open(name, "rt").read())
+
+    @classmethod
+    def create(cls, left_cam_params):
+        fx, fy, cx, cy = get_fx_fy_cx_cy(left_cam_params)
+        baseline = get_baseline(cam_info)
+
+        return cls(fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
 
 if __name__ == "__main__":
     # Create a ZED camera object
@@ -118,3 +125,10 @@ if __name__ == "__main__":
     camera_parameter.save_json(json_file)
     parameter = CameraParmeter.load_json(json_file)
     print(f"{parameter=}")
+
+    camera_parameter2 = CameraParmeter()
+    camera_parameter2.get_current_setting(left_cam_params)
+    print(f"{camera_parameter2=}")
+
+    camera_parameter3 = CameraParmeter.create(left_cam_params)
+    print(f"{camera_parameter3=}")
