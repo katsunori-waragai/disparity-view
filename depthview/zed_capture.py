@@ -139,7 +139,7 @@ def capture_main(args):
         assert cv_left_image.dtype == np.uint8
         zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
         zed_depth = depth.get_data()
-        baseline = camera_pzeddisparitydirarameter.baseline
+        baseline = camera_parameter.baseline
         focal_length = camera_parameter.fx
         disparity = baseline * focal_length / zed_depth
         disparitynpyname = disparity_dir / f"zeddisparity_{counter:05d}.npy"
