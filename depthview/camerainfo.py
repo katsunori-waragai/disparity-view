@@ -1,6 +1,7 @@
 import inspect
 import pyzed.sl as sl
-
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
 def get_fx_fy_cx_cy(left_cam_params):
     """
@@ -16,6 +17,23 @@ def get_baseline(cam_info) -> float:
         cam_info = zed.get_camera_information()
     """
     return cam_info.camera_configuration.calibration_parameters.get_camera_baseline()
+
+
+def load_settings():
+    from pathlib import Path
+    import toml
+    tomlname = sorted(Path("/usr/local/lib/zed/settings").glob("SN*.conf"))[0]
+    zed_settings = toml.load(tomlname)
+    print(zed_settings["STEREO"])
+
+@dataclass_json
+@dataclass
+class CameraParmeter:
+    fx: float
+    fy: float
+    cx: float
+    cy: float
+    baseline: float
 
 
 if __name__ == "__main__":
@@ -75,6 +93,12 @@ if __name__ == "__main__":
     print(f"{cam_info.camera_configuration.calibration_parameters.get_camera_baseline()=}")
 
     print(f"{get_fx_fy_cx_cy(left_cam_params)=}")
+    fx, fy, cx, cy = get_fx_fy_cx_cy(left_cam_params)
     print(f"{get_baseline(cam_info)}")
+    baseline = get_baseline(cam_info)
     # Close the camera
     zed.close()
+
+    camera_parameter = CameraParmeter(fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
+    print(camera_parameter)
+    print(camera_parameter.to_json())
