@@ -69,9 +69,10 @@ def capture_main(args):
     leftdir = outdir / "left"
     rightdir = outdir / "right"
     zeddepthdir = outdir / "zed-depth"
+    zeddisparitydir = outdir / "zed-disparity"
     leftdir.mkdir(exist_ok=True, parents=True)
     rightdir.mkdir(exist_ok=True, parents=True)
-    zeddepthdir.mkdir(exist_ok=True, parents=True)
+    zeddisparitydir.mkdir(exist_ok=True, parents=True)
 
     zed = sl.Camera()
     init_params = sl.InitParameters()
