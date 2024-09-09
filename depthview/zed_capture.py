@@ -142,8 +142,8 @@ def capture_main(args):
         baseline = camera_parameter.baseline
         focal_length = camera_parameter.fx
         disparity = baseline * focal_length / zed_depth
-        disparitynpyname = disparity_dir / f"zeddisparity_{counter:05d}.npy"
-        np.save(disparitynpyname, disparity)
+        disparity_npyname = disparity_dir / f"zed_disparity_{counter:05d}.npy"
+        np.save(disparity_npyname, disparity)
         colored_depth_image = as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
 
