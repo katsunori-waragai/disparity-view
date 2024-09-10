@@ -28,8 +28,8 @@ dev = [
     "black",
 ]
 [project.scripts]
-disparity_viewer = "disparirty_view.disparity_view:disparity_viewer_main"
-zed_capture = "disparirty_view.zed_capture:main"
+disparity_viewer = "disparity_view.disparity_view:disparity_viewer_main"
+zed_capture = "disparity_view.zed_capture:main"
 
 [project.urls]
 Repository = "https://github.com/katsunori-waragai/depth-view"
