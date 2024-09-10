@@ -1,6 +1,13 @@
 # disparity-view
 viewer for disparity data in npy file format
 
+## checked environment
+- NVIDIA Jetson AGX orin
+- Ubuntu 20
+- python3.8
+- Optional:
+  - ZED SDK 4.1 (StereoLabs)
+
 ## Install
 ```commandline
 python3 -m pip install .[dev]
