@@ -16,9 +16,9 @@ RUN chmod +x ${ZED_SDK_INSTALLER} && ./${ZED_SDK_INSTALLER} -- silent
 
 
 # for depth anything
-RUN cd /root && git clone https://github.com/katsunori-waragai/depth-view
-RUN cd /root/depth-view
-WORKDIR /root/depth-view
+RUN cd /root && git clone https://github.com/katsunori-waragai/disparity-view
+RUN cd /root/disparity-view
+WORKDIR /root/disparity-view
 RUN mkdir disparity_view/
 COPY disparity_view/* disparity_view/
 RUN mkdir test

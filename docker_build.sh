@@ -1,3 +1,3 @@
 #/bin/bash
-docker build -t depth-view:100 .
+docker build -t disparity-view:100 .
   
