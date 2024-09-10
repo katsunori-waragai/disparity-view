@@ -1,5 +1,7 @@
 import pyzed.sl as sl
 
+import sys
+
 from depthview.zed_camerainfo import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
 
 
@@ -11,7 +13,7 @@ def test_get_baseline():
     status = zed.open(init_params)
     if status != sl.ERROR_CODE.SUCCESS:
         print(f"Error opening camera: {status}")
-        exit(1)
+        sys.exit(1)
 
     cam_info = zed.get_camera_information()
     baseline = get_baseline(cam_info)
@@ -26,7 +28,7 @@ def test_get_fx_fy_cx_cy():
     status = zed.open(init_params)
     if status != sl.ERROR_CODE.SUCCESS:
         print(f"Error opening camera: {status}")
-        exit(1)
+        sys.exit(1)
 
     cam_info = zed.get_camera_information()
 
@@ -56,7 +58,7 @@ def test_camera_param_create():
     status = zed.open(init_params)
     if status != sl.ERROR_CODE.SUCCESS:
         print(f"Error opening camera: {status}")
-        exit(1)
+        sys.exit(1)
 
     cam_info = zed.get_camera_information()
     camera_parameter = CameraParameter.create(cam_info)
