@@ -32,7 +32,7 @@ disparity_viewer = "disparity_view.disparity_view:disparity_viewer_main"
 zed_capture = "disparity_view.zed_capture:main"
 
 [project.urls]
-Repository = "https://github.com/katsunori-waragai/depth-view"
+Repository = "https://github.com/katsunori-waragai/disparity-view"
 
 [tool.setuptools]
 packages = ["disparity_view"]
