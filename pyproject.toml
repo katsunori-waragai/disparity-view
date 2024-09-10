@@ -35,7 +35,7 @@ zed_capture = "disparirty_view.zed_capture:main"
 Repository = "https://github.com/katsunori-waragai/depth-view"
 
 [tool.setuptools]
-packages = ["disparityview"]
+packages = ["disparity_view"]
 
 [tool.black]
 line-length = 120
