@@ -57,11 +57,16 @@ def as_matrix(chw_array: np.ndarray) -> np.ndarray:
     return np.reshape(chw_array, (H_, W_))
 
 
-def view_by_colormap(args):
-    captured_dir = Path(args.captured_dir)
+def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
     leftdir = captured_dir / "left"
     rightdir = captured_dir / "right"
     disparity_dir = captured_dir / "zed-disparity"
+    return leftdir, rightdir, disparity_dir
+
+
+def view_by_colormap(args):
+    captured_dir = Path(args.captured_dir)
+    leftdir, rightdir, disparity_dir = get_dirs(captured_dir)
     sec = args.sec
     vmax = args.vmax
     vmin = args.vmin
@@ -136,13 +141,6 @@ def view3d(args):
         time.sleep(sec)
 
     vis.destroy_window()
-
-
-def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
-    leftdir = captured_dir / "left"
-    rightdir = captured_dir / "right"
-    disparity_dir = captured_dir / "zed-disparity"
-    return leftdir, rightdir, disparity_dir
 
 
 def depth_viewer_main():
