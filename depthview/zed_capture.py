@@ -17,7 +17,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from depthview.depth_view import as_colorimage, get_dirs
+from depthview.disparity_view import as_colorimage, get_dirs
 from depthview.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
