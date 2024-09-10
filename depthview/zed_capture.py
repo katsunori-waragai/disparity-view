@@ -67,9 +67,6 @@ def parse_args_to_params(args, init_params):
 def capture_main(args):
     outdir = Path(args.outdir)
     leftdir, rightdir, disparity_dir = get_dirs(outdir)
-    leftdir.mkdir(exist_ok=True, parents=True)
-    rightdir.mkdir(exist_ok=True, parents=True)
-    disparity_dir.mkdir(exist_ok=True, parents=True)
 
     zed = sl.Camera()
     init_params = sl.InitParameters()
