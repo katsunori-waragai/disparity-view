@@ -16,8 +16,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+import pyautogui
 
-from disparity_view.disparity_view import as_colorimage, get_dirs
+from disparity_view.disparity_view import as_colorimage, get_dirs, resize_image
 from disparity_view.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
@@ -89,6 +90,8 @@ def capture_main(args):
     runtime_parameters.confidence_threshold = args.confidence_threshold
     print(f"### {runtime_parameters.confidence_threshold=}")
 
+    # screen_width, screen_height = pyautogui.size()
+
     title = f"Depth {init_params.depth_mode=}"
     cv2.namedWindow(title, cv2.WINDOW_NORMAL)
 
@@ -133,7 +136,7 @@ def capture_main(args):
         np.save(disparity_npyname, disparity)
         colored_depth_image = as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
-
+        results = resize_image(results, rate=0.5)
         cv2.imshow(title, results)
         key = cv2.waitKey(1)
         counter += 1
