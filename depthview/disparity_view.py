@@ -1,5 +1,5 @@
 """
-library to view depth npy files.
+library to view disparity npy files.
 """
 
 import time
@@ -145,18 +145,18 @@ def view3d(args):
     vis.destroy_window()
 
 
-def depth_viewer_main():
+def disparity_viewer_main():
     """
     A tool to view depth(as npy file) and left image.
     In --disp3d case, use open3d to show 3D point cloud.
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="depth npy file viewer")
+    parser = argparse.ArgumentParser(description="disparity npy file viewer")
     parser.add_argument("captured_dir", help="captured directory by capture.py")
     parser.add_argument("--sec", type=int, default=1, help="wait sec")
-    parser.add_argument("--vmax", type=float, default=500, help="max depth [mm]")
-    parser.add_argument("--vmin", type=float, default=0, help="min depth [mm]")
+    parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
+    parser.add_argument("--vmin", type=float, default=0, help="min disparity [pixel]")
     parser.add_argument("--disp3d", action="store_true", help="display 3D")
     group = parser.add_argument_group("colormap")
     group.add_argument("--gray", action="store_true", help="gray colormap")
