@@ -19,8 +19,8 @@ RUN chmod +x ${ZED_SDK_INSTALLER} && ./${ZED_SDK_INSTALLER} -- silent
 RUN cd /root && git clone https://github.com/katsunori-waragai/depth-view
 RUN cd /root/depth-view
 WORKDIR /root/depth-view
-RUN mkdir depthview/
-COPY depthview/* depthview/
+RUN mkdir disparirtyview/
+COPY disparirtyview/* disparirtyview/
 RUN mkdir test
 COPY test/* test/
 COPY pyproject.toml Makefile *.py ./
