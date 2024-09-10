@@ -4,6 +4,7 @@ library to view depth npy files.
 
 import time
 from pathlib import Path
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -92,9 +93,7 @@ def view_by_colormap(args):
 
 def view3d(args):
     captured_dir = Path(args.captured_dir)
-    leftdir = captured_dir / "left"
-    rightdir = captured_dir / "right"
-    disparity_dir = captured_dir / "zed-disparity"
+    leftdir, _, disparity_dir = get_dirs(captured_dir)
     sec = args.sec
 
     left_images = sorted(leftdir.glob("**/*.png"))
@@ -137,6 +136,13 @@ def view3d(args):
         time.sleep(sec)
 
     vis.destroy_window()
+
+
+def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
+    leftdir = captured_dir / "left"
+    rightdir = captured_dir / "right"
+    disparity_dir = captured_dir / "zed-disparity"
+    return leftdir, rightdir, disparity_dir
 
 
 def depth_viewer_main():
