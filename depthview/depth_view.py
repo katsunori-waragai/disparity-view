@@ -58,12 +58,11 @@ def as_matrix(chw_array: np.ndarray) -> np.ndarray:
 
 
 def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
-    assert captured_dir.is_dir()
     leftdir = captured_dir / "left"
     rightdir = captured_dir / "right"
     disparity_dir = captured_dir / "zed-disparity"
     for p in (leftdir, rightdir, disparity_dir):
-        p.mkdir(exist_ok=True)
+        p.mkdir(exist_ok=True, parents=True)
     return leftdir, rightdir, disparity_dir
 
 
