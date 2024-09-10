@@ -16,7 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from depthview.depth_view import as_colorimage
+from depthview.depth_view import as_colorimage, get_dirs
 from depthview.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
@@ -66,9 +66,7 @@ def parse_args_to_params(args, init_params):
 
 def capture_main(args):
     outdir = Path(args.outdir)
-    leftdir = outdir / "left"
-    rightdir = outdir / "right"
-    disparity_dir = outdir / "zed-disparity"
+    leftdir, rightdir, disparity_dir = get_dirs(outdir)
     leftdir.mkdir(exist_ok=True, parents=True)
     rightdir.mkdir(exist_ok=True, parents=True)
     disparity_dir.mkdir(exist_ok=True, parents=True)
