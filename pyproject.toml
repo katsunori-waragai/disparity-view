@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "disparirty_view"
+name = "disparity_view"
 description = "depth npy file viewer"
 readme = "README.md"
 version = "0.0.1"
