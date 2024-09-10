@@ -168,7 +168,7 @@ def main():
         "--confidence_threshold",
         type=float,
         help="depth confidence_threshold(0 ~ 100)",
-        default=100,
+        default=80,
     )
     parser.add_argument(
         "--outdir",
