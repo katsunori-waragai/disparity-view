@@ -5,10 +5,10 @@ viewer for depth data in npy file format
 ## tools
 
 ```
-depth_viewer -h
-usage: depth_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--gray] [--jet] [--inferno] captured_dir
+disparity_viewer -h
+usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--gray] [--jet] [--inferno] captured_dir
 
-depth npy file viewer
+disparity npy file viewer
 
 positional arguments:
   captured_dir  captured directory by capture.py
@@ -16,8 +16,8 @@ positional arguments:
 optional arguments:
   -h, --help    show this help message and exit
   --sec SEC     wait sec
-  --vmax VMAX   max depth [mm]
-  --vmin VMIN   min depth [mm]
+  --vmax VMAX   max disparity [pixel]
+  --vmin VMIN   min disparity [pixel]
   --disp3d      display 3D
 
 colormap:
