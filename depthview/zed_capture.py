@@ -16,7 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from depthview.depth_view import as_colorimage
+from depthview.depth_view import as_colorimage, get_dirs
 from depthview.zed_camerainfo import CameraParameter
 
 MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
@@ -66,12 +66,7 @@ def parse_args_to_params(args, init_params):
 
 def capture_main(args):
     outdir = Path(args.outdir)
-    leftdir = outdir / "left"
-    rightdir = outdir / "right"
-    zeddepthdir = outdir / "zed-depth"
-    leftdir.mkdir(exist_ok=True, parents=True)
-    rightdir.mkdir(exist_ok=True, parents=True)
-    zeddepthdir.mkdir(exist_ok=True, parents=True)
+    leftdir, rightdir, disparity_dir = get_dirs(outdir)
 
     zed = sl.Camera()
     init_params = sl.InitParameters()
@@ -123,21 +118,19 @@ def capture_main(args):
         depth_data = depth.get_data()
         leftname = leftdir / f"left_{counter:05d}.png"
         rightname = rightdir / f"right_{counter:05d}.png"
-        depthname = zeddepthdir / f"zeddepth_{counter:05d}.png"
-        depthnpyname = zeddepthdir / f"zeddepth_{counter:05d}.npy"
         cv2.imwrite(str(leftname), cv_left_image)
         cv2.imwrite(str(rightname), cv_right_image)
-        cv2.imwrite(
-            str(depthname),
-            cv2.applyColorMap(cv_depth_img, cv2.COLORMAP_JET),
-        )
-        np.save(depthnpyname, depth_data)
         print(f"saved {leftname} {rightname}")
 
         assert cv_left_image.shape[2] == 3
         assert cv_left_image.dtype == np.uint8
         zed.retrieve_measure(depth, sl.MEASURE.DEPTH)
         zed_depth = depth.get_data()
+        baseline = camera_parameter.baseline
+        focal_length = camera_parameter.fx
+        disparity = baseline * focal_length / zed_depth
+        disparity_npyname = disparity_dir / f"zed_disparity_{counter:05d}.npy"
+        np.save(disparity_npyname, disparity)
         colored_depth_image = as_colorimage(zed_depth)
         results = np.concatenate((cv_left_image, colored_depth_image), axis=1)
 
