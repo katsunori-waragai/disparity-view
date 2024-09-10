@@ -161,8 +161,8 @@ def main():
     parser.add_argument(
         "--resolution",
         type=str,
-        help="Resolution, can be either HD2K, HD1200, HD1080, HD720, SVGA or VGA",
-        default="HD1200",
+        help="Resolution, can be either HD2K, HD1080, HD720, SVGA or VGA",
+        default="HD1080",
     )
     parser.add_argument(
         "--confidence_threshold",
