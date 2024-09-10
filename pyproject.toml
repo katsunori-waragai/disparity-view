@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "disparirtyview"
+name = "disparirty_view"
 description = "depth npy file viewer"
 readme = "README.md"
 version = "0.0.1"
@@ -28,8 +28,8 @@ dev = [
     "black",
 ]
 [project.scripts]
-disparity_viewer = "disparirtyview.disparity_view:disparity_viewer_main"
-zed_capture = "disparirtyview.zed_capture:main"
+disparity_viewer = "disparirty_view.disparity_view:disparity_viewer_main"
+zed_capture = "disparirty_view.zed_capture:main"
 
 [project.urls]
 Repository = "https://github.com/katsunori-waragai/depth-view"
