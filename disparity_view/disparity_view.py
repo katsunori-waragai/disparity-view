@@ -76,7 +76,7 @@ def view_by_colormap(args):
     left_images = sorted(leftdir.glob("**/*.png"))
     disparity_npys = sorted(disparity_dir.glob("**/*.npy"))
     cv2.namedWindow("left depth", cv2.WINDOW_NORMAL)
-    for leftname, disparity_name in tqdm(zip(left_images, disparity_npys)):
+    for leftname, disparity_name in tqdm(list(zip(left_images, disparity_npys))):
         print(leftname, disparity_name)
         image = cv2.imread(str(leftname))
         disparity = np.load(str(disparity_name))
@@ -121,7 +121,7 @@ def view3d(args):
 
     vis = o3d.visualization.Visualizer()
     vis.create_window()
-    for leftname, disparity_name in zip(left_images, disparity_npys):
+    for leftname, disparity_name in tqdm(list(zip(left_images, disparity_npys))):
         print(leftname, disparity_name)
         disparity = np.load(str(disparity_name))
         baseline = camera_parameter.baseline
