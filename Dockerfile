@@ -19,10 +19,5 @@ RUN chmod +x ${ZED_SDK_INSTALLER} && ./${ZED_SDK_INSTALLER} -- silent
 RUN cd /root && git clone https://github.com/katsunori-waragai/disparity-view
 RUN cd /root/disparity-view
 WORKDIR /root/disparity-view
-RUN mkdir disparity_view/
-COPY disparity_view/* disparity_view/
-RUN mkdir test
-COPY test/* test/
-COPY pyproject.toml Makefile *.py ./
 RUN python3 -m pip install .[dev]
 
