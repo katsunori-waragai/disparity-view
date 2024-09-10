@@ -35,15 +35,6 @@ def get_baseline(cam_info) -> float:
     return cam_info.camera_configuration.calibration_parameters.get_camera_baseline()
 
 
-def load_settings():
-    from pathlib import Path
-    import toml
-
-    tomlname = sorted(Path("/usr/local/lib/zed/settings").glob("SN*.conf"))[0]
-    zed_settings = toml.load(tomlname)
-    print(zed_settings["STEREO"])
-
-
 @dataclass_json
 @dataclass
 class CameraParameter:
