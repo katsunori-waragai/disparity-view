@@ -16,7 +16,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import pyautogui
 
 from disparity_view.disparity_view import as_colorimage, get_dirs, resize_image
 from disparity_view.zed_camerainfo import CameraParameter
@@ -89,8 +88,6 @@ def capture_main(args):
     runtime_parameters.measure3D_reference_frame = sl.REFERENCE_FRAME.WORLD
     runtime_parameters.confidence_threshold = args.confidence_threshold
     print(f"### {runtime_parameters.confidence_threshold=}")
-
-    # screen_width, screen_height = pyautogui.size()
 
     title = f"Depth {init_params.depth_mode=}"
     cv2.namedWindow(title, cv2.WINDOW_NORMAL)
