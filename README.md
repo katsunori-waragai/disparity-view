@@ -1,6 +1,10 @@
-# depth-view
-viewer for depth data in npy file format
+# disparity-view
+viewer for disparity data in npy file format
 
+## Install
+```commandline
+python3 -m pip install .[dev]
+```
 
 ## tools
 
@@ -11,7 +15,7 @@ usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] 
 disparity npy file viewer
 
 positional arguments:
-  captured_dir  captured directory by capture.py
+  captured_dir  captured directory by zed_capture
 
 optional arguments:
   -h, --help    show this help message and exit
