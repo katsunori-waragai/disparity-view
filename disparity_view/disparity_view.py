@@ -75,7 +75,7 @@ def view_by_colormap(args):
 
     left_images = sorted(leftdir.glob("**/*.png"))
     disparity_npys = sorted(disparity_dir.glob("**/*.npy"))
-
+    cv2.namedWindow("left depth", cv2.WINDOW_NORMAL)
     for leftname, disparity_name in tqdm(zip(left_images, disparity_npys)):
         print(leftname, disparity_name)
         image = cv2.imread(str(leftname))
@@ -93,6 +93,7 @@ def view_by_colormap(args):
         assert image.shape == colored.shape
         assert image.dtype == colored.dtype
         results = np.concatenate((image, colored), axis=1)
+        results = resize_image(results, rate=0.5)
         cv2.imshow("left depth", results)
         cv2.waitKey(10)
         time.sleep(sec)
