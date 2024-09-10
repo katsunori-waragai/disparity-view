@@ -123,7 +123,6 @@ def view3d(args):
     vis.create_window()
     for leftname, disparity_name in zip(left_images, disparity_npys):
         print(leftname, disparity_name)
-        image = cv2.imread(str(leftname))
         disparity = np.load(str(disparity_name))
         baseline = camera_parameter.baseline
         focal_length = camera_parameter.fx
@@ -132,8 +131,6 @@ def view3d(args):
         rgb = o3d.io.read_image(str(leftname))
         open3d_depth = o3d.geometry.Image(depth)
         rgbd_image = o3d.geometry.RGBDImage.create_from_color_and_depth(rgb, open3d_depth)
-        # [LEFT_CAM_HD]
-        height, width = image.shape[:2]
 
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image, left_cam_intrinsic)
         pcd.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
