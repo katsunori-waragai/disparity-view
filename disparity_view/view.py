@@ -12,7 +12,7 @@ import open3d as o3d
 from tqdm import tqdm
 
 
-from disparity_view.zed_camerainfo import CameraParameter
+from disparity_view.zed_info import CameraParameter
 
 
 def finitemax(depth: np.ndarray) -> float:
