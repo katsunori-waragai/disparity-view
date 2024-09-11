@@ -75,7 +75,9 @@ optional arguments:
 
 ```
 After `zed_capture` execution, you will have following folders.
+```
 ./outdir
 ./outdir/left
 ./outdir/right
 ./outdir/zed-disparity
+```
