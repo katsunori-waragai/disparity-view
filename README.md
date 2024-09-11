@@ -63,3 +63,8 @@ optional arguments:
   --outdir OUTDIR       image pair output
 
 ```
+After `zed_capture` execution, you will have following folders.
+./outdir
+./outdir/left
+./outdir/right
+./outdir/zed-disparity
