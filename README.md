@@ -17,12 +17,12 @@ python3 -m pip install .[dev]
 
 ```
 disparity_viewer -h
-usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--gray] [--jet] [--inferno] captured_dir
+usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--save] [--gray] [--jet] [--inferno] captured_dir
 
 disparity npy file viewer
 
 positional arguments:
-  captured_dir  captured directory by zed_capture
+  captured_dir  captured directory by capture.py
 
 optional arguments:
   -h, --help    show this help message and exit
@@ -30,13 +30,15 @@ optional arguments:
   --vmax VMAX   max disparity [pixel]
   --vmin VMIN   min disparity [pixel]
   --disp3d      display 3D
+  --save        save colored or ply
 
 colormap:
   --gray        gray colormap
   --jet         jet colormap
   --inferno     inferno colormap
-```
 
+```
+### optional tool
 If you have ZED2i or ZED_X by StereoLabs,
 You can use following command to capture stereo images and disparity npy files.
 Access here for more information.
@@ -61,3 +63,8 @@ optional arguments:
   --outdir OUTDIR       image pair output
 
 ```
+After `zed_capture` execution, you will have following folders.
+./outdir
+./outdir/left
+./outdir/right
+./outdir/zed-disparity
