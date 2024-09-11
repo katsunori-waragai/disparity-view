@@ -126,6 +126,7 @@ def view3d(args):
     vis.create_window()
     for leftname, disparity_name in tqdm(list(zip(left_images, disparity_npys))):
         print(leftname, disparity_name)
+        plyname = disparity_name.with_suffix(".ply")
         disparity = np.load(str(disparity_name))
         baseline = camera_parameter.baseline
         focal_length = camera_parameter.fx
@@ -136,6 +137,8 @@ def view3d(args):
         rgbd_image = o3d.geometry.RGBDImage.create_from_color_and_depth(rgb, open3d_depth)
 
         pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image, left_cam_intrinsic)
+        if args.save:
+            o3d.io.write_point_cloud(str(plyname), pcd)
         pcd.transform([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
         vis.add_geometry(pcd)
         vis.update_geometry(pcd)
@@ -159,7 +162,7 @@ def disparity_viewer_main():
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
     parser.add_argument("--vmin", type=float, default=0, help="min disparity [pixel]")
     parser.add_argument("--disp3d", action="store_true", help="display 3D")
-    parser.add_argument("--save", action="store_true", help="save colored")
+    parser.add_argument("--save", action="store_true", help="save colored or ply")
     group = parser.add_argument_group("colormap")
     group.add_argument("--gray", action="store_true", help="gray colormap")
     group.add_argument("--jet", action="store_true", help="jet colormap")
