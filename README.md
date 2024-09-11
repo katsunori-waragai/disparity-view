@@ -8,7 +8,18 @@ viewer for disparity data in npy file format
 - Optional:
   - ZED SDK 4.1 (StereoLabs)
 
-## Install
+## Install in docker environment
+pip install is executed in Dockerfile.
+```commandline
+docker_build.sh
+docker_run.sh
+
+# now you can  execute inside docker environment
+zed_capture -h
+disparity_viewer -h
+```
+
+## Install without docker
 ```commandline
 python3 -m pip install .[dev]
 ```
