@@ -80,6 +80,7 @@ def view_by_colormap(args):
         print(leftname, disparity_name)
         image = cv2.imread(str(leftname))
         disparity = np.load(str(disparity_name))
+        colored_name = disparity_name.with_suffix(".png")
 
         if args.gray:
             colored = as_gray(disparity)
@@ -92,6 +93,8 @@ def view_by_colormap(args):
 
         assert image.shape == colored.shape
         assert image.dtype == colored.dtype
+        if args.save:
+            cv2.imwrite(str(colored_name), colored)
         results = np.concatenate((image, colored), axis=1)
         results = resize_image(results, rate=0.5)
         cv2.imshow("left depth", results)
@@ -156,6 +159,7 @@ def disparity_viewer_main():
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
     parser.add_argument("--vmin", type=float, default=0, help="min disparity [pixel]")
     parser.add_argument("--disp3d", action="store_true", help="display 3D")
+    parser.add_argument("--save", action="store_true", help="save colored")
     group = parser.add_argument_group("colormap")
     group.add_argument("--gray", action="store_true", help="gray colormap")
     group.add_argument("--jet", action="store_true", help="jet colormap")
