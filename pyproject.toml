@@ -28,7 +28,7 @@ dev = [
     "black",
 ]
 [project.scripts]
-disparity_viewer = "disparity_view.disparity_view:disparity_viewer_main"
+disparity_viewer = "disparity_view.view:disparity_viewer_main"
 zed_capture = "disparity_view.zed_capture:main"
 
 [project.urls]

@@ -2,7 +2,7 @@ import pyzed.sl as sl
 
 import sys
 
-from disparity_view.zed_camerainfo import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
+from disparity_view.zed_info import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
 
 
 def test_get_baseline():
