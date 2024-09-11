@@ -6,7 +6,6 @@ module to get zed2i camera by StereoLabs
     The file format is toml.
 """
 
-import pyzed.sl as sl  # ZED-SDK
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from pathlib import Path
