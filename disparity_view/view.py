@@ -1,6 +1,7 @@
 """
 library to view disparity npy files.
 """
+
 import argparse
 import time
 from pathlib import Path
