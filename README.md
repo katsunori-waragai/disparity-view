@@ -27,7 +27,7 @@ python3 -m pip install .[dev]
 ## tools
 
 ```
-disparity_viewer -h
+$ disparity_viewer -h
 usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--save] [--gray] [--jet] [--inferno] captured_dir
 
 disparity npy file viewer
@@ -48,6 +48,27 @@ colormap:
   --jet         jet colormap
   --inferno     inferno colormap
 
+
+$ view_npy -h
+usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--save] [--gray] [--jet] [--inferno] npy_file
+
+np file viewer
+
+positional arguments:
+  npy_file     npy_file to view
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --vmax VMAX  max disparity [pixel]
+  --vmin VMIN  min disparity [pixel]
+  --disp3d     display 3D
+  --save       save colored or ply
+
+colormap:
+  --gray       gray colormap
+  --jet        jet colormap
+  --inferno    inferno colormap
+
 ```
 ### optional tool
 If you have ZED2i or ZED_X by StereoLabs,
@@ -56,7 +77,7 @@ Access here for more information.
     https://www.stereolabs.com/en-jp
 
 ```
-zed_capture -h
+$ zed_capture -h
 usage: zed_capture [-h] [--input_svo_file INPUT_SVO_FILE] [--ip_address IP_ADDRESS] [--resolution RESOLUTION] [--confidence_threshold CONFIDENCE_THRESHOLD] [--outdir OUTDIR]
 
 capture stereo pairs
