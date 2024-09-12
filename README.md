@@ -81,3 +81,7 @@ After `zed_capture` execution, you will have following folders.
 ./outdir/right
 ./outdir/zed-disparity
 ```
+
+## Note on StereoLabs ZED2i Camera
+- You can get stereo rectified left, right image pairs with timestamp.
+- You can retrieve depth data and point cloud by zed sdk.
