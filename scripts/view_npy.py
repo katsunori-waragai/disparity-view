@@ -16,7 +16,12 @@ def view_npy(disparity, args):
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_INFERNO)
     else:
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
-    cv2.imwrite("tmp.png", colored)
+
+    outname = "tmp.png"
+    cv2.imwrite(outname, colored)
+    print(f"saved as {outname}")
+    cv2.imshow("img", colored)
+    cv2.waitKey(-1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="np file viewer")
