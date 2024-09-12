@@ -1,13 +1,13 @@
 import argparse
+from pathlib import Path
 
 import numpy as np
 from tqdm import tqdm
 
 from disparity_view.view import view_npy
 
-if __name__ == "__main__":
-    from pathlib import Path
 
+def view_npy_main():
     parser = argparse.ArgumentParser(description="np file viewer")
     parser.add_argument("npy_file", help="npy_file to view")
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
@@ -31,3 +31,7 @@ if __name__ == "__main__":
             view_npy(disparity, args)
     else:
         print(f"no such file {args.npy_file}")
+
+
+if __name__ == "__main__":
+    view_npy_main()
