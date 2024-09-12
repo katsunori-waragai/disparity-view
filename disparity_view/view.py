@@ -149,6 +149,25 @@ def view3d(args):
     vis.destroy_window()
 
 
+def view_npy(disparity: np.ndarray, args):
+    vmin = args.vmin
+    vmax = args.vmax
+    if args.gray:
+        colored = as_gray(disparity)
+    elif args.jet:
+        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
+    elif args.inferno:
+        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_INFERNO)
+    else:
+        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
+
+    outname = "tmp.png"
+    cv2.imwrite(outname, colored)
+    print(f"saved as {outname}")
+    cv2.imshow("img", colored)
+    cv2.waitKey(-1)
+
+
 def disparity_viewer_main():
     """
     A tool to view depth(as npy file) and left image.

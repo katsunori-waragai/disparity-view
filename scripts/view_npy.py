@@ -1,30 +1,12 @@
 import argparse
 
-import cv2
 import numpy as np
 
-from disparity_view.view import as_colorimage, as_gray
-
-def view_npy(disparity, args):
-    vmin = args.vmin
-    vmax = args.vmax
-    if args.gray:
-        colored = as_gray(disparity)
-    elif args.jet:
-        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
-    elif args.inferno:
-        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_INFERNO)
-    else:
-        colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
-
-    outname = "tmp.png"
-    cv2.imwrite(outname, colored)
-    print(f"saved as {outname}")
-    cv2.imshow("img", colored)
-    cv2.waitKey(-1)
+from disparity_view.view import view_npy
 
 if __name__ == "__main__":
     from pathlib import Path
+
     parser = argparse.ArgumentParser(description="np file viewer")
     parser.add_argument("npy_file", help="npy_file to view")
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
