@@ -29,6 +29,7 @@ dev = [
 ]
 [project.scripts]
 disparity_viewer = "disparity_view.view:disparity_viewer_main"
+view_npy = "disparity_view.view:view_npy_main"
 zed_capture = "disparity_view.zed_capture:main"
 
 [project.urls]
