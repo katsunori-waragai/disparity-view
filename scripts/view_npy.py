@@ -24,6 +24,7 @@ def view_npy(disparity, args):
     cv2.waitKey(-1)
 
 if __name__ == "__main__":
+    from pathlib import Path
     parser = argparse.ArgumentParser(description="np file viewer")
     parser.add_argument("npy_file", help="npy_file to view")
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
@@ -37,5 +38,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    disparity = np.load(args.npy_file)
-    view_npy(disparity, args)
+    if Path(args.npy_file).is_file():
+        disparity = np.load(args.npy_file)
+        view_npy(disparity, args)
+    elif Path(args.npy_file).is_dir():
+        npys = sorted(Path(args.npy_file).glob("*.npy"))
+        for npy in npys:
+            disparity = np.load(npy)
+            view_npy(disparity, args)
+    else:
+        print(f"no such file {args.npy_file}")
