@@ -18,7 +18,9 @@ RUN cd /root && mkdir disparity-view/
 RUN cd /root/disparity-view
 WORKDIR /root/disparity-view
 RUN mkdir disparity_view/
+RUN mkdir ./scripts
 COPY disparity_view/* disparity_view/
+COPY scripts/* ./scripts/
 RUN mkdir test
 COPY test/* test/
 COPY pyproject.toml Makefile *.py ./
