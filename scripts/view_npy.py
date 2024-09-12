@@ -1,6 +1,7 @@
 import argparse
 
 import numpy as np
+from tqdm import tqdm
 
 from disparity_view.view import view_npy
 
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         view_npy(disparity, args)
     elif Path(args.npy_file).is_dir():
         npys = sorted(Path(args.npy_file).glob("*.npy"))
-        for npy in npys:
+        for npy in tqdm(npys):
             disparity = np.load(npy)
             view_npy(disparity, args)
     else:
