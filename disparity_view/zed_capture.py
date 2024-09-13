@@ -20,8 +20,6 @@ import numpy as np
 from disparity_view.view import as_colorimage, get_dirs, resize_image
 from disparity_view.zed_info import CameraParameter
 
-MAX_ABS_DEPTH, MIN_ABS_DEPTH = 0.0, 2.0  # [m]
-
 
 def parse_args_to_params(args, init_params):
     if len(args.input_svo_file) > 0 and args.input_svo_file.endswith(".svo"):
@@ -29,14 +27,10 @@ def parse_args_to_params(args, init_params):
         print("[Sample] Using SVO File input: {0}".format(args.input_svo_file))
     elif len(args.ip_address) > 0:
         ip_str = args.ip_address
-        if (
-            ip_str.replace(":", "").replace(".", "").isdigit()
-            and len(ip_str.split(".")) == 4
-            and len(ip_str.split(":")) == 2
-        ):
+        if is_ip_address(ip_str):
             init_params.set_from_stream(ip_str.split(":")[0], int(ip_str.split(":")[1]))
             print("[Sample] Using Stream input, IP : ", ip_str)
-        elif ip_str.replace(":", "").replace(".", "").isdigit() and len(ip_str.split(".")) == 4:
+        elif is_numerical_ip_address(ip_str):
             init_params.set_from_stream(ip_str)
             print("[Sample] Using Stream input, IP : ", ip_str)
         else:
@@ -63,6 +57,16 @@ def parse_args_to_params(args, init_params):
         print("[Sample] No valid resolution entered. Using default")
     else:
         print("[Sample] Using default resolution")
+
+
+def is_numerical_ip_address(ip_str: str) -> bool:
+    return ip_str.replace(":", "").replace(".", "").isdigit() and len(ip_str.split(".")) == 4
+
+
+def is_ip_address(ip_str: str) -> bool:
+    return ip_str.replace(":", "").replace(".", "").isdigit()
+    and len(ip_str.split(".")) == 4
+    and len(ip_str.split(":")) == 2
 
 
 def capture_main(args):
