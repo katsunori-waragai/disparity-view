@@ -27,10 +27,10 @@ def parse_args_to_params(args, init_params):
         print("[Sample] Using SVO File input: {0}".format(args.input_svo_file))
     elif len(args.ip_address) > 0:
         ip_str = args.ip_address
-        if is_ip_address(ip_str):
+        if _is_ip_address(ip_str):
             init_params.set_from_stream(ip_str.split(":")[0], int(ip_str.split(":")[1]))
             print("[Sample] Using Stream input, IP : ", ip_str)
-        elif is_numerical_ip_address(ip_str):
+        elif _is_numerical_ip_address(ip_str):
             init_params.set_from_stream(ip_str)
             print("[Sample] Using Stream input, IP : ", ip_str)
         else:
@@ -59,11 +59,11 @@ def parse_args_to_params(args, init_params):
         print("[Sample] Using default resolution")
 
 
-def is_numerical_ip_address(ip_str: str) -> bool:
+def _is_numerical_ip_address(ip_str: str) -> bool:
     return ip_str.replace(":", "").replace(".", "").isdigit() and len(ip_str.split(".")) == 4
 
 
-def is_ip_address(ip_str: str) -> bool:
+def _is_ip_address(ip_str: str) -> bool:
     return ip_str.replace(":", "").replace(".", "").isdigit()
     and len(ip_str.split(".")) == 4
     and len(ip_str.split(":")) == 2
