@@ -64,9 +64,11 @@ def _is_numerical_ip_address(ip_str: str) -> bool:
 
 
 def _is_ip_address(ip_str: str) -> bool:
-    return ip_str.replace(":", "").replace(".", "").isdigit()
-    and len(ip_str.split(".")) == 4
-    and len(ip_str.split(":")) == 2
+    return (
+        ip_str.replace(":", "").replace(".", "").isdigit()
+        and len(ip_str.split(".")) == 4
+        and len(ip_str.split(":")) == 2
+    )
 
 
 def capture_main(args):
