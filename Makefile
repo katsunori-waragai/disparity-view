@@ -10,6 +10,6 @@ test:
 whl:
 	apt install -y python3.8-venv
 	python3 -m venv venv
-	bash source venv/bin/activate
+	. venv/bin/activate
 	python3 -m pip install build
 	python3 -m build
