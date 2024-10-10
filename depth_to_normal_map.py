@@ -27,9 +27,7 @@ class DepthToNormalMap:
         self.depth_map = cv2.imread(depth_map_path, cv2.IMREAD_UNCHANGED)
 
         if self.depth_map is None:
-            raise ValueError(
-                f"Could not read the depth map image file at {depth_map_path}"
-            )
+            raise ValueError(f"Could not read the depth map image file at {depth_map_path}")
         self.max_depth = max_depth
 
     def convert(self, output_path: str) -> None:
@@ -66,9 +64,7 @@ class DepthToNormalMap:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert depth map to normal map")
     parser.add_argument("--input", type=str, help="Path to depth map image")
-    parser.add_argument(
-        "--max_depth", type=int, default=255, help="Maximum depth value (default: 255)"
-    )
+    parser.add_argument("--max_depth", type=int, default=255, help="Maximum depth value (default: 255)")
     parser.add_argument(
         "--output_path",
         type=str,
