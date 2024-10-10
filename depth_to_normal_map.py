@@ -16,7 +16,6 @@ class DepthToNormalMap:
     depth_map: np.ndarray = field(default=None)
     max_depth: int = 255
 
-
     def convert(self, depth_map: np.ndarray) -> np.ndarray:
         """Converts the depth map image to a normal map image.
 
