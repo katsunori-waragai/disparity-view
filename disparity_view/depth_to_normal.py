@@ -9,11 +9,7 @@ class DepthToNormalMap:
     """A class for converting a depth map image to a normal map image.
 
 
-    Attributes:
-        max_depth (int): The maximum depth value in the depth map image.
     """
-
-    max_depth: int = 255
 
     def convert(self, depth_map: np.ndarray) -> np.ndarray:
         """Converts the depth map image to a normal map image.

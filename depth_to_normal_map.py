@@ -7,7 +7,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Convert depth map to normal map")
     parser.add_argument("--input", type=str, help="Path to depth map image")
-    parser.add_argument("--max_depth", type=int, default=255, help="Maximum depth value (default: 255)")
     parser.add_argument(
         "--output_path",
         type=str,
@@ -16,7 +15,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    converter = disparity_view.DepthToNormalMap(max_depth=args.max_depth)
+    converter = disparity_view.DepthToNormalMap()
     depth_map = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
     normal_bgr = converter.convert(depth_map)
     cv2.imwrite(args.output_path, normal_bgr)
