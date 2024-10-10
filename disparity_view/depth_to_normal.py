@@ -10,30 +10,24 @@ class DepthToNormalMap:
 
 
     Attributes:
-        depth_map (ndarray): A numpy array representing the depth map image.
         max_depth (int): The maximum depth value in the depth map image.
     """
 
-    depth_map: np.ndarray = field(default=None)
     max_depth: int = 255
 
     def convert(self, depth_map: np.ndarray) -> np.ndarray:
         """Converts the depth map image to a normal map image.
 
-        Args:
-            output_path (str): The path to save the normal map image file.
-
         """
-        self.depth_map = depth_map
-        rows, cols = self.depth_map.shape[:2]
+        rows, cols = depth_map.shape[:2]
 
         x, y = np.meshgrid(np.arange(cols), np.arange(rows))
         x = x.astype(np.float32)
         y = y.astype(np.float32)
 
         # Calculate the partial derivatives of depth with respect to x and y
-        dx = cv2.Sobel(self.depth_map, cv2.CV_32F, 1, 0)
-        dy = cv2.Sobel(self.depth_map, cv2.CV_32F, 0, 1)
+        dx = cv2.Sobel(depth_map, cv2.CV_32F, 1, 0)
+        dy = cv2.Sobel(depth_map, cv2.CV_32F, 0, 1)
 
         # Compute the normal vector for each pixel
         normal = np.dstack((-dx, -dy, np.ones((rows, cols))))
