@@ -106,18 +106,17 @@ After `zed_capture` execution, you will have following folders.
 ## depth_to_normal
 - Depth image is not easy to recognize fine structure.
 - Ported depth_to_normal from following github.
+
 ```commandline
 
 python3 depth_to_normal_map.py -h
-usage: depth_to_normal_map.py [-h] [--input INPUT] [--max_depth MAX_DEPTH] [--output_path OUTPUT_PATH]
+usage: depth_to_normal_map.py [-h] [--input INPUT] [--output_path OUTPUT_PATH]
 
 Convert depth map to normal map
 
 optional arguments:
   -h, --help            show this help message and exit
   --input INPUT         Path to depth map image
-  --max_depth MAX_DEPTH
-                        Maximum depth value (default: 255)
   --output_path OUTPUT_PATH
                         Output path for normal map image (default: normal_map.png)
 ```
