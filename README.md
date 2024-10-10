@@ -103,6 +103,27 @@ After `zed_capture` execution, you will have following folders.
 ./outdir/zed-disparity
 ```
 
+## depth_to_normal
+- Depth image is not easy to recognize fine structure.
+- Ported depth_to_normal from following github.
+
+```commandline
+
+python3 depth_to_normal_map.py -h
+usage: depth_to_normal_map.py [-h] [--input INPUT] [--output_path OUTPUT_PATH]
+
+Convert depth map to normal map
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input INPUT         Path to depth map image
+  --output_path OUTPUT_PATH
+                        Output path for normal map image (default: normal_map.png)
+```
+
+<img src="test/assets/depth.png" width="300">
+<img src="test/assets/normal.png" width="300">
+
 ## Note on StereoLabs ZED2i Camera
 - You can get stereo rectified left, right image pairs with timestamp.
 - You can retrieve depth data and point cloud by zed sdk.
@@ -118,3 +139,6 @@ will generate
 dist/disparity_view-0.0.1-py3-none-any.whl
 dist/disparity_view-0.0.1.tar.gz
 ```
+
+## THANKS
+https://github.com/cobanov/depth2normal.git
