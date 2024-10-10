@@ -30,7 +30,7 @@ class DepthToNormalMap:
             raise ValueError(f"Could not read the depth map image file at {depth_map_path}")
         self.max_depth = max_depth
 
-    def convert(self, output_path: str) -> None:
+    def convert(self) -> np.ndarray:
         """Converts the depth map image to a normal map image.
 
         Args:
@@ -57,8 +57,7 @@ class DepthToNormalMap:
         normal = normal.clip(0, 255).astype(np.uint8)
 
         # Save the normal map to a file
-        normal_bgr = cv2.cvtColor(normal, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, normal_bgr)
+        return cv2.cvtColor(normal, cv2.COLOR_RGB2BGR)
 
 
 if __name__ == "__main__":
@@ -74,4 +73,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     converter = DepthToNormalMap(args.input, max_depth=args.max_depth)
-    converter.convert(args.output_path)
+    normal_bgr = converter.convert()
+    cv2.imwrite(args.output_path, normal_bgr)
