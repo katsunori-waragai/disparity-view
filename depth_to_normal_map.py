@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
-import argparse
+from dataclasses import dataclass, field
 
 
+@dataclass
 class DepthToNormalMap:
     """A class for converting a depth map image to a normal map image.
 
@@ -12,32 +13,19 @@ class DepthToNormalMap:
         max_depth (int): The maximum depth value in the depth map image.
     """
 
-    def __init__(self, depth_map_path: str, max_depth: int = 255) -> None:
-        """Constructs a DepthToNormalMap object.
+    depth_map: np.ndarray = field(default=None)
+    max_depth: int = 255
 
-        Args:
-            depth_map_path (str): The path to the depth map image file.
-            max_depth (int, optional): The maximum depth value in the depth map image.
-                Defaults to 255.
 
-        Raises:
-            ValueError: If the depth map image file cannot be read.
-
-        """
-        self.depth_map = cv2.imread(depth_map_path, cv2.IMREAD_UNCHANGED)
-
-        if self.depth_map is None:
-            raise ValueError(f"Could not read the depth map image file at {depth_map_path}")
-        self.max_depth = max_depth
-
-    def convert(self) -> np.ndarray:
+    def convert(self, depth_map: np.ndarray) -> np.ndarray:
         """Converts the depth map image to a normal map image.
 
         Args:
             output_path (str): The path to save the normal map image file.
 
         """
-        rows, cols = self.depth_map.shape
+        self.depth_map = depth_map
+        rows, cols = self.depth_map.shape[:2]
 
         x, y = np.meshgrid(np.arange(cols), np.arange(rows))
         x = x.astype(np.float32)
@@ -61,6 +49,8 @@ class DepthToNormalMap:
 
 
 if __name__ == "__main__":
+    import argparse
+
     parser = argparse.ArgumentParser(description="Convert depth map to normal map")
     parser.add_argument("--input", type=str, help="Path to depth map image")
     parser.add_argument("--max_depth", type=int, default=255, help="Maximum depth value (default: 255)")
@@ -72,6 +62,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    converter = DepthToNormalMap(args.input, max_depth=args.max_depth)
-    normal_bgr = converter.convert()
+    converter = DepthToNormalMap(max_depth=args.max_depth)
+    depth_map = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
+    normal_bgr = converter.convert(depth_map)
     cv2.imwrite(args.output_path, normal_bgr)
