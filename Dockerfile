@@ -22,7 +22,9 @@ RUN mkdir ./scripts
 COPY disparity_view/* disparity_view/
 COPY scripts/* ./scripts/
 RUN mkdir test
+RUN mkdir test/assets
 COPY test/* test/
+COPY test/assets/* test/assets/
 COPY pyproject.toml Makefile *.py ./
 RUN python3 -m pip install .[dev]
 
