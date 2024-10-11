@@ -17,6 +17,8 @@ if __name__ == "__main__":
 
     converter = disparity_view.DepthToNormalMap()
     depth_map = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
+    if len(depth_map.shape) == 3:
+        depth_map = cv2.cvtColor(depth_map, cv2.COLOR_BGR2GRAY)
     normal_bgr = converter.convert(depth_map)
     cv2.imwrite(args.output_path, normal_bgr)
     print(f"saved {args.output_path}")
