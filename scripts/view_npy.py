@@ -23,27 +23,28 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
+    if not Path(args.npy_file).exists():
+        print(f"no such file {args.npy_file}")
+        exit()
     if Path(args.npy_file).is_file():
-        disparity = np.load(args.npy_file)
-        view_npy(disparity, args)
+        npys = [Path(args.npy_file)]
     elif Path(args.npy_file).is_dir():
         npys = sorted(Path(args.npy_file).glob("*.npy"))
-        for npy in tqdm(npys):
-            disparity = np.load(npy)
-            print(f"{np.nanmax(disparity.flatten())=}")
-            print(f"{np.nanmin(disparity.flatten())=}")
-            minval = np.nanmin(disparity.flatten())
-            if args.normal:
-                print(f"{args.normal=}")
-                converter = disparity_view.DepthToNormalMap()
-                depth_map = 1.0 / disparity
-                depth_map[np.logical_not(np.isfinite(depth_map))] = 1.0 / minval
-                normal_bgr = converter.convert(depth_map)
-                print(f"{normal_bgr.shape=}")
-                oname = Path(args.outdir) / f"normal_{npy.stem}.png"
-                oname.parent.mkdir(exist_ok=True)
-                cv2.imwrite(str(oname), normal_bgr)
-            else:
-                view_npy(disparity, args)
-    else:
-        print(f"no such file {args.npy_file}")
+
+    for npy in tqdm(npys):
+        disparity = np.load(npy)
+        print(f"{np.nanmax(disparity.flatten())=}")
+        print(f"{np.nanmin(disparity.flatten())=}")
+        minval = np.nanmin(disparity.flatten())
+        if args.normal:
+            print(f"{args.normal=}")
+            converter = disparity_view.DepthToNormalMap()
+            depth_map = 1.0 / disparity
+            depth_map[np.logical_not(np.isfinite(depth_map))] = 1.0 / minval
+            normal_bgr = converter.convert(depth_map)
+            print(f"{normal_bgr.shape=}")
+            oname = Path(args.outdir) / f"normal_{npy.stem}.png"
+            oname.parent.mkdir(exist_ok=True)
+            cv2.imwrite(str(oname), normal_bgr)
+        else:
+            view_npy(disparity, args)
