@@ -8,7 +8,8 @@ from tqdm import tqdm
 from disparity_view.view import view_npy
 import disparity_view
 
-if __name__ == "__main__":
+
+def view_npy_main():
     parser = argparse.ArgumentParser(description="np file viewer")
     parser.add_argument("npy_file", help="npy_file to view")
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
@@ -22,7 +23,6 @@ if __name__ == "__main__":
     group.add_argument("--normal", action="store_true", help="normal colormap")
 
     args = parser.parse_args()
-    print(args)
     if not Path(args.npy_file).exists():
         print(f"no such file {args.npy_file}")
         exit()
@@ -30,7 +30,6 @@ if __name__ == "__main__":
         npys = [Path(args.npy_file)]
     elif Path(args.npy_file).is_dir():
         npys = sorted(Path(args.npy_file).glob("*.npy"))
-
     baseline = 120.0  # [mm] baseline value for ZED2i case
     for npy in tqdm(npys):
         disparity = np.load(npy)
@@ -48,3 +47,7 @@ if __name__ == "__main__":
             print(f"saved {oname}")
         else:
             view_npy(disparity, args)
+
+
+if __name__ == "__main__":
+    view_npy_main()
