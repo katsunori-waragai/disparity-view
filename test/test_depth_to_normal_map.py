@@ -2,6 +2,7 @@ import cv2
 
 import disparity_view
 
+
 def test_depth2normal():
     input_name = "assets/depth.png"
     converter = disparity_view.DepthToNormalMap()
