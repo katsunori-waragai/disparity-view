@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 import cv2
 import numpy as np
+import skimage.util
 
 
 @dataclass
@@ -30,9 +31,11 @@ class DepthToNormalMap:
         print(f"{np.percentile(dy.flatten(), [90])=}")
 
         # Compute the normal vector for each pixel
-        normal = np.dstack((-dx, -dy, np.ones((rows, cols))))
+        scale = 0.01
+        normal = np.dstack((-dx, -dy, np.full((rows, cols), scale)))
         print(f"{normal.shape=}")
-        norm = np.sqrt(np.mean(normal**2, axis=2, keepdims=True))
+        # sqrt(dx**2 + dy**2 + 1**2) を計算している
+        norm = np.sqrt(np.sum(normal**2, axis=2, keepdims=True))
         print(f"{norm.shape=}")
         normal = np.divide(normal, norm, out=np.zeros_like(normal), where=norm != 0)
 
