@@ -206,7 +206,7 @@ def view_npy_main():
     group.add_argument("--gray", action="store_true", help="gray colormap")
     group.add_argument("--jet", action="store_true", help="jet colormap")
     group.add_argument("--inferno", action="store_true", help="inferno colormap")
-    group.add_argument("--normal", action="store_true", help="normal colormap")
+    group.add_argument("--normal", action="store_true", help="normal mapping")
 
     args = parser.parse_args()
     if not Path(args.npy_file).exists():
