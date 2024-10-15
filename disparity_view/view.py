@@ -13,8 +13,8 @@ import open3d as o3d
 from tqdm import tqdm
 
 
-from .zed_info import CameraParameter
 from .depth_to_normal import DepthToNormalMap
+from .zed_info import CameraParameter
 
 
 def finitemax(depth: np.ndarray) -> float:
