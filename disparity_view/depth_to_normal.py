@@ -27,7 +27,9 @@ class DepthToNormalMap:
 
         # Compute the normal vector for each pixel
         normal = np.dstack((-dx, -dy, np.ones((rows, cols))))
-        norm = np.sqrt(np.sum(normal**2, axis=2, keepdims=True))
+        print(f"{normal.shape=}")
+        norm = np.sqrt(np.mean(normal**2, axis=2, keepdims=True))
+        print(f"{norm=}")
         normal = np.divide(normal, norm, out=np.zeros_like(normal), where=norm != 0)
 
         # Map the normal vectors to the [0, 255] range and convert to uint8
