@@ -49,26 +49,26 @@ colormap:
   --inferno     inferno colormap
 
 
-$ view_npy -h
-usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--save] [--gray] [--jet] [--inferno] npy_file
+ view_npy -h
+usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--outdir OUTDIR] [--gray] [--jet] [--inferno] [--normal] npy_file
 
 np file viewer
 
 positional arguments:
-  npy_file     npy_file to view
+  npy_file         npy_file to view
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --vmax VMAX  max disparity [pixel]
-  --vmin VMIN  min disparity [pixel]
-  --disp3d     display 3D
-  --save       save colored or ply
+  -h, --help       show this help message and exit
+  --vmax VMAX      max disparity [pixel]
+  --vmin VMIN      min disparity [pixel]
+  --disp3d         display 3D
+  --outdir OUTDIR  save colored or ply
 
 colormap:
-  --gray       gray colormap
-  --jet        jet colormap
-  --inferno    inferno colormap
-
+  --gray           gray colormap
+  --jet            jet colormap
+  --inferno        inferno colormap
+  --normal         normal mapping
 ```
 ### optional tool
 If you have ZED2i or ZED_X by StereoLabs,

@@ -5,10 +5,10 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from disparity_view.view import view_npy
 import disparity_view
 
-if __name__ == "__main__":
+
+def view_npy_main():
     parser = argparse.ArgumentParser(description="np file viewer")
     parser.add_argument("npy_file", help="npy_file to view")
     parser.add_argument("--vmax", type=float, default=500, help="max disparity [pixel]")
@@ -19,10 +19,9 @@ if __name__ == "__main__":
     group.add_argument("--gray", action="store_true", help="gray colormap")
     group.add_argument("--jet", action="store_true", help="jet colormap")
     group.add_argument("--inferno", action="store_true", help="inferno colormap")
-    group.add_argument("--normal", action="store_true", help="normal colormap")
+    group.add_argument("--normal", action="store_true", help="normal mapping")
 
     args = parser.parse_args()
-    print(args)
     if not Path(args.npy_file).exists():
         print(f"no such file {args.npy_file}")
         exit()
@@ -47,4 +46,8 @@ if __name__ == "__main__":
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:
-            view_npy(disparity, args)
+            disparity_view.view_npy(disparity, args)
+
+
+if __name__ == "__main__":
+    view_npy_main()
