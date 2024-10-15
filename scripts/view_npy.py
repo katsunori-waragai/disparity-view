@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from disparity_view.view import view_npy
 import disparity_view
 
 
@@ -30,6 +29,7 @@ def view_npy_main():
         npys = [Path(args.npy_file)]
     elif Path(args.npy_file).is_dir():
         npys = sorted(Path(args.npy_file).glob("*.npy"))
+
     baseline = 120.0  # [mm] baseline value for ZED2i case
     for npy in tqdm(npys):
         disparity = np.load(npy)
@@ -46,7 +46,7 @@ def view_npy_main():
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:
-            view_npy(disparity, args)
+            disparity_view.view_npy(disparity, args)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 
 import cv2
 import numpy as np
-import skimage.util
 
 
 @dataclass
