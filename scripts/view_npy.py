@@ -31,20 +31,20 @@ if __name__ == "__main__":
     elif Path(args.npy_file).is_dir():
         npys = sorted(Path(args.npy_file).glob("*.npy"))
 
+    baseline = 120.0  # [mm] baseline value for ZED2i case
     for npy in tqdm(npys):
         disparity = np.load(npy)
-        print(f"{np.nanmax(disparity.flatten())=}")
-        print(f"{np.nanmin(disparity.flatten())=}")
+
         minval = np.nanmin(disparity.flatten())
         if args.normal:
-            print(f"{args.normal=}")
             converter = disparity_view.DepthToNormalMap()
-            depth_map = 1.0 / disparity
-            depth_map[np.logical_not(np.isfinite(depth_map))] = 1.0 / minval
+            depth_map = baseline / disparity
+            # padded to remove non-finite values
+            depth_map[np.logical_not(np.isfinite(depth_map))] = baseline / minval
             normal_bgr = converter.convert(depth_map)
-            print(f"{normal_bgr.shape=}")
             oname = Path(args.outdir) / f"normal_{npy.stem}.png"
             oname.parent.mkdir(exist_ok=True)
             cv2.imwrite(str(oname), normal_bgr)
+            print(f"saved {oname}")
         else:
             view_npy(disparity, args)
