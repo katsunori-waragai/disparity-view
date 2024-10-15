@@ -7,20 +7,11 @@ import skimage.util
 
 @dataclass
 class DepthToNormalMap:
-    """A class for converting a depth map image to a normal map image.
-
-
-    """
+    """A class for converting a depth map image to a normal map image."""
 
     def convert(self, depth_map: np.ndarray) -> np.ndarray:
-        """Converts the depth map image to a normal map image.
-
-        """
+        """Converts the depth map image to a normal map image."""
         rows, cols = depth_map.shape[:2]
-
-        x, y = np.meshgrid(np.arange(cols), np.arange(rows))
-        x = x.astype(np.float32)
-        y = y.astype(np.float32)
 
         # Calculate the partial derivatives of depth with respect to x and y
         dx = cv2.Sobel(depth_map, cv2.CV_32F, 1, 0)
