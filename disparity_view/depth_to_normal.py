@@ -31,7 +31,9 @@ class DepthToNormalMap:
         print(f"{np.percentile(dy.flatten(), [90])=}")
 
         # Compute the normal vector for each pixel
-        scale = 0.01
+        scale = 0.1 * np.mean(np.sqrt(dx**2 + dy**2))
+        # scale = 0.01
+        print(f"{scale=}")
         normal = np.dstack((-dx, -dy, np.full((rows, cols), scale)))
         print(f"{normal.shape=}")
         # sqrt(dx**2 + dy**2 + 1**2) を計算している
