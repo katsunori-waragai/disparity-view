@@ -18,9 +18,9 @@ class DepthToNormalMap:
         dy = cv2.Sobel(depth_map, cv2.CV_32F, 0, 1)
 
         # Compute the normal vector for each pixel
-        scale = 0.1 * np.mean(np.sqrt(dx**2 + dy**2))
-        normal = np.dstack((-dx, -dy, np.full((rows, cols), scale)))
-        # sqrt(dx**2 + dy**2 + 1**2) を計算している
+        z_value = 0.1 * np.mean(np.sqrt(dx**2 + dy**2))
+        normal = np.dstack((-dx, -dy, np.full((rows, cols), z_value)))
+        # sqrt(dx**2 + dy**2 + z_value**2) を計算している
         norm = np.sqrt(np.sum(normal**2, axis=2, keepdims=True))
 
         # それぞれの画素についてRGBのベクトルの大きさが１になるようにしている。
