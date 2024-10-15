@@ -24,12 +24,16 @@ class DepthToNormalMap:
         # Calculate the partial derivatives of depth with respect to x and y
         dx = cv2.Sobel(depth_map, cv2.CV_32F, 1, 0)
         dy = cv2.Sobel(depth_map, cv2.CV_32F, 0, 1)
+        print(f"{np.max(dx.flatten())=}")
+        print(f"{np.max(dy.flatten())=}")
+        print(f"{np.percentile(dx.flatten(), [90])=}")
+        print(f"{np.percentile(dy.flatten(), [90])=}")
 
         # Compute the normal vector for each pixel
         normal = np.dstack((-dx, -dy, np.ones((rows, cols))))
         print(f"{normal.shape=}")
         norm = np.sqrt(np.mean(normal**2, axis=2, keepdims=True))
-        print(f"{norm=}")
+        print(f"{norm.shape=}")
         normal = np.divide(normal, norm, out=np.zeros_like(normal), where=norm != 0)
 
         # Map the normal vectors to the [0, 255] range and convert to uint8
