@@ -70,6 +70,11 @@ colormap:
   --inferno        inferno colormap
   --normal         normal mapping
 ```
+
+![left_motorcycle.png](test/test-imgs/left/left_motorcycle.png)
+![left_motorcycle.png](test/test-imgs/disparity-IGEV/left_motorcycle.png)
+![normal_left_motorcycle.png](test/test-imgs/normal/normal_left_motorcycle.png)
+
 ### optional tool
 If you have ZED2i or ZED_X by StereoLabs,
 You can use following command to capture stereo images and disparity npy files.
