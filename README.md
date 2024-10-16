@@ -27,29 +27,7 @@ python3 -m pip install .[dev]
 ## tools
 
 ```
-$ disparity_viewer -h
-usage: disparity_viewer [-h] [--sec SEC] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--save] [--gray] [--jet] [--inferno] captured_dir
-
-disparity npy file viewer
-
-positional arguments:
-  captured_dir  captured directory by capture.py
-
-optional arguments:
-  -h, --help    show this help message and exit
-  --sec SEC     wait sec
-  --vmax VMAX   max disparity [pixel]
-  --vmin VMIN   min disparity [pixel]
-  --disp3d      display 3D
-  --save        save colored or ply
-
-colormap:
-  --gray        gray colormap
-  --jet         jet colormap
-  --inferno     inferno colormap
-
-
- view_npy -h
+$ view_npy -h
 usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--outdir OUTDIR] [--gray] [--jet] [--inferno] [--normal] npy_file
 
 np file viewer
