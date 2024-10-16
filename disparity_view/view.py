@@ -151,7 +151,7 @@ def view3d(args):
     vis.destroy_window()
 
 
-def view_npy(disparity: np.ndarray, args):
+def view_npy(disparity: np.ndarray, args, npy=None):
     vmin = args.vmin
     vmax = args.vmax
     if args.gray:
@@ -163,8 +163,12 @@ def view_npy(disparity: np.ndarray, args):
     else:
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
 
-    outname = "tmp.png"
-    cv2.imwrite(outname, colored)
+    if args.outdir:
+        outname = Path(args.outdir) / f"colormap_{npy.stem}.png"
+    else:
+        outname = Path(".")/ f"colormap_{npy.stem}.png"
+    outname.parent.mkdir(exist_ok=True)
+    cv2.imwrite(str(outname), colored)
     print(f"saved as {outname}")
     cv2.imshow("img", colored)
     cv2.waitKey(-1)
@@ -232,4 +236,4 @@ def view_npy_main():
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:
-            view_npy(disparity, args)
+            view_npy(disparity, args, npy)
