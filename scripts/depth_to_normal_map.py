@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 
 import disparity_view
@@ -10,13 +12,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "--outdir",
         type=str,
-        default="normal_map.png",
-        help="Output path for normal map image (default: normal_map.png)",
+        default="output",
+        help="Output directory for normal map image (default: output)",
     )
     args = parser.parse_args()
 
     converter = disparity_view.DepthToNormalMap()
-    depth_map = cv2.imread(args.input, cv2.IMREAD_GRAYSCALE)
+    inputname = Path(args.input)
+    depth_map = cv2.imread(str(inputname), cv2.IMREAD_GRAYSCALE)
     normal_bgr = converter.convert(depth_map)
-    cv2.imwrite(args.outdir, normal_bgr)
-    print(f"saved {args.outdir}")
+    outname = Path(args.outdir) / f"normal_{inputname.stem}.png"
+    outname.parent.mkdir(exist_ok=True)
+    cv2.imwrite(str(outname), normal_bgr)
+    print(f"saved {outname}")
