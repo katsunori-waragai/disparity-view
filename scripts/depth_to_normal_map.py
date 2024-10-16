@@ -22,6 +22,6 @@ if __name__ == "__main__":
     depth_map = cv2.imread(str(inputname), cv2.IMREAD_GRAYSCALE)
     normal_bgr = converter.convert(depth_map)
     outname = Path(args.outdir) / f"normal_{inputname.stem}.png"
-    outname.parent.mkdir(exist_ok=True)
+    outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), normal_bgr)
     print(f"saved {outname}")
