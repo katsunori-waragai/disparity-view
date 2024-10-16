@@ -46,7 +46,7 @@ def view_npy_main():
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:
-            disparity_view.view_npy(disparity, args)
+            disparity_view.view_npy(disparity, args, npy)
 
 
 if __name__ == "__main__":
