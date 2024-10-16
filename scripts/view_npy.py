@@ -42,7 +42,7 @@ def view_npy_main():
             depth_map[np.logical_not(np.isfinite(depth_map))] = baseline / minval
             normal_bgr = converter.convert(depth_map)
             oname = Path(args.outdir) / f"normal_{npy.stem}.png"
-            oname.parent.mkdir(exist_ok=True)
+            oname.parent.mkdir(exist_ok=True, parents=True)
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:

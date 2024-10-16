@@ -167,7 +167,7 @@ def view_npy(disparity: np.ndarray, args, npy=None):
         outname = Path(args.outdir) / f"colormap_{npy.stem}.png"
     else:
         outname = Path(".")/ f"colormap_{npy.stem}.png"
-    outname.parent.mkdir(exist_ok=True)
+    outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), colored)
     print(f"saved as {outname}")
     cv2.imshow("img", colored)
@@ -232,7 +232,7 @@ def view_npy_main():
             depth_map[np.logical_not(np.isfinite(depth_map))] = baseline / minval
             normal_bgr = converter.convert(depth_map)
             oname = Path(args.outdir) / f"normal_{npy.stem}.png"
-            oname.parent.mkdir(exist_ok=True)
+            oname.parent.mkdir(exist_ok=True, parents=True)
             cv2.imwrite(str(oname), normal_bgr)
             print(f"saved {oname}")
         else:
