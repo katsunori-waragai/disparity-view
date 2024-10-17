@@ -1,9 +1,15 @@
-import pyzed.sl as sl
+try:
+    import pyzed.sl as sl
+    no_zed_sdk = False
+except ImportError:
+    no_zed_sdk = True
 
 import sys
+import pytest
 
 import disparity_view
 
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_baseline():
     zed = sl.Camera()
 
@@ -20,6 +26,7 @@ def test_get_baseline():
     zed.close()
 
 
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_fx_fy_cx_cy():
     zed = sl.Camera()
 
@@ -50,6 +57,7 @@ def test_get_fx_fy_cx_cy():
     zed.close()
 
 
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create():
     zed = sl.Camera()
 
