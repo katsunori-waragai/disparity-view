@@ -2,8 +2,7 @@ import pyzed.sl as sl
 
 import sys
 
-from disparity_view.zed_info import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
-
+import disparity_view
 
 def test_get_baseline():
     zed = sl.Camera()
@@ -16,7 +15,7 @@ def test_get_baseline():
         sys.exit(1)
 
     cam_info = zed.get_camera_information()
-    baseline = get_baseline(cam_info)
+    baseline = disparity_view.get_baseline(cam_info)
     assert 110 < baseline < 130
     zed.close()
 
@@ -34,7 +33,7 @@ def test_get_fx_fy_cx_cy():
 
     left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
 
-    width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
+    width, height, fx, fy, cx, cy = disparity_view.get_width_height_fx_fy_cx_cy(left_cam_params)
 
     assert isinstance(width, int)
     assert isinstance(height, int)
@@ -61,7 +60,7 @@ def test_camera_param_create():
         sys.exit(1)
 
     cam_info = zed.get_camera_information()
-    camera_parameter = CameraParameter.create(cam_info)
+    camera_parameter = disparity_view.CameraParameter.create(cam_info)
     print(f"{camera_parameter=}")
     assert isinstance(camera_parameter.width, int)
     assert isinstance(camera_parameter.height, int)
