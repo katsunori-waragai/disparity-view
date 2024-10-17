@@ -1,10 +1,15 @@
-import pyzed.sl as sl
+try:
+    import pyzed.sl as sl
+    no_zed_sdk = False
+except ImportError:
+    no_zed_sdk = True
 
 import sys
+import pytest
 
-from disparity_view.zed_info import get_width_height_fx_fy_cx_cy, get_baseline, CameraParameter
+import disparity_view
 
-
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_baseline():
     zed = sl.Camera()
 
@@ -16,11 +21,12 @@ def test_get_baseline():
         sys.exit(1)
 
     cam_info = zed.get_camera_information()
-    baseline = get_baseline(cam_info)
+    baseline = disparity_view.get_baseline(cam_info)
     assert 110 < baseline < 130
     zed.close()
 
 
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_fx_fy_cx_cy():
     zed = sl.Camera()
 
@@ -34,7 +40,7 @@ def test_get_fx_fy_cx_cy():
 
     left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
 
-    width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
+    width, height, fx, fy, cx, cy = disparity_view.get_width_height_fx_fy_cx_cy(left_cam_params)
 
     assert isinstance(width, int)
     assert isinstance(height, int)
@@ -51,6 +57,7 @@ def test_get_fx_fy_cx_cy():
     zed.close()
 
 
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create():
     zed = sl.Camera()
 
@@ -61,7 +68,7 @@ def test_camera_param_create():
         sys.exit(1)
 
     cam_info = zed.get_camera_information()
-    camera_parameter = CameraParameter.create(cam_info)
+    camera_parameter = disparity_view.CameraParameter.create(cam_info)
     print(f"{camera_parameter=}")
     assert isinstance(camera_parameter.width, int)
     assert isinstance(camera_parameter.height, int)
