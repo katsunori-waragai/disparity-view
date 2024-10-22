@@ -50,30 +50,28 @@ def reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
         reprojected_image: 再投影画像
     """
 
-    # 点群データをOpen3DのPointCloudに変換
-    pcd = o3d.geometry.PointCloud()
-    pcd.points = o3d.utility.Vector3dVector(point_cloud)
-    pcd.colors = o3d.utility.Vector3dVector(color)
-
+    point_cloud[:, 0] -= baseline
 
     # カメラ座標系から画像座標系に変換 (投影)
     points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), np.zeros(3), right_camera_intrinsics, np.zeros(5))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
-    point_cloud[:, 0] += baseline
 
     # 再投影画像の作成
     print(f"{right_camera_intrinsics=}")
-    # img_h, img_w = right_camera_intrinsics[2][2], right_camera_intrinsics[2][2]
     img_w, img_h = 2 * right_camera_intrinsics[0][2], 2 * right_camera_intrinsics[1][2]
     reprojected_image = np.zeros((int(img_h), int(img_w), 3), dtype=np.uint8)
+
+    assert reprojected_image.shape[2] == 3
+
+    print(f"{np.max(color.flatten())=}")
 
     # 点を画像に描画
     for pt, c in zip(points_2d, color):
         # print(f"{pt=}")
         x, y = pt[0], pt[1]  # points_2dの形状に合わせて修正
         if 0 <= x < img_w and 0 <= y < img_h:
-            reprojected_image[y, x] = (c * 255).astype(np.uint8)
+            reprojected_image[y, x] = c.astype(np.uint8)
 
     return reprojected_image
 
