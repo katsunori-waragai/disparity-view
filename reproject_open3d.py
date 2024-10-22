@@ -73,11 +73,8 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     vis.create_window()
     vis.add_geometry(pcd)
     vis.get_render_option().point_size = 2
-    ctr = vis.get_view_control()
-
-    # for k , v in inspect.getmembers(ctr):
-    #     print(k, v)
-    ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
+    # ctr = vis.get_view_control()
+    # ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
     vis.update_geometry()
     vis.poll_events()
     vis.capture_screen_image("reprojected_image.png")
