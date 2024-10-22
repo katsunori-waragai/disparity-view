@@ -36,7 +36,7 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
 
 
 def reproject_point_cloud(
-    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float
+    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float, shift_ratio=1.0
 ) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
@@ -51,7 +51,7 @@ def reproject_point_cloud(
         reprojected_image: 再投影画像
     """
 
-    point_cloud[:, 0] -= baseline
+    point_cloud[:, 0] -= baseline * shift_ratio
 
     # カメラ座標系から画像座標系に変換 (投影)
     points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), np.zeros(3), right_camera_intrinsics, np.zeros(5))
@@ -74,7 +74,7 @@ def reproject_point_cloud(
 
 
 def reproject_from_left_and_disparity(
-    left_image: np.ndarray, disparity: np.ndarray, camera_matrix: np.ndarray
+    left_image: np.ndarray, disparity: np.ndarray, camera_matrix: np.ndarray, shift_ratio=1.0
 ) -> np.ndarray:
     """
     左カメラ画像と視差画像とカメラパラメータを元に再投影した画像を返す。
@@ -93,4 +93,4 @@ def reproject_from_left_and_disparity(
     # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
     # 再投影
-    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
+    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline, shift_ratio=shift_ratio)
