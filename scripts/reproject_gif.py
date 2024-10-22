@@ -2,10 +2,11 @@
 導出済みの視差画像に基づいて、右カメラでの再投影画像を生成するサンプルスクリプト
 """
 
+from pathlib import Path
+
 import numpy as np
 import cv2
 
-from disparity_view.reprojection import reproject_from_left_and_disparity
 from disparity_view.reprojection import reproject_point_cloud, generate_point_cloud
 
 
@@ -27,28 +28,9 @@ def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
 
 
-if __name__ == "__main__":
-    """
-    python3 reproject.py test/test-imgs/disparity-IGEV/left_motorcycle.npy test/test-imgs/left/left_motorcycle.png
-    """
-    from pathlib import Path
-    import PIL
-    import argparse
-    from tqdm import tqdm
-
-    parser = argparse.ArgumentParser(description="reprojector")
-    parser.add_argument("disparity", help="disparity npy file")
-    parser.add_argument("left", help="left image file")
-    parser.add_argument("--outdir", default="output", help="save colored or ply")
-    args = parser.parse_args()
-    disparity_name = Path(args.disparity)
-    left_name = Path(args.left)
-    left_image = cv2.imread(str(left_name))
-    disparity = np.load(str(disparity_name))
+def make_animation_gif(disparity, left_image, outdir: Path):
     camera_matrix = dummy_camera_matrix(left_image.shape)
-
     baseline = 100  # カメラ間の距離[m]
-
     right_camera_intrinsics = camera_matrix
 
     # 点群データの生成
@@ -64,6 +46,26 @@ if __name__ == "__main__":
         pil_image = PIL.Image.fromarray(reprojected_image)
         pictures.append(pil_image)
 
-    gifname = Path(args.outdir) / f"reproject_{left_name.stem}.gif"
+    gifname = outdir / f"reproject_{left_name.stem}.gif"
     gifname.parent.mkdir(exist_ok=True, parents=True)
     pil_images_to_gif_animation(pictures, gifname=gifname)
+
+
+if __name__ == "__main__":
+    """
+    python3 reproject.py test/test-imgs/disparity-IGEV/left_motorcycle.npy test/test-imgs/left/left_motorcycle.png
+    """
+    import PIL
+    import argparse
+    from tqdm import tqdm
+
+    parser = argparse.ArgumentParser(description="reprojector")
+    parser.add_argument("disparity", help="disparity npy file")
+    parser.add_argument("left", help="left image file")
+    parser.add_argument("--outdir", default="output", help="save colored or ply")
+    args = parser.parse_args()
+    disparity_name = Path(args.disparity)
+    left_name = Path(args.left)
+    left_image = cv2.imread(str(left_name))
+    disparity = np.load(str(disparity_name))
+    make_animation_gif(disparity, left_image, Path(args.outdir))
