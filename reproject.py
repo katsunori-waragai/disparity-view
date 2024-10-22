@@ -75,17 +75,7 @@ def reproject_point_cloud(point_cloud: np.ndarray, color: np.ndarray, right_came
 
     return reprojected_image
 
-def reproject_from_left_and_disparity(left_image, disparity):
-    # 近似値
-    cx = left_image.shape[1] / 2.0
-    cy = left_image.shape[0] / 2.0
-
-    # ダミー
-    fx = 1070  # [mm]
-    fy = fx
-
-    # カメラパラメータの設定
-    camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+def reproject_from_left_and_disparity(left_image, disparity, camera_matrix):
     # 基線長の設定
     baseline = 100  # カメラ間の距離[m]
 
@@ -107,8 +97,20 @@ if __name__ == "__main__":
     bgr1 = cv2.imread(str(imfile1))
     left_image = bgr1
 
+
     disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity)
+    # 近似値
+    cx = left_image.shape[1] / 2.0
+    cy = left_image.shape[0] / 2.0
+
+    # ダミー
+    fx = 1070  # [mm]
+    fy = fx
+
+    # カメラパラメータの設定
+    camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix)
 
     cv2.imwrite("reprojected.png", reprojected_image)
