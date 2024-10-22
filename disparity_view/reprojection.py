@@ -58,13 +58,10 @@ def reproject_point_cloud(
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
-    print(f"{right_camera_intrinsics=}")
     img_w, img_h = 2 * right_camera_intrinsics[0][2], 2 * right_camera_intrinsics[1][2]
     reprojected_image = np.zeros((int(img_h), int(img_w), 3), dtype=np.uint8)
 
     assert reprojected_image.shape[2] == 3
-
-    print(f"{np.max(color.flatten())=}")
 
     # 点を画像に描画
     for pt, c in zip(points_2d, color):
@@ -95,7 +92,5 @@ def reproject_from_left_and_disparity(
 
     # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-    print(f"{point_cloud.shape=}")
-    print(f"{color.shape=}")
     # 再投影
     return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
