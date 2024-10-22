@@ -39,7 +39,10 @@ if __name__ == "__main__":
     left_image = cv2.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix)
+    baseline = 100.0  # [mm] dummy
+    tvec = np.array((-baseline, 0.0, 0.0))
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline, tvec)
     outname = Path(args.outdir) / f"reproject_{left_name.stem}.png"
+    outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), reprojected_image)
     print(f"saved {outname}")

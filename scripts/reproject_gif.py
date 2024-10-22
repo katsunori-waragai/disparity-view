@@ -8,6 +8,7 @@ import cv2
 from disparity_view.reprojection import reproject_from_left_and_disparity
 from disparity_view.reprojection import reproject_point_cloud, generate_point_cloud
 
+
 def dummy_camera_matrix(image_shape) -> np.ndarray:
     # 近似値
     cx = image_shape[1] / 2.0
@@ -21,9 +22,9 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
     return camera_matrix
 
+
 def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
-    pictures[0].save(gifname, save_all=True, append_images=pictures[1:],
-                     optimize=False, duration=200, loop=0)
+    pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
 
 
 if __name__ == "__main__":
@@ -57,8 +58,8 @@ if __name__ == "__main__":
     n = 16
     for i in tqdm(range(n + 1)):
         shift_ratio = i / n
-        delta = 1.0 / n
-        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline, shift_ratio=delta)
+        tvec = np.array((-baseline * shift_ratio, 0.0, 0.0))
+        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
         pil_image = PIL.Image.fromarray(reprojected_image)
         pictures.append(pil_image)
