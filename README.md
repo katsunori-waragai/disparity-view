@@ -52,6 +52,7 @@ colormap:
 ![left_motorcycle.png](test/test-imgs/left/left_motorcycle.png)
 ![left_motorcycle.png](test/test-imgs/disparity-IGEV/left_motorcycle.png)
 ![normal_left_motorcycle.png](test/test-imgs/normal/normal_left_motorcycle.png)
+![overlay_left_motorcycle.png](test/test-imgs/overlay/overlay_left_motorcycle.png)
 
 ```commandline
 view_npy --normal  --outdir normal test/test-imgs/disparity-IGEV/left_motorcycle.npy
