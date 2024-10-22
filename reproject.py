@@ -23,9 +23,22 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    imfile1 = "test/test-imgs/left/left_motorcycle.png"
-    left_image = cv2.imread(str(imfile1))
+    """
+    python3 reproject.py test/test-imgs/disparity-IGEV/left_motorcycle.npy test/test-imgs/left/left_motorcycle.png
+    """
+    from pathlib import Path
+    import argparse
+    parser = argparse.ArgumentParser(description="reprojector")
+    parser.add_argument("disparity", help="disparity npy file")
+    parser.add_argument("left", help="left image file")
+    parser.add_argument("--outdir", default="output", help="save colored or ply")
+    args = parser.parse_args()
+    disparity_name = Path(args.disparity)
+    left_name = Path(args.left)
+    left_image = cv2.imread(str(left_name))
+    disparity = np.load(str(disparity_name))
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
     reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix)
-    cv2.imwrite("reprojected.png", reprojected_image)
+    outname = Path(args.outdir) / f"reproject_{left_name.stem}.png"
+    cv2.imwrite(str(outname), reprojected_image)
+    print(f"saved {outname}")
