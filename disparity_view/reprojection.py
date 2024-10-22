@@ -49,6 +49,8 @@ def reproject_point_cloud(
 
     Returns:
         reprojected_image: 再投影画像
+    CAUTION:
+        side effect: point_cloud is modified.
     """
 
     point_cloud[:, 0] -= baseline * shift_ratio
