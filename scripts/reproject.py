@@ -21,6 +21,15 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
     return camera_matrix
 
+def gen_right_image(left_image, disparity, left_name):
+    camera_matrix = dummy_camera_matrix(left_image.shape)
+    baseline = 100.0  # [mm] dummy
+    tvec = np.array((-baseline, 0.0, 0.0))
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline, tvec)
+    outname = Path(args.outdir) / f"reproject_{left_name.stem}.png"
+    outname.parent.mkdir(exist_ok=True, parents=True)
+    cv2.imwrite(str(outname), reprojected_image)
+    print(f"saved {outname}")
 
 if __name__ == "__main__":
     """
@@ -38,11 +47,4 @@ if __name__ == "__main__":
     left_name = Path(args.left)
     left_image = cv2.imread(str(left_name))
     disparity = np.load(str(disparity_name))
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 100.0  # [mm] dummy
-    tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline, tvec)
-    outname = Path(args.outdir) / f"reproject_{left_name.stem}.png"
-    outname.parent.mkdir(exist_ok=True, parents=True)
-    cv2.imwrite(str(outname), reprojected_image)
-    print(f"saved {outname}")
+    gen_right_image(left_image, disparity, left_name)

@@ -28,7 +28,7 @@ def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
 
 
-def make_animation_gif(disparity, left_image, outdir: Path):
+def make_animation_gif(disparity, left_image, outdir: Path, left_name: Path):
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 100  # カメラ間の距離[m]
     right_camera_intrinsics = camera_matrix
@@ -68,4 +68,4 @@ if __name__ == "__main__":
     left_name = Path(args.left)
     left_image = cv2.imread(str(left_name))
     disparity = np.load(str(disparity_name))
-    make_animation_gif(disparity, left_image, Path(args.outdir))
+    make_animation_gif(disparity, left_image, Path(args.outdir), left_name)
