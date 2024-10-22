@@ -3,7 +3,7 @@ import cv2
 import open3d as o3d
 
 
-def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
+def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
     """
     視差マップと左カメラのRGB画像から点群データを生成する関数
 
@@ -36,7 +36,7 @@ def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
     return point_cloud, color
 
 
-def reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline):
+def reproject_point_cloud(point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
 
@@ -75,17 +75,7 @@ def reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
 
     return reprojected_image
 
-
-if __name__ == "__main__":
-    from pathlib import Path
-    imfile1 = "test/test-imgs/left/left_motorcycle.png"
-    imfile2 = "test/test-imgs/right/right_motorcycle.png"
-    bgr1 = cv2.imread(str(imfile1))
-    bgr2 = cv2.imread(str(imfile2))
-    left_image = bgr1
-
-    disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-
+def reproject_from_left_and_disparity(left_image, disparity):
     # 近似値
     cx = left_image.shape[1] / 2.0
     cy = left_image.shape[0] / 2.0
@@ -108,5 +98,17 @@ if __name__ == "__main__":
     print(f"{color.shape=}")
     # 再投影
     reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
+    return reprojected_image
+
+
+if __name__ == "__main__":
+    from pathlib import Path
+    imfile1 = "test/test-imgs/left/left_motorcycle.png"
+    bgr1 = cv2.imread(str(imfile1))
+    left_image = bgr1
+
+    disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity)
 
     cv2.imwrite("reprojected.png", reprojected_image)
