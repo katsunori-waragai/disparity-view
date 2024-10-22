@@ -103,7 +103,7 @@ if __name__ == "__main__":
     cy = left_image.shape[0] / 2.0
 
     # ダミー
-    fx = 1070  # [mm]
+    fx = 1070  # [pixel]
     fy = fx
 
     # カメラパラメータの設定
