@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import open3d as o3d
-import torch
 
 
 def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
@@ -61,10 +60,13 @@ def reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
     points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), np.zeros(3), right_camera_intrinsics, np.zeros(5))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
+    point_cloud[:, 0] += baseline
+
     # 再投影画像の作成
-    img_h, img_w = right_camera_intrinsics[2][2], right_camera_intrinsics[2][2]
+    print(f"{right_camera_intrinsics=}")
+    # img_h, img_w = right_camera_intrinsics[2][2], right_camera_intrinsics[2][2]
+    img_w, img_h = 2 * right_camera_intrinsics[0][2], 2 * right_camera_intrinsics[1][2]
     reprojected_image = np.zeros((int(img_h), int(img_w), 3), dtype=np.uint8)
-    reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
 
     # 点を画像に描画
     for pt, c in zip(points_2d, color):
@@ -78,34 +80,35 @@ def reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
 
 if __name__ == "__main__":
     from pathlib import Path
-    with torch.no_grad():
-        imfile1 = "test/test-imgs/left/left_motorcycle.png"
-        imfile2 = "test/test-imgs/right/right_motorcycle.png"
-        bgr1 = cv2.imread(str(imfile1))
-        bgr2 = cv2.imread(str(imfile2))
-        left_image = bgr1
+    imfile1 = "test/test-imgs/left/left_motorcycle.png"
+    imfile2 = "test/test-imgs/right/right_motorcycle.png"
+    bgr1 = cv2.imread(str(imfile1))
+    bgr2 = cv2.imread(str(imfile2))
+    left_image = bgr1
 
-        disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+    disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
-        # 近似値
-        cx = left_image.shape[1] / 2.0
-        cy = left_image.shape[0] / 2.0
+    # 近似値
+    cx = left_image.shape[1] / 2.0
+    cy = left_image.shape[0] / 2.0
 
-        # ダミー
-        fx = 1070  # [mm]
-        fy = fx
+    # ダミー
+    fx = 1070  # [mm]
+    fy = fx
 
-        # カメラパラメータの設定
-        camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
-        # 基線長の設定
-        baseline = 0.1  # カメラ間の距離
+    # カメラパラメータの設定
+    camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+    # 基線長の設定
+    baseline = 100  # カメラ間の距離[m]
 
-        right_camera_intrinsics = camera_matrix
+    right_camera_intrinsics = camera_matrix
 
-        # 点群データの生成
-        point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    # 点群データの生成
+    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
-        # 再投影
-        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
+    print(f"{point_cloud.shape=}")
+    print(f"{color.shape=}")
+    # 再投影
+    reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
 
-        cv2.imwrite("reprojected.png", reprojected_image)
+    cv2.imwrite("reprojected.png", reprojected_image)
