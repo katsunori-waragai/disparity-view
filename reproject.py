@@ -36,7 +36,9 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
     return point_cloud, color
 
 
-def reproject_point_cloud(point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float) -> np.ndarray:
+def reproject_point_cloud(
+    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float
+) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
 
@@ -56,7 +58,6 @@ def reproject_point_cloud(point_cloud: np.ndarray, color: np.ndarray, right_came
     points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), np.zeros(3), right_camera_intrinsics, np.zeros(5))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
-
     # 再投影画像の作成
     print(f"{right_camera_intrinsics=}")
     img_w, img_h = 2 * right_camera_intrinsics[0][2], 2 * right_camera_intrinsics[1][2]
@@ -75,28 +76,36 @@ def reproject_point_cloud(point_cloud: np.ndarray, color: np.ndarray, right_came
 
     return reprojected_image
 
-def reproject_from_left_and_disparity(left_image, disparity, camera_matrix):
-    # 基線長の設定
+
+def reproject_from_left_and_disparity(
+    left_image: np.ndarray, disparity: np.ndarray, camera_matrix: np.ndarray
+) -> np.ndarray:
+    """
+    左カメラ画像と視差画像とカメラパラメータを元に再投影した画像を返す。
+
+    Args:
+        left_image：　左カメラ画像
+        disparity:  視差画像（raw data)
+    Returns:
+        reprojected_image: 再投影画像
+    """
+
     baseline = 100  # カメラ間の距離[m]
 
     right_camera_intrinsics = camera_matrix
 
     # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-
     print(f"{point_cloud.shape=}")
     print(f"{color.shape=}")
     # 再投影
-    reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
-    return reprojected_image
+    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
 
 
 if __name__ == "__main__":
-    from pathlib import Path
-    imfile1 = "test/test-imgs/left/left_motorcycle.png"
-    bgr1 = cv2.imread(str(imfile1))
-    left_image = bgr1
 
+    imfile1 = "test/test-imgs/left/left_motorcycle.png"
+    left_image = cv2.imread(str(imfile1))
 
     disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
@@ -110,7 +119,5 @@ if __name__ == "__main__":
 
     # カメラパラメータの設定
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
-
     reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix)
-
     cv2.imwrite("reprojected.png", reprojected_image)
