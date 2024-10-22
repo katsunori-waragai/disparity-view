@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import cv2
 
-from disparity_view.reprojection import reproject_point_cloud, generate_point_cloud
+from scripts.reproject import make_animation_gif
 
 
 def dummy_camera_matrix(image_shape) -> np.ndarray:
@@ -24,40 +24,11 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     return camera_matrix
 
 
-def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
-    pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
-
-
-def make_animation_gif(disparity, left_image, outdir: Path, left_name: Path):
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 100  # カメラ間の距離[m]
-    right_camera_intrinsics = camera_matrix
-
-    # 点群データの生成
-    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-
-    pictures = []
-    n = 16
-    for i in tqdm(range(n + 1)):
-        shift_ratio = i / n
-        tvec = np.array((-baseline * shift_ratio, 0.0, 0.0))
-        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec)
-        reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
-        pil_image = PIL.Image.fromarray(reprojected_image)
-        pictures.append(pil_image)
-
-    gifname = outdir / f"reproject_{left_name.stem}.gif"
-    gifname.parent.mkdir(exist_ok=True, parents=True)
-    pil_images_to_gif_animation(pictures, gifname=gifname)
-
-
 if __name__ == "__main__":
     """
     python3 reproject.py test/test-imgs/disparity-IGEV/left_motorcycle.npy test/test-imgs/left/left_motorcycle.png
     """
-    import PIL
     import argparse
-    from tqdm import tqdm
 
     parser = argparse.ArgumentParser(description="reprojector")
     parser.add_argument("disparity", help="disparity npy file")
