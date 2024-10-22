@@ -24,8 +24,14 @@ def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
     open3d_depth = o3d.geometry.Image(depth)
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
-    intrinsic = o3d.camera.PinholeCameraIntrinsic()
 
+    height, width = left_image.shape[:2]
+    cx = camera_matrix[0, 2]
+    cy = camera_matrix[1, 2]
+    fx = camera_matrix[0, 0]
+    fy = camera_matrix[1, 1]
+    intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
+    pcd = o3d.geometry.create_point_cloud_from_rgbd_image(rgbd, intrinsic=intrinsic)
     return pcd
 
 def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
