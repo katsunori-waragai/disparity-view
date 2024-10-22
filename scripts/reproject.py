@@ -70,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument("disparity", help="disparity npy file")
     parser.add_argument("left", help="left image file")
     parser.add_argument("--gif", action="store_true", help="git animation")
-    parser.add_argument("--outdir", default="output", help="save colored or ply")
+    parser.add_argument("--outdir", default="output", help="output folder")
     args = parser.parse_args()
     disparity_name = Path(args.disparity)
     left_name = Path(args.left)
