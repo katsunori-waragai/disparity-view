@@ -28,6 +28,7 @@ if __name__ == "__main__":
     """
     from pathlib import Path
     import argparse
+
     parser = argparse.ArgumentParser(description="reprojector")
     parser.add_argument("disparity", help="disparity npy file")
     parser.add_argument("left", help="left image file")
