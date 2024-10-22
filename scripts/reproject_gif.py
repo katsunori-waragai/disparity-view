@@ -64,4 +64,6 @@ if __name__ == "__main__":
         pil_image = PIL.Image.fromarray(reprojected_image)
         pictures.append(pil_image)
 
-    pil_images_to_gif_animation(pictures, gifname="animation.gif")
+    gifname = Path(args.outdir) / f"reproject_{left_name.stem}.gif"
+    gifname.parent.mkdir(exist_ok=True, parents=True)
+    pil_images_to_gif_animation(pictures, gifname=gifname)
