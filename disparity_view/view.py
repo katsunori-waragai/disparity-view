@@ -68,6 +68,17 @@ def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
     return leftdir, rightdir, disparity_dir
 
 
+def depth_overlay(gray: np.ndarray, color_depth: np.ndarray) -> np.ndarray:
+    """
+    overlay color_depth to gray scale image
+    """
+    assert len(gray.shape) == 2
+    assert len(color_depth.shape) == 3
+    gray2 = cv2.merge((gray, gray, gray)).astype(np.uint16)
+    color_depth2 = color_depth.astype(np.uint16)
+    return ((gray2 + color_depth2) / 2).astype(np.uint8)
+
+
 def view_by_colormap(args):
     captured_dir = Path(args.captured_dir)
     leftdir, rightdir, disparity_dir = get_dirs(captured_dir)
@@ -166,7 +177,7 @@ def view_npy(disparity: np.ndarray, args, npy=None):
     if args.outdir:
         outname = Path(args.outdir) / f"colormap_{npy.stem}.png"
     else:
-        outname = Path(".")/ f"colormap_{npy.stem}.png"
+        outname = Path(".") / f"colormap_{npy.stem}.png"
     outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), colored)
     print(f"saved as {outname}")
