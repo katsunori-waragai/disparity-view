@@ -54,6 +54,8 @@ colormap:
 ![normal_left_motorcycle.png](test/test-imgs/normal/normal_left_motorcycle.png)
 ![overlay_left_motorcycle.png](test/test-imgs/overlay/overlay_left_motorcycle.png)
 
+![reproject_left_motorcycle.gif](test/test-imgs/gif/reproject_left_motorcycle.gif)
+
 ```commandline
 view_npy --normal  --outdir normal test/test-imgs/disparity-IGEV/left_motorcycle.npy
 view_npy --jet  --outdir jet test/test-imgs/disparity-IGEV/left_motorcycle.npy
@@ -65,6 +67,22 @@ python3 scripts/view_npy.py -h
 
 ```
 
+```commandline
+ python3 reproject.py -h
+usage: reproject.py [-h] [--gif] [--outdir OUTDIR] disparity left
+
+reprojector
+
+positional arguments:
+  disparity        disparity npy file
+  left             left image file
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --gif            git animation
+  --outdir OUTDIR  output folder
+
+```
 ### optional tool
 If you have ZED2i or ZED_X by StereoLabs,
 You can use following command to capture stereo images and disparity npy files.

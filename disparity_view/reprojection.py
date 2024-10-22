@@ -36,7 +36,7 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
 
 
 def reproject_point_cloud(
-    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, baseline: float
+    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, tvec=np.zeros(3, dtype=np.float32)
 ) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
@@ -45,16 +45,14 @@ def reproject_point_cloud(
         point_cloud: 点群データ (Nx3 numpy array)
         color: 点の色情報 (Nx3 numpy array)
         right_camera_intrinsics: 右カメラの内部パラメータ
-        baseline: 基線長
+        tvec: transfer vector
 
     Returns:
         reprojected_image: 再投影画像
     """
 
-    point_cloud[:, 0] -= baseline
-
     # カメラ座標系から画像座標系に変換 (投影)
-    points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), np.zeros(3), right_camera_intrinsics, np.zeros(5))
+    points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), tvec, right_camera_intrinsics, np.zeros(5))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
@@ -65,7 +63,6 @@ def reproject_point_cloud(
 
     # 点を画像に描画
     for pt, c in zip(points_2d, color):
-        # print(f"{pt=}")
         x, y = pt[0], pt[1]  # points_2dの形状に合わせて修正
         if 0 <= x < img_w and 0 <= y < img_h:
             reprojected_image[y, x] = c.astype(np.uint8)
@@ -74,7 +71,11 @@ def reproject_point_cloud(
 
 
 def reproject_from_left_and_disparity(
-    left_image: np.ndarray, disparity: np.ndarray, camera_matrix: np.ndarray
+    left_image: np.ndarray,
+    disparity: np.ndarray,
+    camera_matrix: np.ndarray,
+    baseline: float,
+    tvec=np.zeros(3, dtype=np.float32),
 ) -> np.ndarray:
     """
     左カメラ画像と視差画像とカメラパラメータを元に再投影した画像を返す。
@@ -82,15 +83,15 @@ def reproject_from_left_and_disparity(
     Args:
         left_image：　左カメラ画像
         disparity:  視差画像（raw data)
+        baseline: 基線長
+        tvec: transfer vector
     Returns:
         reprojected_image: 再投影画像
     """
-
-    baseline = 100  # カメラ間の距離[m]
 
     right_camera_intrinsics = camera_matrix
 
     # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
     # 再投影
-    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, baseline)
+    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)

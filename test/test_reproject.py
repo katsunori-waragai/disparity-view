@@ -25,8 +25,11 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
 def test_reproject_from_left_and_disparity():
     imfile1 = "../test/test-imgs/left/left_motorcycle.png"
     left_image = cv2.imread(str(imfile1))
-    camera_matrix = dummy_camera_matrix(left_image.shape)
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix)
+    camera_matrix = dummy_camera_matrix(left_image.shape)
+
+    baseline = 100.0  # [mm] dummy
+    tvec = np.array((-baseline, 0.0, 0.0))
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline, tvec)
     cv2.imwrite("reprojected.png", reprojected_image)
     assert reprojected_image.shape == left_image.shape
