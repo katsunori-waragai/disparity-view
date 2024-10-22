@@ -1,5 +1,6 @@
 try:
     import pyzed.sl as sl
+
     no_zed_sdk = False
 except ImportError:
     no_zed_sdk = True
@@ -8,6 +9,7 @@ import sys
 import pytest
 
 import disparity_view
+
 
 @pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_baseline():
