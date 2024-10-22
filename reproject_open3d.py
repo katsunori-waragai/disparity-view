@@ -2,6 +2,8 @@ import open3d as o3d
 import numpy as np
 import cv2
 
+import inspect
+
 
 def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
     """
@@ -56,13 +58,26 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     # 投影行列の作成
     projection_matrix = np.hstack((right_camera_intrinsics, np.zeros((3, 1))))
 
+    height, width = left_image.shape[:2]
+    cx = right_camera_intrinsics[0, 2]
+    cy = right_camera_intrinsics[1, 2]
+    fx = right_camera_intrinsics[0, 0]
+    fy = right_camera_intrinsics[1, 1]
+
+    open3d_right_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
+
+    print(f"{open3d_right_intrinsic=}")
+
     # 点群を投影
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     vis.add_geometry(pcd)
     vis.get_render_option().point_size = 2
     ctr = vis.get_view_control()
-    ctr.set_projection_matrix(projection_matrix)
+
+    # for k , v in inspect.getmembers(ctr):
+    #     print(k, v)
+    ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
     vis.update_geometry()
     vis.poll_events()
     vis.capture_screen_image("reprojected_image.png")
