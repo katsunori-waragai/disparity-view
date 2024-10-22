@@ -45,12 +45,10 @@ def reproject_point_cloud(
         point_cloud: 点群データ (Nx3 numpy array)
         color: 点の色情報 (Nx3 numpy array)
         right_camera_intrinsics: 右カメラの内部パラメータ
-        baseline: 基線長
+        tvec: transfer vector
 
     Returns:
         reprojected_image: 再投影画像
-    CAUTION:
-        side effect: point_cloud is modified.
     """
 
     # カメラ座標系から画像座標系に変換 (投影)
@@ -65,7 +63,6 @@ def reproject_point_cloud(
 
     # 点を画像に描画
     for pt, c in zip(points_2d, color):
-        # print(f"{pt=}")
         x, y = pt[0], pt[1]  # points_2dの形状に合わせて修正
         if 0 <= x < img_w and 0 <= y < img_h:
             reprojected_image[y, x] = c.astype(np.uint8)
@@ -86,11 +83,11 @@ def reproject_from_left_and_disparity(
     Args:
         left_image：　左カメラ画像
         disparity:  視差画像（raw data)
+        baseline: 基線長
+        tvec: transfer vector
     Returns:
         reprojected_image: 再投影画像
     """
-
-    # baseline = 100  # カメラ間の距離[m]
 
     right_camera_intrinsics = camera_matrix
 
