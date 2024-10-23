@@ -105,6 +105,24 @@ optional arguments:
 <img src="test/assets/depth.png" width="300">
 <img src="test/assets/normal.png" width="300">
 
+```commandline
+python3 depth_overlay.py -h
+usage: depth_overlay.py [-h] [--outdir OUTDIR] [--jet] [--inferno] disparity left
+
+overlay depth image to left image
+
+positional arguments:
+  disparity        disparity npy file
+  left             left image file
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --outdir OUTDIR  output folder
+
+colormap:
+  --jet            jet colormap
+  --inferno        inferno colormap
+```
 
 
 ### optional tool (with ZED SDK)

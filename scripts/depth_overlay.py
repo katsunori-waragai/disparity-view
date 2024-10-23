@@ -22,6 +22,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     disparity_name = Path(args.disparity)
     left_name = Path(args.left)
+    outdir = Path(args.outdir)
+
     left_image = cv2.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     gray = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
@@ -35,8 +37,13 @@ if __name__ == "__main__":
 
 
     overlayed = disparity_view.depth_overlay(gray, color_depth)
+
     assert len(overlayed.shape) == 3
     assert overlayed.shape[2] == 3
     assert overlayed.shape[:2] == color_depth.shape[:2]
-    cv2.imwrite("overlayed.png", overlayed)
+
+    outname = outdir / f"overlay_{left_name.stem}.png"
+    outname.parent.mkdir(exist_ok=True, parents=True)
+
+    cv2.imwrite(str(outname), overlayed)
 
