@@ -52,6 +52,8 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
 def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     """
     save animation gif file using PIL.Image
+
+    pictures: List of PIL.Image
     """
     pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
 
@@ -91,7 +93,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
 
 if __name__ == "__main__":
     """
-    python3 reproject.py test/test-imgs/disparity-IGEV/left_motorcycle.npy test/test-imgs/left/left_motorcycle.png
+    python3 reproject.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
