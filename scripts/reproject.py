@@ -1,6 +1,7 @@
 """
 導出済みの視差画像に基づいて、右カメラでの再投影画像を生成するサンプルスクリプト
 """
+
 from pathlib import Path
 
 import PIL
@@ -24,6 +25,7 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
     return camera_matrix
 
+
 def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path):
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 100.0  # [mm] dummy
@@ -33,6 +35,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), reprojected_image)
     print(f"saved {outname}")
+
 
 def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
@@ -49,7 +52,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     pictures = []
     n = 16
     for i in tqdm(range(n + 1)):
-        tvec = np.array((- baseline * i / n, 0.0, 0.0))
+        tvec = np.array((-baseline * i / n, 0.0, 0.0))
         reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
         pil_image = PIL.Image.fromarray(reprojected_image)
