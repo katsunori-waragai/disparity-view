@@ -41,6 +41,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_na
     outdir.mkdir(exist_ok=True, parents=True)
     plyname = outdir / f"{left_name.stem}.ply"
     o3d.io.write_point_cloud(str(plyname), pcd)
+    print(f"saved {plyname}")
 
 
 if __name__ == "__main__":
