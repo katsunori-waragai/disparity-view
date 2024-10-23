@@ -7,7 +7,7 @@ import disparity_view
 
 if __name__ == "__main__":
     """
-    python3 reproject.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 depth_overlay.py --jet ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
@@ -16,7 +16,6 @@ if __name__ == "__main__":
     parser.add_argument("left", help="left image file")
     parser.add_argument("--outdir", default="output", help="output folder")
     group = parser.add_argument_group("colormap")
-    group.add_argument("--gray", action="store_true", help="gray colormap")
     group.add_argument("--jet", action="store_true", help="jet colormap")
     group.add_argument("--inferno", action="store_true", help="inferno colormap")
 
