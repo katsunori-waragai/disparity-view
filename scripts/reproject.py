@@ -5,7 +5,7 @@
 from pathlib import Path
 from typing import List
 
-import PIL
+from PIL import Image
 import numpy as np
 import cv2
 from tqdm import tqdm
@@ -49,7 +49,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     print(f"saved {outname}")
 
 
-def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
+def pil_images_to_gif_animation(pictures: List[Image], gifname="animation.gif"):
     """
     save animation gif file using PIL.Image
 
@@ -83,7 +83,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         tvec = np.array((-baseline * i / n, 0.0, 0.0))
         reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
-        pil_image = PIL.Image.fromarray(reprojected_image)
+        pil_image = Image.fromarray(reprojected_image)
         pictures.append(pil_image)
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
