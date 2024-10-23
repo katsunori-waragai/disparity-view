@@ -50,7 +50,7 @@ if __name__ == "__main__":
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="reprojector")
+    parser = argparse.ArgumentParser(description="generate ply file")
     parser.add_argument("disparity", help="disparity npy file")
     parser.add_argument("left", help="left image file")
     parser.add_argument("--outdir", default="output", help="output folder")
