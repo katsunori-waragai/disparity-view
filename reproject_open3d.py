@@ -36,6 +36,7 @@ def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
     return pcd
 
+
 def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     """
     点群データを右カメラ視点に再投影する
@@ -50,10 +51,7 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     """
 
     # 視点変換（平行移動）
-    pcd.transform([[1, 0, 0, baseline],
-                   [0, 1, 0, 0],
-                   [0, 0, 1, 0],
-                   [0, 0, 0, 1]])
+    pcd.transform([[1, 0, 0, baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     # 投影行列の作成
     projection_matrix = np.hstack((right_camera_intrinsics, np.zeros((3, 1))))
@@ -85,10 +83,10 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
 
     return reprojected_image
 
-# ... (使用例は省略)
 
 if __name__ == "__main__":
     from pathlib import Path
+
     imfile1 = "test/test-imgs/left/left_motorcycle.png"
     bgr1 = cv2.imread(str(imfile1))
     left_image = bgr1
