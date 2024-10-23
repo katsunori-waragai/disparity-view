@@ -67,6 +67,7 @@ python3 scripts/view_npy.py -h
 
 ```
 
+### reproject to 2D
 ```commandline
  python3 reproject.py -h
 usage: reproject.py [-h] [--gif] [--outdir OUTDIR] disparity left
@@ -83,7 +84,48 @@ optional arguments:
   --outdir OUTDIR  output folder
 
 ```
-### optional tool
+### depth_to_normal
+- Depth image is not easy to recognize fine structure.
+- Ported depth_to_normal from following github.
+
+```commandline
+python3 scripts/depth_to_normal_map.py -h
+usage: depth_to_normal_map.py [-h] [--outdir OUTDIR] input
+
+Convert depth map to normal map
+
+positional arguments:
+  input            Path to depth map gray image
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --outdir OUTDIR  Output directory for normal map image (default: output)
+```
+
+<img src="test/assets/depth.png" width="300">
+<img src="test/assets/normal.png" width="300">
+
+```commandline
+python3 depth_overlay.py -h
+usage: depth_overlay.py [-h] [--outdir OUTDIR] [--jet] [--inferno] disparity left
+
+overlay depth image to left image
+
+positional arguments:
+  disparity        disparity npy file
+  left             left image file
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --outdir OUTDIR  output folder
+
+colormap:
+  --jet            jet colormap
+  --inferno        inferno colormap
+```
+
+
+### optional tool (with ZED SDK)
 If you have ZED2i or ZED_X by StereoLabs,
 You can use following command to capture stereo images and disparity npy files.
 Access here for more information.
@@ -115,27 +157,6 @@ After `zed_capture` execution, you will have following folders.
 ./outdir/right
 ./outdir/zed-disparity
 ```
-
-## depth_to_normal
-- Depth image is not easy to recognize fine structure.
-- Ported depth_to_normal from following github.
-
-```commandline
-python3 scripts/depth_to_normal_map.py -h
-usage: depth_to_normal_map.py [-h] [--outdir OUTDIR] input
-
-Convert depth map to normal map
-
-positional arguments:
-  input            Path to depth map gray image
-
-optional arguments:
-  -h, --help       show this help message and exit
-  --outdir OUTDIR  Output directory for normal map image (default: output)
-```
-
-<img src="test/assets/depth.png" width="300">
-<img src="test/assets/normal.png" width="300">
 
 ## Note on StereoLabs ZED2i Camera
 - You can get stereo rectified left, right image pairs with timestamp.
