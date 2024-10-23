@@ -19,7 +19,7 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     cy = image_shape[0] / 2.0
 
     # ダミー
-    fx = 1070  # [mm]
+    fx = 1070  # [pixel]
     fy = fx
 
     # カメラパラメータの設定
