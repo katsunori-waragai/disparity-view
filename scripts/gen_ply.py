@@ -11,7 +11,7 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     cy = image_shape[0] / 2.0
 
     # ダミー
-    fx = 1070  # [mm]
+    fx = 1070  # [pixel]
     fy = fx
 
     # カメラパラメータの設定
@@ -19,22 +19,17 @@ def dummy_camera_matrix(image_shape) -> np.ndarray:
     return camera_matrix
 
 
-def gen_ply(disparity, left_image, outdir, left_name):
+def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=100.0 ):
 
     height, width = left_image.shape[:2]
+
     camera_matrix = dummy_camera_matrix(left_image.shape)
     fx = camera_matrix[0, 0]
     fy = camera_matrix[1, 1]
     cx = camera_matrix[0, 2]
     cy = camera_matrix[1, 2]
 
-    baseline = 100.0  # [mm]
-
     left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
-
-    # vis = o3d.visualization.Visualizer()
-    # vis.create_window()
-
     focal_length = fx
     depth = baseline * focal_length / disparity
 
