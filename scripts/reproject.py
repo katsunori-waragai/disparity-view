@@ -49,7 +49,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     print(f"saved {outname}")
 
 
-def pil_images_to_gif_animation(pictures: List[PIL.Image], gifname="animation.gif"):
+def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     """
     save animation gif file using PIL.Image
     """
