@@ -2,6 +2,7 @@ import cv2
 
 from disparity_view.view import depth_overlay
 
+
 def test_overlay():
     grayname = "../test/test-imgs/left/left_motorcycle.png"
     color_depth_name = "../test/test-imgs/disparity-IGEV/left_motorcycle.png"
