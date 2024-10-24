@@ -4,78 +4,11 @@ based on the derived disparity image
 """
 
 from pathlib import Path
-from typing import List
 
-from PIL import Image
 import numpy as np
 import cv2
-from tqdm import tqdm
 
-from disparity_view.reprojection import reproject_from_left_and_disparity, generate_point_cloud, reproject_point_cloud
-from disparity_view.util import dummy_camera_matrix
-
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path):
-    """
-    save reproject right image file
-
-    Args:
-        disparity: disparity image
-        left_image:left camera image
-        outdir: destination directory
-        left_name: file name of the left camera image
-    Returns：
-        None
-    """
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 120.0  # [mm] dummy same to ZED2i
-    tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
-    outname = outdir / f"reproject_{left_name.stem}.png"
-    outname.parent.mkdir(exist_ok=True, parents=True)
-    cv2.imwrite(str(outname), reprojected_image)
-    print(f"saved {outname}")
-
-
-def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
-    """
-    save animation gif file using PIL.Image
-
-    pictures: List of PIL.Image
-    """
-    pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
-
-
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path):
-    """
-    save animation gif file
-
-    Args:
-        disparity: disparity image
-        left_image:left camera image
-        outdir: destination directory
-        left_name: file name of the left camera image
-    Returns：
-        None
-    """
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 120.0 # [mm] same to zed2i
-    right_camera_intrinsics = camera_matrix
-
-    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-
-    pictures = []
-    n = 16
-    for i in tqdm(range(n + 1)):
-        tvec = np.array((-baseline * i / n, 0.0, 0.0))
-        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
-        reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
-        pil_image = Image.fromarray(reprojected_image)
-        pictures.append(pil_image)
-
-    gifname = outdir / f"reproject_{left_name.stem}.gif"
-    gifname.parent.mkdir(exist_ok=True, parents=True)
-    pil_images_to_gif_animation(pictures, gifname=gifname)
-
+from disparity_view.reprojection import gen_right_image, make_animation_gif
 
 if __name__ == "__main__":
     """

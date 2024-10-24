@@ -1,6 +1,7 @@
 import numpy as np
 
-def dummy_camera_matrix(image_shape, focal_length: float=1070) -> np.ndarray:
+
+def dummy_camera_matrix(image_shape, focal_length: float = 1070) -> np.ndarray:
     """
     return dummy camera matrix
 

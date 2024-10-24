@@ -30,6 +30,8 @@ def test_reproject_from_left_and_disparity():
 
     baseline = 120.0  # [mm] dummy same to ZED2i
     tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
+    reprojected_image = reproject_from_left_and_disparity(
+        left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec
+    )
     cv2.imwrite("reprojected.png", reprojected_image)
     assert reprojected_image.shape == left_image.shape
