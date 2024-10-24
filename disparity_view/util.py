@@ -1,15 +1,18 @@
 import numpy as np
 
+def dummy_camera_matrix(image_shape, focal_length: float=1070) -> np.ndarray:
+    """
+    return dummy camera matrix
 
-def dummy_camera_matrix(image_shape) -> np.ndarray:
-    # 近似値
+    Note:
+        If you change camera resolution, camera parameters also changes.
+    """
+    # approximation
     cx = image_shape[1] / 2.0
     cy = image_shape[0] / 2.0
 
-    # ダミー
-    fx = 1070  # [pixel]
-    fy = fx
+    fx = focal_length  # [pixel]
+    fy = focal_length  # [pixel]
 
-    # カメラパラメータの設定
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
     return camera_matrix
