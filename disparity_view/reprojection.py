@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from disparity_view.util import dummy_camera_matrix
 
+
 def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
     """
     視差マップと左カメラのRGB画像から点群データを生成する関数
@@ -127,7 +128,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     elif axis == 1:
         tvec = np.array((0.0, baseline, 0.0))
     elif axis == 2:
-        tvec = np.array((0.0, 0.0,  -baseline))
+        tvec = np.array((0.0, 0.0, -baseline))
 
     reprojected_image = reproject_from_left_and_disparity(
         left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec

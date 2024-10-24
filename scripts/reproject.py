@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="reprojector")
     parser.add_argument("disparity", help="disparity npy file")
     parser.add_argument("left", help="left image file")
-    parser.add_argument("--axis", default=0,  help="axis to shift(0: to right, 1: to upper, 2: to far")
+    parser.add_argument("--axis", default=0, help="axis to shift(0: to right, 1: to upper, 2: to far")
     parser.add_argument("--gif", action="store_true", help="git animation")
     parser.add_argument("--outdir", default="output", help="output folder")
     args = parser.parse_args()
