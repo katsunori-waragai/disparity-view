@@ -27,7 +27,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
         None
     """
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 100.0  # [mm] dummy
+    baseline = 120.0  # [mm] dummy same to ZED2i
     tvec = np.array((-baseline, 0.0, 0.0))
     reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
     outname = outdir / f"reproject_{left_name.stem}.png"
@@ -58,7 +58,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         None
     """
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 100
+    baseline = 120.0 # [mm] same to zed2i
     right_camera_intrinsics = camera_matrix
 
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)

@@ -28,7 +28,7 @@ def test_reproject_from_left_and_disparity():
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
     camera_matrix = dummy_camera_matrix(left_image.shape)
 
-    baseline = 100.0  # [mm] dummy
+    baseline = 120.0  # [mm] dummy same to ZED2i
     tvec = np.array((-baseline, 0.0, 0.0))
     reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
     cv2.imwrite("reprojected.png", reprojected_image)

@@ -7,7 +7,7 @@ import open3d as o3d
 from disparity_view.util import dummy_camera_matrix
 
 
-def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=100.0 ):
+def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=120.0 ):
 
     height, width = left_image.shape[:2]
 
