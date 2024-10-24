@@ -52,7 +52,7 @@ def reproject_point_cloud(
     """
 
     # カメラ座標系から画像座標系に変換 (投影)
-    points_2d, _ = cv2.projectPoints(point_cloud, rvecs, tvec, right_camera_intrinsics, np.zeros(5))
+    points_2d, _ = cv2.projectPoints(point_cloud, rvec=rvecs, tvec=tvec, cameraMatrix=right_camera_intrinsics, distCoeffs=np.zeros(5))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
