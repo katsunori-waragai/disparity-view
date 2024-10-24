@@ -36,7 +36,7 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
 
 
 def reproject_point_cloud(
-    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, tvec=np.zeros(3, dtype=np.float32)
+    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, rvec=np.eye(3, dtype=np.float64), tvec=np.zeros(3, dtype=np.float64)
 ) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
@@ -52,7 +52,8 @@ def reproject_point_cloud(
     """
 
     # カメラ座標系から画像座標系に変換 (投影)
-    points_2d, _ = cv2.projectPoints(point_cloud, np.zeros(3), tvec, right_camera_intrinsics, np.zeros(5))
+    dtype = tvec.dtype
+    points_2d, _ = cv2.projectPoints(point_cloud, rvec=rvec, tvec=tvec, cameraMatrix=right_camera_intrinsics, distCoeffs=np.zeros(5, dtype=dtype))
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
@@ -75,7 +76,8 @@ def reproject_from_left_and_disparity(
     disparity: np.ndarray,
     camera_matrix: np.ndarray,
     baseline: float,
-    tvec=np.zeros(3, dtype=np.float32),
+    rvec=np.eye(3, dtype=np.float64),
+    tvec=np.zeros(3, dtype=np.float64),
 ) -> np.ndarray:
     """
     Returns a reprojected image based on the left camera image, disparity image and camera parameters.
@@ -92,4 +94,4 @@ def reproject_from_left_and_disparity(
     right_camera_intrinsics = camera_matrix
 
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
+    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, rvec=rvec, tvec=tvec)
