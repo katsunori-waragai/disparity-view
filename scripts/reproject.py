@@ -1,5 +1,6 @@
 """
-導出済みの視差画像に基づいて、右カメラでの再投影画像を生成するサンプルスクリプト
+Sample script to generate a re-projected image with the right camera
+based on the derived disparity image
 """
 
 from pathlib import Path
@@ -18,10 +19,10 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     save reproject right image file
 
     Args:
-        disparity: 視差画像
-        left_image: 左カメラ画像
-        outdir: 保存先のディレクトリ
-        left_name: 左カメラ画像ファイル名
+        disparity: disparity image
+        left_image:left camera image
+        outdir: destination directory
+        left_name: file name of the left camera image
     Returns：
         None
     """
@@ -49,18 +50,17 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     save animation gif file
 
     Args:
-        disparity: 視差画像
-        left_image: 左カメラ画像
-        outdir: 保存先のディレクトリ
-        left_name: 左カメラ画像ファイル名
+        disparity: disparity image
+        left_image:left camera image
+        outdir: destination directory
+        left_name: file name of the left camera image
     Returns：
         None
     """
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 100  # カメラ間の距離[m]
+    baseline = 100
     right_camera_intrinsics = camera_matrix
 
-    # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     pictures = []
