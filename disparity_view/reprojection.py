@@ -125,7 +125,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     if axis == 0:
         tvec = np.array((-baseline, 0.0, 0.0))
     elif axis == 1:
-        tvec = np.array((0.0, -baseline, 0.0))
+        tvec = np.array((0.0, baseline, 0.0))
     elif axis == 2:
         tvec = np.array((0.0, 0.0,  -baseline))
 
@@ -147,7 +147,7 @@ def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
     pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
 
 
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path):
+def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save animation gif file
 
@@ -159,6 +159,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     Returns：
         None
     """
+    assert axis in (0, 1, 2)
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
     right_camera_intrinsics = camera_matrix
@@ -168,7 +169,13 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     pictures = []
     n = 16
     for i in tqdm(range(n + 1)):
-        tvec = np.array((-baseline * i / n, 0.0, 0.0))
+        if axis == 0:
+            tvec = np.array((-baseline * i / n, 0.0, 0.0))
+        elif axis == 1:
+            tvec = np.array((0.0, baseline * i / n, 0.0))
+        elif axis == 2:
+            tvec = np.array((0.0, 0.0, baseline * i / n))
+
         reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(reprojected_image)
