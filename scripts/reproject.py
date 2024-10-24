@@ -29,7 +29,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 100.0  # [mm] dummy
     tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline, tvec)
+    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
     outname = outdir / f"reproject_{left_name.stem}.png"
     outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), reprojected_image)
@@ -67,7 +67,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     n = 16
     for i in tqdm(range(n + 1)):
         tvec = np.array((-baseline * i / n, 0.0, 0.0))
-        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec)
+        reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(reprojected_image)
         pictures.append(pil_image)
