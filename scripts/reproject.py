@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import cv2
 
-from disparity_view.reprojection import gen_right_image, make_animation_gif
+import disparity_view
 
 if __name__ == "__main__":
     """
@@ -27,6 +27,6 @@ if __name__ == "__main__":
     left_image = cv2.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     if args.gif:
-        make_animation_gif(disparity, left_image, Path(args.outdir), left_name)
+        disparity_view.make_animation_gif(disparity, left_image, Path(args.outdir), left_name)
     else:
-        gen_right_image(disparity, left_image, Path(args.outdir), left_name)
+        disparity_view.gen_right_image(disparity, left_image, Path(args.outdir), left_name)
