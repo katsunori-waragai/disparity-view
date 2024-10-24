@@ -42,7 +42,11 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
 
 
 def reproject_point_cloud(
-    point_cloud: np.ndarray, color: np.ndarray, right_camera_intrinsics: np.ndarray, rvec=np.eye(3, dtype=np.float64), tvec=np.zeros(3, dtype=np.float64)
+    point_cloud: np.ndarray,
+    color: np.ndarray,
+    right_camera_intrinsics: np.ndarray,
+    rvec=np.eye(3, dtype=np.float64),
+    tvec=np.zeros(3, dtype=np.float64),
 ) -> np.ndarray:
     """
     点群データを右カメラ視点に再投影する関数
@@ -59,7 +63,9 @@ def reproject_point_cloud(
 
     # カメラ座標系から画像座標系に変換 (投影)
     dtype = tvec.dtype
-    points_2d, _ = cv2.projectPoints(point_cloud, rvec=rvec, tvec=tvec, cameraMatrix=right_camera_intrinsics, distCoeffs=np.zeros(5, dtype=dtype))
+    points_2d, _ = cv2.projectPoints(
+        point_cloud, rvec=rvec, tvec=tvec, cameraMatrix=right_camera_intrinsics, distCoeffs=np.zeros(5, dtype=dtype)
+    )
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
@@ -118,7 +124,9 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] dummy same to ZED2i
     tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = reproject_from_left_and_disparity(left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec)
+    reprojected_image = reproject_from_left_and_disparity(
+        left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec
+    )
     outname = outdir / f"reproject_{left_name.stem}.png"
     outname.parent.mkdir(exist_ok=True, parents=True)
     cv2.imwrite(str(outname), reprojected_image)
@@ -147,7 +155,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         None
     """
     camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 120.0 # [mm] same to zed2i
+    baseline = 120.0  # [mm] same to zed2i
     right_camera_intrinsics = camera_matrix
 
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
