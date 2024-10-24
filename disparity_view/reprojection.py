@@ -78,20 +78,18 @@ def reproject_from_left_and_disparity(
     tvec=np.zeros(3, dtype=np.float32),
 ) -> np.ndarray:
     """
-    左カメラ画像と視差画像とカメラパラメータを元に再投影した画像を返す。
+    Returns a reprojected image based on the left camera image, disparity image and camera parameters.
 
     Args:
-        left_image：　左カメラ画像
-        disparity:  視差画像（raw data)
-        baseline: 基線長
+        left_image：　left camera image
+        disparity:  disparity image（raw data)
+        baseline: baseline length
         tvec: transfer vector
     Returns:
-        reprojected_image: 再投影画像
+        reprojected_image: reprojected image
     """
 
     right_camera_intrinsics = camera_matrix
 
-    # 点群データの生成
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-    # 再投影
     return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
