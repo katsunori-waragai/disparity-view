@@ -69,8 +69,8 @@ python3 scripts/view_npy.py -h
 
 ### reproject to 2D
 ```commandline
- python3 reproject.py -h
-usage: reproject.py [-h] [--gif] [--outdir OUTDIR] disparity left
+$ python3 reproject.py -h
+usage: reproject.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
 
 reprojector
 
@@ -80,6 +80,7 @@ positional arguments:
 
 optional arguments:
   -h, --help       show this help message and exit
+  --axis AXIS      axis to shift(0: to right, 1: to upper, 2: to far)
   --gif            git animation
   --outdir OUTDIR  output folder
 
