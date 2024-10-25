@@ -3,14 +3,11 @@ import numpy as np
 import skimage.io
 import cv2
 
-if __name__ == "__main__":
-    """
-    pcd.project_to_rgbd_imageの使い方を確認するためのスクリプト
-    """
+
+def read_and_reproject(depth_path, color_path):
     device = o3d.core.Device("CPU:0")
-    tum_data = o3d.data.SampleTUMRGBDImage()
-    depth = o3d.t.io.read_image(tum_data.depth_path).to(device)
-    color = o3d.t.io.read_image(tum_data.color_path).to(device)
+    depth = o3d.t.io.read_image(depth_path).to(device)
+    color = o3d.t.io.read_image(color_path).to(device)
 
     assert depth.rows == color.rows
     assert depth.columns == color.columns
@@ -34,5 +31,13 @@ if __name__ == "__main__":
 
     color_img = skimage.img_as_ubyte(color_legacy)
     cv2.imwrite("color_ubyte.png", color_img[:, :, ::-1])
-    # depth_img = skimage.img_as_ubyte(depth_legacy)
-    # cv2.imwrite("depth_ubyte.png", depth_img)
+
+if __name__ == "__main__":
+    """
+    pcd.project_to_rgbd_imageの使い方を確認するためのスクリプト
+    """
+    tum_data = o3d.data.SampleTUMRGBDImage()
+    depth_path = tum_data.depth_path
+    color_path = tum_data.color_path
+
+    read_and_reproject(depth_path, color_path)
