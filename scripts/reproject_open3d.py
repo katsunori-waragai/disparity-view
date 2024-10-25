@@ -7,7 +7,9 @@ import inspect
 from disparity_view.util import dummy_pihhole_camera_intrincic
 
 
-def o3d_generate_point_cloud(disparity_map, left_image, intrinsic: o3d.camera.PinholeCameraIntrinsic, baseline: float) -> o3d.geometry.PointCloud:
+def o3d_generate_point_cloud(
+    disparity_map, left_image, intrinsic: o3d.camera.PinholeCameraIntrinsic, baseline: float
+) -> o3d.geometry.PointCloud:
     """
     視差マップと左カメラのRGB画像から点群データを生成する
 
@@ -34,7 +36,9 @@ def o3d_generate_point_cloud(disparity_map, left_image, intrinsic: o3d.camera.Pi
     return pcd
 
 
-def reproject_point_cloud(pcd: o3d.geometry.PointCloud, right_camera_intrinsics: o3d.camera.PinholeCameraIntrinsic, baseline: float):
+def reproject_point_cloud(
+    pcd: o3d.geometry.PointCloud, right_camera_intrinsics: o3d.camera.PinholeCameraIntrinsic, baseline: float
+):
     """
     点群データを右カメラ視点に再投影する
 
