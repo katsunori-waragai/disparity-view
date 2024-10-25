@@ -4,8 +4,10 @@ import cv2
 
 import inspect
 
+from disparity_view.util import dummy_pihhole_camera_intrincic
 
-def o3d_generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
+
+def o3d_generate_point_cloud(disparity_map, left_image, intrinsic, baseline):
     """
     視差マップと左カメラのRGB画像から点群データを生成する
 
@@ -20,24 +22,19 @@ def o3d_generate_point_cloud(disparity_map, left_image, camera_matrix, baseline)
     """
 
     # 視差から深度を計算
-    depth = baseline * camera_matrix[0, 0] / (disparity_map + 1e-8)
+    focal_length, _ = intrinsic.get_focal_length()
+    depth = baseline * focal_length / (disparity_map + 1e-8)
 
     open3d_img = o3d.geometry.Image(left_image)
     open3d_depth = o3d.geometry.Image(depth)
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
-
-    height, width = left_image.shape[:2]
-    cx = camera_matrix[0, 2]
-    cy = camera_matrix[1, 2]
-    fx = camera_matrix[0, 0]
-    fy = camera_matrix[1, 1]
-    intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
+    intrinsic = dummy_pihhole_camera_intrincic(left_image.shape)
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
     return pcd
 
 
-def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
+def reproject_point_cloud(pcd: o3d.geometry.PointCloud, right_camera_intrinsics: o3d.camera.PinholeCameraIntrinsic, baseline):
     """
     点群データを右カメラ視点に再投影する
 
@@ -54,15 +51,8 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     pcd.transform([[1, 0, 0, baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     # 投影行列の作成
-    projection_matrix = np.hstack((right_camera_intrinsics, np.zeros((3, 1))))
 
-    height, width = left_image.shape[:2]
-    cx = right_camera_intrinsics[0, 2]
-    cy = right_camera_intrinsics[1, 2]
-    fx = right_camera_intrinsics[0, 0]
-    fy = right_camera_intrinsics[1, 1]
-
-    open3d_right_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
+    open3d_right_intrinsic = right_camera_intrinsics
 
     print(f"{open3d_right_intrinsic=}")
 
@@ -79,7 +69,7 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     # vis.destroy_window()
 
     # 画像を読み込み
-    reprojected_image = cv2.imread("reprojected_image.png")
+    # reprojected_image = cv2.imread("reprojected_image.png")
 
     return reprojected_image
 
@@ -93,23 +83,18 @@ if __name__ == "__main__":
 
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
-    # 近似値
-    cx = left_image.shape[1] / 2.0
-    cy = left_image.shape[0] / 2.0
-
-    # ダミー
-    fx = 1070  # [pixel]
-    fy = fx
-
-    # カメラパラメータの設定
-    camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+    intrinsic = dummy_pihhole_camera_intrincic(left_image.shape)
     # 基線長の設定
-    baseline = 100  # カメラ間の距離[m]
+    baseline = 120  # カメラ間の距離[m]
 
-    right_camera_intrinsics = camera_matrix
+    right_camera_intrinsics = intrinsic
+
+    assert isinstance(right_camera_intrinsics, o3d.camera.PinholeCameraIntrinsic)
 
     # 点群データの生成
-    point_cloud = o3d_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    point_cloud = o3d_generate_point_cloud(disparity, left_image, intrinsic, baseline)
+
+    assert isinstance(point_cloud, o3d.geometry.PointCloud)
 
     # 再投影
     reprojected_image = reproject_point_cloud(point_cloud, right_camera_intrinsics, baseline)
