@@ -4,7 +4,12 @@ import skimage.io
 import cv2
 
 
-def read_and_reproject(depth_path, color_path):
+def read_and_reproject(depth_path: str, color_path: str):
+    """
+    read depth, color from files, and reproject from constructed point cloud
+    """
+    print(f"{depth_path=}")
+    print(f"{color_path=}")
     device = o3d.core.Device("CPU:0")
     depth = o3d.t.io.read_image(depth_path).to(device)
     color = o3d.t.io.read_image(color_path).to(device)
