@@ -56,17 +56,17 @@ def reproject_point_cloud(pcd: o3d.geometry.PointCloud, right_camera_intrinsics:
 
     print(f"{open3d_right_intrinsic=}")
 
-    # 点群を投影
-    # vis = o3d.visualization.Visualizer()
-    # vis.create_window()
-    # vis.add_geometry(pcd)
-    # vis.get_render_option().point_size = 2
-    # # ctr = vis.get_view_control()
-    # # ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
+    vis = o3d.visualization.Visualizer()
+    vis.create_window()
+    vis.add_geometry(pcd)
+    vis.get_render_option().point_size = 2
+    ctr = vis.get_view_control()
+    # ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
     # vis.update_geometry()
-    # vis.poll_events()
-    # vis.capture_screen_image("reprojected_image.png")
-    # vis.destroy_window()
+    vis.run()
+    vis.poll_events()
+    vis.capture_screen_image("reprojected_image.png")
+    vis.destroy_window()
 
     # 画像を読み込み
     # reprojected_image = cv2.imread("reprojected_image.png")
