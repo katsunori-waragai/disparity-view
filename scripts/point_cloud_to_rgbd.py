@@ -1,15 +1,11 @@
-# ----------------------------------------------------------------------------
-# -                        Open3D: www.open3d.org                            -
-# ----------------------------------------------------------------------------
-# Copyright (c) 2018-2024 www.open3d.org
-# SPDX-License-Identifier: MIT
-# ----------------------------------------------------------------------------
-
 import open3d as o3d
 import numpy as np
 import skimage.io
 
 if __name__ == "__main__":
+    """
+    pcd.project_to_rgbd_imageの使い方を確認するためのスクリプト
+    """
     device = o3d.core.Device("CPU:0")
     tum_data = o3d.data.SampleTUMRGBDImage()
     depth = o3d.t.io.read_image(tum_data.depth_path).to(device)
