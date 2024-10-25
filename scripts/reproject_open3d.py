@@ -5,7 +5,7 @@ import cv2
 import inspect
 
 
-def generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
+def o3d_generate_point_cloud(disparity_map, left_image, camera_matrix, baseline):
     """
     視差マップと左カメラのRGB画像から点群データを生成する
 
@@ -67,16 +67,16 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
     print(f"{open3d_right_intrinsic=}")
 
     # 点群を投影
-    vis = o3d.visualization.Visualizer()
-    vis.create_window()
-    vis.add_geometry(pcd)
-    vis.get_render_option().point_size = 2
-    # ctr = vis.get_view_control()
-    # ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
-    vis.update_geometry()
-    vis.poll_events()
-    vis.capture_screen_image("reprojected_image.png")
-    vis.destroy_window()
+    # vis = o3d.visualization.Visualizer()
+    # vis.create_window()
+    # vis.add_geometry(pcd)
+    # vis.get_render_option().point_size = 2
+    # # ctr = vis.get_view_control()
+    # # ctr.convert_from_pinhole_camera_parameters(parameter=open3d_right_intrinsic)
+    # vis.update_geometry()
+    # vis.poll_events()
+    # vis.capture_screen_image("reprojected_image.png")
+    # vis.destroy_window()
 
     # 画像を読み込み
     reprojected_image = cv2.imread("reprojected_image.png")
@@ -87,11 +87,11 @@ def reproject_point_cloud(pcd, right_camera_intrinsics, baseline):
 if __name__ == "__main__":
     from pathlib import Path
 
-    imfile1 = "test/test-imgs/left/left_motorcycle.png"
+    imfile1 = "../test/test-imgs/left/left_motorcycle.png"
     bgr1 = cv2.imread(str(imfile1))
     left_image = bgr1
 
-    disparity = np.load("test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+    disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
     # 近似値
     cx = left_image.shape[1] / 2.0
@@ -109,9 +109,9 @@ if __name__ == "__main__":
     right_camera_intrinsics = camera_matrix
 
     # 点群データの生成
-    point_cloud = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    point_cloud = o3d_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     # 再投影
     reprojected_image = reproject_point_cloud(point_cloud, right_camera_intrinsics, baseline)
-
-    cv2.imwrite("reprojected_open3d.png", reprojected_image)
+    if isinstance(reprojected_image, np.ndarray):
+        cv2.imwrite("reprojected_open3d.png", reprojected_image)
