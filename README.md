@@ -69,8 +69,8 @@ python3 scripts/view_npy.py -h
 
 ### reproject to 2D
 ```commandline
- python3 reproject.py -h
-usage: reproject.py [-h] [--gif] [--outdir OUTDIR] disparity left
+$ python3 reproject.py -h
+usage: reproject.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
 
 reprojector
 
@@ -80,6 +80,7 @@ positional arguments:
 
 optional arguments:
   -h, --help       show this help message and exit
+  --axis AXIS      axis to shift(0: to right, 1: to upper, 2: to far)
   --gif            git animation
   --outdir OUTDIR  output folder
 
@@ -106,7 +107,7 @@ optional arguments:
 <img src="test/assets/normal.png" width="300">
 
 ```commandline
-python3 depth_overlay.py -h
+$ python3 depth_overlay.py -h
 usage: depth_overlay.py [-h] [--outdir OUTDIR] [--jet] [--inferno] disparity left
 
 overlay depth image to left image
@@ -124,6 +125,23 @@ colormap:
   --inferno        inferno colormap
 ```
 
+### generate ply file
+```commandline
+$ python3 gen_ply.py -h 
+
+usage: gen_ply.py [-h] [--outdir OUTDIR] disparity left
+
+genarate ply file
+
+positional arguments:
+  disparity        disparity npy file
+  left             left image file
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --outdir OUTDIR  output folder
+
+```
 
 ### optional tool (with ZED SDK)
 If you have ZED2i or ZED_X by StereoLabs,
