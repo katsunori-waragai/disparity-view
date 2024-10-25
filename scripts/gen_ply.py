@@ -4,21 +4,16 @@ import cv2
 import numpy as np
 import open3d as o3d
 
-from disparity_view.util import dummy_camera_matrix
+from disparity_view.util import dummy_pihhole_camera_intrincic
 
 
 def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=120.0):
+    """
+    generate point cloud and save
+    """
 
-    height, width = left_image.shape[:2]
-
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    fx = camera_matrix[0, 0]
-    fy = camera_matrix[1, 1]
-    cx = camera_matrix[0, 2]
-    cy = camera_matrix[1, 2]
-
-    left_cam_intrinsic = o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
-    focal_length = fx
+    left_cam_intrinsic = dummy_pihhole_camera_intrincic(left_image.shape)
+    focal_length, _ = left_cam_intrinsic.get_focal_length()
     depth = baseline * focal_length / disparity
 
     rgb = o3d.io.read_image(str(left_name))
