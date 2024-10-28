@@ -35,6 +35,7 @@ def read_and_reproject(depth_path: str, color_path: str):
 
     print(f"saved {color_out} {depth_out}")
 
+
 if __name__ == "__main__":
     """
     pcd.project_to_rgbd_imageの使い方を確認するためのスクリプト
