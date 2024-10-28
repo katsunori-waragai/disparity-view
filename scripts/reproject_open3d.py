@@ -65,7 +65,11 @@ if __name__ == "__main__":
             return (left_image.rows, left_image.columns)
 
     intrinsic = dummy_pihhole_camera_intrincic(shape(left_image))
-    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
+    extrinsic = np.array([[1., 0., 0., 0.],
+       [0., 1., 0., 0.],
+       [0., 0., 1., 0.],
+       [0., 0., 0., 1.]])
+    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, extrinsic=extrinsic)  # passed
 
     assert isinstance(pcd, o3d.geometry.PointCloud)
 
