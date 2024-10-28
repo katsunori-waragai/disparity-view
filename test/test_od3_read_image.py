@@ -24,6 +24,3 @@ def test_read_image():
     if 0:
         for k, v in  inspect.getmembers(color):
             print(k, v)
-
-if __name__ == "__main__":
-    test_read_image()
