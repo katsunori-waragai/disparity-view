@@ -8,7 +8,7 @@ import skimage
 
 import inspect
 
-from disparity_view.util import dummy_pihhole_camera_intrincic
+from disparity_view.util import dummy_pinhole_camera_intrincic
 
 
 def shape_of(image) -> Tuple[float, float]:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
     shape = [left_image.rows, left_image.columns]
-    intrinsic = dummy_pihhole_camera_intrincic(shape)
+    intrinsic = dummy_pinhole_camera_intrincic(shape)
     # 基線長の設定
     baseline = 120  # カメラ間の距離[m]
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
 
 
-    intrinsic = dummy_pihhole_camera_intrincic(shape_of(left_image))
+    intrinsic = dummy_pinhole_camera_intrincic(shape_of(left_image))
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
 
     assert isinstance(pcd, o3d.geometry.PointCloud)
