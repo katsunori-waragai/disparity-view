@@ -2,6 +2,7 @@ import numpy as np
 import open3d as o3d
 import skimage.io
 
+
 def test_imread():
     tum_data = o3d.data.SampleTUMRGBDImage()
     depth_path = tum_data.depth_path

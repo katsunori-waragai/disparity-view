@@ -2,6 +2,7 @@ import open3d as o3d
 
 import inspect
 
+
 def test_read_image():
     device = o3d.core.Device("CPU:0")
 
@@ -22,5 +23,5 @@ def test_read_image():
     # print(f"{color.size=}")
 
     if 0:
-        for k, v in  inspect.getmembers(color):
+        for k, v in inspect.getmembers(color):
             print(k, v)
