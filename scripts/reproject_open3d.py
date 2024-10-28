@@ -67,7 +67,13 @@ def reproject_point_cloud(
 
     print(f"{open3d_right_intrinsic=}")
 
+    for k, v in inspect.getmembers(pcd):
+        if inspect.ismethod(v):
+            print(k, v)
+
     shape = [left_image.rows, left_image.columns]
+
+    # AttributeError: 'open3d.cpu.pybind.geometry.PointCloud' object has no attribute
     rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=5000.0, depth_max=10.0)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
