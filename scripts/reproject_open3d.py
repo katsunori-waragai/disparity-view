@@ -69,9 +69,11 @@ if __name__ == "__main__":
        [0., 1., 0., 0.],
        [0., 0., 1., 0.],
        [0., 0., 0., 1.]])
-    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, extrinsic=extrinsic)  # passed
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, extrinsic=extrinsic)  # passed without "t."
 
-    assert isinstance(pcd, o3d.geometry.PointCloud)
+    assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
+
+    pcd.project_to_rgbd_image
 
     # 再投影
     device = o3d.core.Device("CPU:0")
