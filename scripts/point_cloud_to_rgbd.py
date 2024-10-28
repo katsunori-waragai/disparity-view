@@ -15,10 +15,6 @@ def read_and_reproject(depth_path: str, color_path: str):
     depth = o3d.t.io.read_image(depth_path).to(device)
     color = o3d.t.io.read_image(color_path).to(device)
 
-    assert depth.rows == color.rows
-    assert depth.columns == color.columns
-    print(f"{color.rows=} {color.columns=}")
-
     width = color.columns
     height = color.rows
 
@@ -30,8 +26,6 @@ def read_and_reproject(depth_path: str, color_path: str):
 
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-    print(f"{color_legacy.dtype=}")
-    print(f"{depth_legacy.dtype=}")
     outdir = Path("reprojected")
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / "depth.png"
