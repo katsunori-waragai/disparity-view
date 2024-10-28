@@ -1,7 +1,8 @@
+from pathlib import Path
+
 import open3d as o3d
 import numpy as np
 import skimage.io
-import cv2
 
 
 def read_and_reproject(depth_path: str, color_path: str):
@@ -31,11 +32,14 @@ def read_and_reproject(depth_path: str, color_path: str):
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
-    skimage.io.imsave("color.png", color_legacy)
-    skimage.io.imsave("depth.png", depth_legacy)
+    outdir = Path("reprojected")
+    outdir.mkdir(exist_ok=True, parents=True)
+    depth_out = outdir / "depth.png"
+    color_out = outdir / "color.png"
+    skimage.io.imsave(color_out, color_legacy)
+    skimage.io.imsave(depth_out, depth_legacy)
 
-    color_img = skimage.img_as_ubyte(color_legacy)
-    cv2.imwrite("color_ubyte.png", color_img[:, :, ::-1])
+    print(f"saved {color_out} {depth_out}")
 
 if __name__ == "__main__":
     """
