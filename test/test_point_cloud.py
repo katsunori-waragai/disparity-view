@@ -72,7 +72,7 @@ def test_point_cloud():
     assert isinstance(rgbd, o3d.geometry.RGBDImage)
     intrinsic = dummy_pinhole_camera_intrincic((height, width))
 
-    assert isinstance(intrinsic,  o3d.cpu.pybind.camera.PinholeCameraIntrinsic)
+    assert isinstance(intrinsic, o3d.cpu.pybind.camera.PinholeCameraIntrinsic)
 
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic)
     if 0:
