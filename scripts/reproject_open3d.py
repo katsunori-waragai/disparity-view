@@ -148,6 +148,10 @@ if __name__ == "__main__":
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
+    print(f"{np.max(depth_legacy.flatten())=}")
+    print(f"{np.max(color_legacy.flatten())=}")
+    print(f"{np.min(depth_legacy.flatten())=}")
+    print(f"{np.min(color_legacy.flatten())=}")
     outdir = Path("reprojected_open3d")
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / "depth.png"
