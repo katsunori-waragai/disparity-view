@@ -12,15 +12,12 @@ def test_t_rgbd_image():
     depth = o3d.t.io.read_image(depth_path).to(device)
     color = o3d.t.io.read_image(color_path).to(device)
 
-    width = color.columns
-    height = color.rows
-
-    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     rgbd = o3d.t.geometry.RGBDImage(color, depth)
 
     assert hasattr(rgbd, "color")
     assert hasattr(rgbd, "depth")
     assert hasattr(rgbd, "device")
+    assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
 
 
 def test_t_create_from_rgbd_image():
@@ -53,7 +50,6 @@ def test_rgbd_image():
     assert hasattr(color, "columns") == False
     assert hasattr(color, "rows") == False
 
-    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     """
     wrong code:
     No such constructor
@@ -68,5 +64,4 @@ def test_rgbd_image():
 if __name__ == "__main__":
     test_t_rgbd_image()
     test_t_create_from_rgbd_image()
-
     test_rgbd_image()
