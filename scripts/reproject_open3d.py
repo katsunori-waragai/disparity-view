@@ -128,7 +128,9 @@ if __name__ == "__main__":
 
     assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
     assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsics=intrinsic, depth_scale=5000.0, depth_max=10.0)
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
+        rgbd, intrinsics=intrinsic, depth_scale=5000.0, depth_max=10.0
+    )
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
