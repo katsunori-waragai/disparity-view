@@ -11,8 +11,6 @@ def test_imread():
     cvcolor = skimage.io.imread(color_path)
     assert cvdepth.dtype == np.uint16
     assert len(cvdepth.shape) == 2
-
     assert cvcolor.dtype == np.uint8
     assert len(cvcolor.shape) == 3
-    print(f"{cvcolor.shape=}")
     assert cvcolor.shape[2] in (3, 4)
