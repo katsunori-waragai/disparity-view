@@ -101,38 +101,32 @@ if __name__ == "__main__":
         for k, v in inspect.getmembers(left_image):
             print(k, v)
 
-    # disparity = o3d.geometry.Image(np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
     shape = [left_image.rows, left_image.columns]
-    intrinsic = dummy_pinhole_camera_intrincic(shape)
+
+    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     # 基線長の設定
     baseline = 120  # カメラ間の距離[m]
 
     right_camera_intrinsics = intrinsic
 
-    assert isinstance(right_camera_intrinsics, o3d.camera.PinholeCameraIntrinsic)
-
-    # 点群データの生成
-    # point_cloud = o3d_generate_point_cloud(disparity, left_image, intrinsic, baseline)
-
-    focal_length, _ = intrinsic.get_focal_length()
+    focal_length = 535.4
     depth = baseline * focal_length / (disparity + 1e-8)
 
     print(f"{np.max(depth.flatten())=}")
 
     depth = np.array(depth, dtype=np.uint16)
 
-    open3d_img = o3d.geometry.Image(left_image)
-    open3d_depth = o3d.geometry.Image(depth)
+    open3d_img = o3d.t.geometry.Image(left_image)
+    open3d_depth = o3d.t.geometry.Image(depth)
 
-    o3d.io.write_image("depth_my.png", open3d_depth)
+    o3d.t.io.write_image("depth_my.png", open3d_depth)
 
     # 深度マップとカラー画像から点群を作成
-    rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
+    rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    intrinsic = dummy_pinhole_camera_intrincic(shape_of(left_image))
-    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
