@@ -35,7 +35,7 @@ def test_t_create_from_rgbd_image():
     rgbd = o3d.t.geometry.RGBDImage(color, depth)
 
 
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic, depth_scale=5000.0, depth_max=10.0)
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic, depth_scale=1000.0, depth_max=3.0)
     assert hasattr(pcd, "project_to_rgbd_image")
 
     # このようにすると、pcdがどのようなメソッドを持っているのかが、わかる。
@@ -43,7 +43,7 @@ def test_t_create_from_rgbd_image():
         if str(v).find("method") > -1:
             print(f"{k=} {v=}")
 
-    rgbd_reproj = pcd.project_to_rgbd_image(width, height, intrinsic, depth_scale=5000.0, depth_max=10.0)
+    rgbd_reproj = pcd.project_to_rgbd_image(width, height, intrinsic, depth_scale=1000.0, depth_max=3.0)
 
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
