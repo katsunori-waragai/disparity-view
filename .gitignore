@@ -1,3 +1,7 @@
+output/
+scripts/reprojected_open3d/
+scripts/reprojected/
+temp/
 .idea
 junk/
 scripts/output/
