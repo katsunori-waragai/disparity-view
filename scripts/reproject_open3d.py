@@ -1,8 +1,18 @@
+"""
+open3d.t.geometry.PointCloud
+https://www.open3d.org/docs/release/python_api/open3d.t.geometry.PointCloud.html#open3d.t.geometry.PointCloud.create_from_rgbd_image
+depth_scale (float, optional, default=1000.0) – The depth is scaled by 1 / depth_scale.
+    - mm 単位のものを m 単位に変換する効果を持つ。
+
+depth_max (float, optional, default=3.0) – Truncated at depth_max distance.
+    - それより遠方の点を除外する効果を持つ（らしい）。
+
+"""
+
 from typing import Tuple
 
 import open3d as o3d
 import numpy as np
-import cv2
 import skimage.io
 
 
@@ -20,8 +30,6 @@ def shape_of(image) -> Tuple[float, float]:
 
 if __name__ == "__main__":
     from pathlib import Path
-
-    import inspect
 
     device = o3d.core.Device("CPU:0")
     imfile1 = "../test/test-imgs/left/left_motorcycle.png"
@@ -49,30 +57,28 @@ if __name__ == "__main__":
 
     o3d.t.io.write_image("depth_my.png", open3d_depth)
 
-    # 深度マップとカラー画像から点群を作成
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
     assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
     assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
-        rgbd, intrinsics=intrinsic, depth_scale=5000.0, depth_max=10.0
+        rgbd, intrinsics=intrinsic, depth_scale=1000.0, depth_max=10.0
     )
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
     pcd.project_to_rgbd_image
 
-    # 再投影
     device = o3d.core.Device("CPU:0")
-    baseline = 0.0
-    pcd.transform([[1, 0, 0, baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    baseline = 120.0 / 1000.0
+    pcd.transform([[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     open3d_right_intrinsic = right_camera_intrinsics
 
     print(f"{open3d_right_intrinsic=}")
 
     shape = [left_image.rows, left_image.columns]
-    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=5000.0, depth_max=10.0)
+    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=1000.0, depth_max=10.0)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
