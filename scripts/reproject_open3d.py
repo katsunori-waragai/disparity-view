@@ -131,7 +131,6 @@ if __name__ == "__main__":
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
 
-
     intrinsic = dummy_pinhole_camera_intrincic(shape_of(left_image))
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
 

@@ -27,6 +27,7 @@ def test_t_read_image():
         for k, v in inspect.getmembers(color):
             print(k, v)
 
+
 def test_read_image():
     device = o3d.core.Device("CPU:0")
 
@@ -45,4 +46,3 @@ def test_read_image():
     assert np.asarray(depth).shape[:2] == np.asarray(color).shape[:2]
     assert np.asarray(color).shape[2] == 3
     assert np.asarray(color).dtype == np.uint8
-
