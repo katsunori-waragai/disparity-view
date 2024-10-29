@@ -3,7 +3,7 @@ from typing import Tuple
 import open3d as o3d
 import numpy as np
 import cv2
-import skimage
+import skimage.io
 
 
 import inspect
@@ -43,7 +43,7 @@ def o3d_generate_point_cloud(
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
 
-    intrinsic = dummy_pihhole_camera_intrincic(shape(left_image))
+    intrinsic = dummy_pinhole_camera_intrincic(shape(left_image))
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
     return pcd
 
@@ -148,7 +148,10 @@ if __name__ == "__main__":
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
-    reprojected_image = skimage.img_as_ubyte(color_legacy)
+    outdir = Path("reprojected_open3d")
+    outdir.mkdir(exist_ok=True, parents=True)
+    depth_out = outdir / "depth.png"
+    color_out = outdir / "color.png"
 
-    if isinstance(reprojected_image, np.ndarray):
-        cv2.imwrite("reprojected_open3d.png", reprojected_image)
+    skimage.io.imsave(color_out, color_legacy)
+    print(f"saved {color_out}")
