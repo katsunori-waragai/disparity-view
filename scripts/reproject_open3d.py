@@ -1,11 +1,21 @@
+from typing import Tuple
+
 import open3d as o3d
 import numpy as np
 import cv2
 import skimage
 
+
 import inspect
 
-from disparity_view.util import dummy_pihhole_camera_intrincic
+from disparity_view.util import dummy_pinhole_camera_intrincic
+
+
+def shape_of(image) -> Tuple[float, float]:
+    if isinstance(image, np.ndarray):
+        return image.shape
+    else:
+        return (image.rows, image.columns)
 
 
 def o3d_generate_point_cloud(
@@ -32,12 +42,6 @@ def o3d_generate_point_cloud(
     open3d_depth = o3d.geometry.Image(depth)
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
-
-    def shape(left_image):
-        if isinstance(left_image, np.ndarray):
-            return left_image.shape
-        else:
-            return (left_image.rows, left_image.columns)
 
     intrinsic = dummy_pihhole_camera_intrincic(shape(left_image))
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
@@ -67,7 +71,13 @@ def reproject_point_cloud(
 
     print(f"{open3d_right_intrinsic=}")
 
+    for k, v in inspect.getmembers(pcd):
+        if inspect.ismethod(v):
+            print(k, v)
+
     shape = [left_image.rows, left_image.columns]
+
+    # AttributeError: 'open3d.cpu.pybind.geometry.PointCloud' object has no attribute
     rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=5000.0, depth_max=10.0)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
@@ -95,7 +105,7 @@ if __name__ == "__main__":
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
     shape = [left_image.rows, left_image.columns]
-    intrinsic = dummy_pihhole_camera_intrincic(shape)
+    intrinsic = dummy_pinhole_camera_intrincic(shape)
     # 基線長の設定
     baseline = 120  # カメラ間の距離[m]
 
@@ -121,14 +131,8 @@ if __name__ == "__main__":
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
 
-    def shape(left_image):
-        if isinstance(left_image, np.ndarray):
-            return left_image.shape
-        else:
-            return (left_image.rows, left_image.columns)
-
-    intrinsic = dummy_pihhole_camera_intrincic(shape(left_image))
-    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
+    intrinsic = dummy_pinhole_camera_intrincic(shape_of(left_image))
+    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
 
     assert isinstance(pcd, o3d.geometry.PointCloud)
 
