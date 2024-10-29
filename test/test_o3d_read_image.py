@@ -19,8 +19,6 @@ def test_t_read_image():
 
 
 def test_read_image():
-    device = o3d.core.Device("CPU:0")
-
     tum_data = o3d.data.SampleTUMRGBDImage()
     depth_path = tum_data.depth_path
     color_path = tum_data.color_path
