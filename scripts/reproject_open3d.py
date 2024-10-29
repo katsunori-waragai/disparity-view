@@ -126,7 +126,9 @@ if __name__ == "__main__":
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
+    assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
+    assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsics=intrinsic, depth_scale=5000.0, depth_max=10.0)
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
