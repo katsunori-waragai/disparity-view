@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     # 基線長の設定
-    baseline = 120  # カメラ間の距離[m]
+    baseline = 120  # カメラ間の距離[mm]
 
     right_camera_intrinsics = intrinsic
 
@@ -136,6 +136,7 @@ if __name__ == "__main__":
 
     # 再投影
     device = o3d.core.Device("CPU:0")
+    baseline = 0.0
     pcd.transform([[1, 0, 0, baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     open3d_right_intrinsic = right_camera_intrinsics
