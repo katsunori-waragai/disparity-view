@@ -1,4 +1,3 @@
-import inspect
 from pathlib import Path
 
 import open3d as o3d
@@ -75,10 +74,6 @@ def test_point_cloud():
     assert isinstance(intrinsic, o3d.cpu.pybind.camera.PinholeCameraIntrinsic)
 
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic)
-    if 0:
-        for k, v in inspect.getmembers(pcd):
-            if str(v).find("method") > -1:
-                print(f"{k=} {v=}")
 
     assert hasattr(pcd, "project_to_rgbd_image") == False
 
