@@ -155,3 +155,5 @@ if __name__ == "__main__":
 
     skimage.io.imsave(color_out, color_legacy)
     print(f"saved {color_out}")
+    skimage.io.imsave(depth_out, depth_legacy)
+    print(f"saved {depth_out}")
