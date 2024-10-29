@@ -52,6 +52,26 @@ def test_t_create_from_rgbd_image():
     assert isinstance(depth_legacy, np.ndarray)
 
 
+def test_rgbd_image():
+    depth = o3d.io.read_image(depth_path)
+    color = o3d.io.read_image(color_path)
+
+    assert hasattr(color, "columns") == False
+    assert hasattr(color, "rows") == False
+
+    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
+    """
+    wrong code:
+    No such constructor
+    o3d.geometry.RGBDImage(color, depth)
+    """
+    rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color, depth)
+
+    assert hasattr(rgbd, "color")
+    assert hasattr(rgbd, "depth")
+
 if __name__ == "__main__":
     test_t_rgbd_image()
     test_t_create_from_rgbd_image()
+
+    test_rgbd_image()
