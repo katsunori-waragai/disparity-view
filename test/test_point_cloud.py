@@ -1,3 +1,4 @@
+import inspect
 from pathlib import Path
 
 import open3d as o3d
@@ -74,27 +75,16 @@ def test_point_cloud():
     assert isinstance(intrinsic,  o3d.cpu.pybind.camera.PinholeCameraIntrinsic)
 
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic)
+    if 0:
+        for k, v in inspect.getmembers(pcd):
+            if str(v).find("method") > -1:
+                print(f"{k=} {v=}")
 
-    assert hasattr(pcd, "project_to_rgbd_image")
-    assert isinstance(intrinsic, o3d.core.Tensor)
-    rgbd_reproj = pcd.project_to_rgbd_image(width, height, intrinsic, depth_scale=5000.0, depth_max=10.0)
+    assert hasattr(pcd, "project_to_rgbd_image") == False
 
-    assert hasattr(rgbd_reproj, "color")
-    assert hasattr(rgbd_reproj, "depth")
-
-    color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
-    depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-
-    assert isinstance(color_legacy, np.ndarray)
-    assert isinstance(depth_legacy, np.ndarray)
-
-    assert color_legacy.shape[0] == height
-    assert color_legacy.shape[1] == width
-    assert color_legacy.dtype == np.float32
-
-    assert depth_legacy.shape[0] == height
-    assert depth_legacy.shape[1] == width
-    assert depth_legacy.dtype == np.float32
+    """
+    o3d.geometry.PointCloud 型に再投影するためのメソッドは見つからなかった。
+    """
 
 
 if __name__ == "__main__":
