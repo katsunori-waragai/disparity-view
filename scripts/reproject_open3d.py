@@ -3,7 +3,7 @@ from typing import Tuple
 import open3d as o3d
 import numpy as np
 import cv2
-import skimage
+import skimage.io
 
 
 import inspect
@@ -43,7 +43,7 @@ def o3d_generate_point_cloud(
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(open3d_img, open3d_depth)
 
-    intrinsic = dummy_pihhole_camera_intrincic(shape(left_image))
+    intrinsic = dummy_pinhole_camera_intrincic(shape(left_image))
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic)
     return pcd
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     # 基線長の設定
-    baseline = 120  # カメラ間の距離[m]
+    baseline = 120  # カメラ間の距離[mm]
 
     right_camera_intrinsics = intrinsic
 
@@ -126,7 +126,11 @@ if __name__ == "__main__":
     # 深度マップとカラー画像から点群を作成
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic=intrinsic, depth_scale=5000.0, depth_max=10.0)
+    assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
+    assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
+        rgbd, intrinsics=intrinsic, depth_scale=5000.0, depth_max=10.0
+    )
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
@@ -134,6 +138,7 @@ if __name__ == "__main__":
 
     # 再投影
     device = o3d.core.Device("CPU:0")
+    baseline = 0.0
     pcd.transform([[1, 0, 0, baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     open3d_right_intrinsic = right_camera_intrinsics
@@ -146,7 +151,16 @@ if __name__ == "__main__":
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
-    reprojected_image = skimage.img_as_ubyte(color_legacy)
+    print(f"{np.max(depth_legacy.flatten())=}")
+    print(f"{np.max(color_legacy.flatten())=}")
+    print(f"{np.min(depth_legacy.flatten())=}")
+    print(f"{np.min(color_legacy.flatten())=}")
+    outdir = Path("reprojected_open3d")
+    outdir.mkdir(exist_ok=True, parents=True)
+    depth_out = outdir / "depth.png"
+    color_out = outdir / "color.png"
 
-    if isinstance(reprojected_image, np.ndarray):
-        cv2.imwrite("reprojected_open3d.png", reprojected_image)
+    skimage.io.imsave(color_out, color_legacy)
+    print(f"saved {color_out}")
+    skimage.io.imsave(depth_out, depth_legacy)
+    print(f"saved {depth_out}")
