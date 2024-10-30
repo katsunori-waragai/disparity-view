@@ -41,11 +41,11 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     shape = left_image.shape
 
     # disparityからdepth にする関数を抜き出すこと
-    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
+    intrinsics = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     # 基線長の設定
     baseline = 120  # カメラ間の距離[mm]
 
-    right_camera_intrinsics = intrinsic
+    right_camera_intrinsics = intrinsics
 
     focal_length = 535.4
 
@@ -58,18 +58,15 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
     assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
-    assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
+    assert isinstance(intrinsics, o3d.cpu.pybind.core.Tensor)
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
-        rgbd, intrinsics=intrinsic, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+        rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
     scaled_baseline = baseline / DEPTH_SCALE
 
-    open3d_right_intrinsic = right_camera_intrinsics
-
-    print(f"{open3d_right_intrinsic=}")
     if axis == 0:
         extrinsics = [[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     elif axis == 1:
@@ -78,7 +75,7 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
         extrinsics = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, scaled_baseline], [0, 0, 0, 1]]
 
     rgbd_reproj = pcd.project_to_rgbd_image(
-        shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+        shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
