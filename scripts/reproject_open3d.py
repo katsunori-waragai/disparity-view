@@ -31,19 +31,15 @@ def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: flo
     depth = baseline * focal_length / (disparity + 1e-8)
     return depth
 
-if __name__ == "__main__":
-    from pathlib import Path
+def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
 
     DEPTH_SCALE = 1000.0
     DEPTH_MAX = 10.0
 
     device = o3d.core.Device("CPU:0")
-    imfile1 = "../test/test-imgs/left/left_motorcycle.png"
-    left_image = o3d.t.io.read_image(str(imfile1)).to(device)
 
-    disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
 
-    shape = [left_image.rows, left_image.columns]
+    shape = left_image.shape
 
     # disparityからdepth にする関数を抜き出すこと
     intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
@@ -73,15 +69,13 @@ if __name__ == "__main__":
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
     device = o3d.core.Device("CPU:0")
-    baseline = 120.0 / DEPTH_SCALE
-    # pcd.transform([[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    scaled_baseline = baseline / DEPTH_SCALE
 
     open3d_right_intrinsic = right_camera_intrinsics
 
     print(f"{open3d_right_intrinsic=}")
 
-    shape = [left_image.rows, left_image.columns]
-    extrinsics =[[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    extrinsics =[[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
@@ -91,7 +85,6 @@ if __name__ == "__main__":
     print(f"{np.max(color_legacy.flatten())=}")
     print(f"{np.min(depth_legacy.flatten())=}")
     print(f"{np.min(color_legacy.flatten())=}")
-    outdir = Path("reprojected_open3d")
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / "depth.png"
     color_out = outdir / "color.png"
@@ -100,3 +93,12 @@ if __name__ == "__main__":
     print(f"saved {color_out}")
     skimage.io.imsave(depth_out, depth_legacy)
     print(f"saved {depth_out}")
+
+if __name__ == "__main__":
+    from pathlib import Path
+    disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+    left_name = "../test/test-imgs/left/left_motorcycle.png"
+    left_image = skimage.io.imread(left_name)
+    outdir = Path("reprojected_open3d")
+    axis = 0
+    o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
