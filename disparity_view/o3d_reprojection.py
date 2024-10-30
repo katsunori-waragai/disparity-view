@@ -4,6 +4,11 @@ from typing import Tuple
 import numpy as np
 import open3d as o3d
 import skimage.io
+import cv2
+
+from tqdm import tqdm
+
+from .animation_gif import AnimationGif
 
 
 DEPTH_SCALE = 1000.0
@@ -86,3 +91,39 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     print(f"saved {color_out}")
     skimage.io.imsave(depth_out, depth_legacy)
     print(f"saved {depth_out}")
+
+
+def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+    """
+    save animation gif file
+
+    Args:
+        disparity: disparity image
+        left_image:left camera image
+        outdir: destination directory
+        left_name: file name of the left camera image
+    Returns：
+        None
+    """
+    assert axis in (0, 1, 2)
+    camera_matrix = dummy_camera_matrix(left_image.shape)
+    baseline = 120.0  # [mm] same to zed2i
+
+    point_cloud, color = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+
+    maker = AnimationGif()
+    n = 16
+    for i in tqdm(range(n + 1)):
+        if axis == 0:
+            tvec = np.array((-baseline * i / n, 0.0, 0.0))
+        elif axis == 1:
+            tvec = np.array((0.0, baseline * i / n, 0.0))
+        elif axis == 2:
+            tvec = np.array((0.0, 0.0, baseline * i / n))
+
+        reprojected_image = od3_reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
+        maker.append(cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB))
+
+    gifname = outdir / f"reproject_{left_name.stem}.gif"
+    gifname.parent.mkdir(exist_ok=True, parents=True)
+    maker.save(gifname)
