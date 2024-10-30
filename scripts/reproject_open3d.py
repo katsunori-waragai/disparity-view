@@ -27,9 +27,15 @@ def shape_of(image) -> Tuple[float, float]:
     else:
         return (image.rows, image.columns)
 
+def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
+    depth = baseline * focal_length / (disparity + 1e-8)
+    return depth
 
 if __name__ == "__main__":
     from pathlib import Path
+
+    DEPTH_SCALE = 1000.0
+    DEPTH_MAX = 10.0
 
     device = o3d.core.Device("CPU:0")
     imfile1 = "../test/test-imgs/left/left_motorcycle.png"
@@ -39,6 +45,7 @@ if __name__ == "__main__":
 
     shape = [left_image.rows, left_image.columns]
 
+    # disparityからdepth にする関数を抜き出すこと
     intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     # 基線長の設定
     baseline = 120  # カメラ間の距離[mm]
@@ -46,7 +53,8 @@ if __name__ == "__main__":
     right_camera_intrinsics = intrinsic
 
     focal_length = 535.4
-    depth = baseline * focal_length / (disparity + 1e-8)
+
+    depth = disparity_to_depth(disparity, baseline, focal_length)
 
     print(f"{np.max(depth.flatten())=}")
 
@@ -62,7 +70,7 @@ if __name__ == "__main__":
     assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
     assert isinstance(intrinsic, o3d.cpu.pybind.core.Tensor)
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
-        rgbd, intrinsics=intrinsic, depth_scale=1000.0, depth_max=10.0
+        rgbd, intrinsics=intrinsic, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
@@ -70,7 +78,7 @@ if __name__ == "__main__":
     pcd.project_to_rgbd_image
 
     device = o3d.core.Device("CPU:0")
-    baseline = 120.0 / 1000.0
+    baseline = 120.0 / DEPTH_SCALE
     pcd.transform([[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     open3d_right_intrinsic = right_camera_intrinsics
@@ -78,7 +86,7 @@ if __name__ == "__main__":
     print(f"{open3d_right_intrinsic=}")
 
     shape = [left_image.rows, left_image.columns]
-    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=1000.0, depth_max=10.0)
+    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
