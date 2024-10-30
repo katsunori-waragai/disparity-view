@@ -68,14 +68,18 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
-    device = o3d.core.Device("CPU:0")
     scaled_baseline = baseline / DEPTH_SCALE
 
     open3d_right_intrinsic = right_camera_intrinsics
 
     print(f"{open3d_right_intrinsic=}")
+    if axis == 0:
+        extrinsics =[[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    elif axis == 1:
+        extrinsics =[[1, 0, 0, 0], [0, 1, 0, scaled_baseline], [0, 0, 1, 0], [0, 0, 0, 1]]
+    elif axis == 2:
+        extrinsics =[[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, scaled_baseline], [0, 0, 0, 1]]
 
-    extrinsics =[[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
@@ -100,5 +104,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 0
+    axis = 1
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
