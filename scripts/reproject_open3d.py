@@ -20,6 +20,9 @@ import inspect
 
 from disparity_view.util import dummy_pinhole_camera_intrincic
 
+DEPTH_SCALE = 1000.0
+DEPTH_MAX = 10.0
+
 
 def shape_of(image) -> Tuple[float, float]:
     if isinstance(image, np.ndarray):
@@ -47,17 +50,36 @@ def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarra
     return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
 
-def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
+def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
+    shape = left_image.shape
+    focal_length = np.asarray(intrinsics)[0, 0]
+    depth = disparity_to_depth(disparity, baseline, focal_length)
 
-    DEPTH_SCALE = 1000.0
-    DEPTH_MAX = 10.0
+    open3d_img = o3d.t.geometry.Image(left_image)
+    open3d_depth = o3d.t.geometry.Image(depth)
+
+    rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
+
+    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
+        rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+    )
+
+    extrinsics = as_extrinsics(tvec)
+    rgbd_reproj = pcd.project_to_rgbd_image(
+        shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+    )
+    color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
+    depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
+
+    return color_legacy, depth_legacy
+
+
+def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
     left_name = Path(left_name)
     shape = left_image.shape
 
-    # disparityからdepth にする関数を抜き出すこと
     intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
-    # 基線長の設定
-    baseline = 120  # カメラ間の距離[mm]
+    baseline = 120  # カメラ間の距離[mm] 基線長
 
     scaled_baseline = baseline / DEPTH_SCALE
     if axis == 0:
@@ -67,30 +89,9 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     elif axis == 2:
         tvec = np.array([[0.0, 0.0, scaled_baseline]])
 
-    focal_length = np.asarray(intrinsics)[0, 0]
-
-    def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=baseline, tvec=tvec):
-        depth = disparity_to_depth(disparity, baseline, focal_length)
-
-        open3d_img = o3d.t.geometry.Image(left_image)
-        open3d_depth = o3d.t.geometry.Image(depth)
-
-        rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
-
-        pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
-            rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-        )
-
-        extrinsics = as_extrinsics(tvec)
-        rgbd_reproj = pcd.project_to_rgbd_image(
-            shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-        )
-        color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
-        depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-
-        return color_legacy, depth_legacy
-
-    color_legacy, depth_legacy = o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=baseline, tvec=tvec)
+    color_legacy, depth_legacy = o3d_reproject_from_left_and_disparity(
+        left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
+    )
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / f"depth_{left_name.stem}.png"
     color_out = outdir / f"color_{left_name.stem}.png"
@@ -108,5 +109,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 1
+    axis = 0
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
