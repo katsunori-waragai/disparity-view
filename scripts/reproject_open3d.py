@@ -36,10 +36,6 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     DEPTH_SCALE = 1000.0
     DEPTH_MAX = 10.0
     left_name = Path(left_name)
-
-    device = o3d.core.Device("CPU:0")
-
-
     shape = left_image.shape
 
     # disparityからdepth にする関数を抜き出すこと
@@ -56,8 +52,6 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
 
     open3d_img = o3d.t.geometry.Image(left_image)
     open3d_depth = o3d.t.geometry.Image(depth)
-
-    o3d.t.io.write_image("depth_my.png", open3d_depth)
 
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
@@ -84,12 +78,6 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-    print(f"{color_legacy.dtype=}")
-    print(f"{depth_legacy.dtype=}")
-    print(f"{np.max(depth_legacy.flatten())=}")
-    print(f"{np.max(color_legacy.flatten())=}")
-    print(f"{np.min(depth_legacy.flatten())=}")
-    print(f"{np.min(color_legacy.flatten())=}")
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / f"depth_{left_name.stem}.png"
     color_out = outdir / f"color_{left_name.stem}.png"
