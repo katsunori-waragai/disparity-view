@@ -27,9 +27,11 @@ def shape_of(image) -> Tuple[float, float]:
     else:
         return (image.rows, image.columns)
 
+
 def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float):
     depth = baseline * focal_length / (disparity + 1e-8)
     return depth
+
 
 def test_o3d_reproject():
     from pathlib import Path
@@ -106,6 +108,7 @@ def test_o3d_reproject():
     print(f"saved {color_out}")
     skimage.io.imsave(depth_out, depth_legacy)
     print(f"saved {depth_out}")
+
 
 if __name__ == "__main__":
     test_o3d_reproject()

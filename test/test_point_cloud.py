@@ -45,7 +45,6 @@ def test_t_point_cloud():
     assert depth_legacy.dtype == np.float32
 
 
-
 def test_point_cloud():
     """
     o3d.geometry.PointCloud の使い方を確認するためのコード
