@@ -6,6 +6,7 @@ from PIL import Image
 from tqdm import tqdm
 
 from disparity_view.util import dummy_camera_matrix
+from disparity_view.animation_gif import AnimationGif
 
 
 def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
@@ -139,15 +140,6 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     print(f"saved {outname}")
 
 
-def pil_images_to_gif_animation(pictures, gifname="animation.gif"):
-    """
-    save animation gif file using PIL.Image
-
-    pictures: List of PIL.Image
-    """
-    pictures[0].save(gifname, save_all=True, append_images=pictures[1:], optimize=False, duration=200, loop=0)
-
-
 def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save animation gif file
@@ -167,7 +159,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
 
     point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
-    pictures = []
+    maker = AnimationGif()
     n = 16
     for i in tqdm(range(n + 1)):
         if axis == 0:
@@ -180,8 +172,8 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         reprojected_image = reproject_point_cloud(point_cloud, color, right_camera_intrinsics, tvec=tvec)
         reprojected_image = cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(reprojected_image)
-        pictures.append(pil_image)
+        maker.append(pil_image)
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
     gifname.parent.mkdir(exist_ok=True, parents=True)
-    pil_images_to_gif_animation(pictures, gifname=gifname)
+    maker.save(gifname)
