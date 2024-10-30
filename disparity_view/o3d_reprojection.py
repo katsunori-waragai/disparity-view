@@ -40,6 +40,16 @@ def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
     return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
+def od3_reproject_point_cloud(pcd, intrinsics, tvec):
+    extrinsics = as_extrinsics(tvec)
+    img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
+    shape = [img_h, img_w]
+
+    rgbd_reproj = pcd.project_to_rgbd_image(
+        shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+    )
+    return rgbd_reproj
+
 
 def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
     shape = left_image.shape
@@ -55,10 +65,8 @@ def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, bas
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
 
-    extrinsics = as_extrinsics(tvec)
-    rgbd_reproj = pcd.project_to_rgbd_image(
-        shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-    )
+
+    rgbd_reproj = od3_reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
 
@@ -106,7 +114,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         None
     """
     assert axis in (0, 1, 2)
-    camera_matrix = dummy_camera_matrix(left_image.shape)
+    camera_matrix = dummy_o3d_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
     point_cloud, color = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
