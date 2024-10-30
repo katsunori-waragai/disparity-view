@@ -29,7 +29,7 @@ def shape_of(image) -> Tuple[float, float]:
 
 
 def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
-    depth = baseline * focal_length / (disparity + 1e-8)
+    depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
 
 def dummy_o3d_camera_matrix(image_shape, focal_length: float=535.4):
@@ -39,7 +39,7 @@ def dummy_o3d_camera_matrix(image_shape, focal_length: float=535.4):
     fx = focal_length  # [pixel]
     fy = focal_length  # [pixel]
 
-    return o3d.core.Tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+    return [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
 
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
 
@@ -52,10 +52,12 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
     # 基線長の設定
     baseline = 120  # カメラ間の距離[mm]
-    focal_length = 535.4
+    print(f"{intrinsics=}")
+    focal_length = np.asarray(intrinsics)[0, 0]
+
+    assert isinstance(focal_length, float)
 
     depth = disparity_to_depth(disparity, baseline, focal_length)
-    depth = np.array(depth, dtype=np.uint16)
 
     open3d_img = o3d.t.geometry.Image(left_image)
     open3d_depth = o3d.t.geometry.Image(depth)
@@ -63,7 +65,6 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
     assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
-    assert isinstance(intrinsics, o3d.cpu.pybind.core.Tensor)
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
@@ -101,5 +102,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 1
+    axis = 0
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
