@@ -2,7 +2,7 @@ import numpy as np
 import open3d as o3d
 
 
-def dummy_camera_matrix(image_shape, focal_length: float = 1070) -> np.ndarray:
+def dummy_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray:
     """
     return dummy camera matrix
 
