@@ -35,6 +35,7 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
 
     DEPTH_SCALE = 1000.0
     DEPTH_MAX = 10.0
+    left_name = Path(left_name)
 
     device = o3d.core.Device("CPU:0")
 
@@ -90,8 +91,8 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     print(f"{np.min(depth_legacy.flatten())=}")
     print(f"{np.min(color_legacy.flatten())=}")
     outdir.mkdir(exist_ok=True, parents=True)
-    depth_out = outdir / "depth.png"
-    color_out = outdir / "color.png"
+    depth_out = outdir / f"depth_{left_name.stem}.png"
+    color_out = outdir / f"color_{left_name.stem}.png"
 
     skimage.io.imsave(color_out, color_legacy)
     print(f"saved {color_out}")
