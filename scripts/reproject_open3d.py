@@ -32,7 +32,8 @@ def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: flo
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
 
-def dummy_o3d_camera_matrix(image_shape, focal_length: float=535.4):
+
+def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
     cx = image_shape[1] / 2.0
     cy = image_shape[0] / 2.0
 
@@ -40,6 +41,11 @@ def dummy_o3d_camera_matrix(image_shape, focal_length: float=535.4):
     fy = focal_length  # [pixel]
 
     return [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
+
+
+def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
+    return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
+
 
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
 
@@ -64,12 +70,9 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
 
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    assert isinstance(rgbd, o3d.t.geometry.RGBDImage)
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-
-    assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
     scaled_baseline = baseline / DEPTH_SCALE
 
@@ -80,10 +83,7 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     elif axis == 2:
         tvec = np.array([[0.0, 0.0, scaled_baseline]])
 
-    rot_mat = np.eye(3, dtype=float)
-    extrinsics = np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
-    print(f"{extrinsics=}")
-
+    extrinsics = as_extrinsics(tvec)
     rgbd_reproj = pcd.project_to_rgbd_image(
         shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
@@ -106,5 +106,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 2
+    axis = 0
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
