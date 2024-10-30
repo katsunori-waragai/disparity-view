@@ -1,3 +1,8 @@
+"""
+簡易的な実装である。
+そのため、Open3dのライブラリで今後置き換える可能性あり。
+"""
+
 from dataclasses import dataclass, field
 
 import cv2
