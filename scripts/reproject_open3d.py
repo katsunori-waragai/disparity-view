@@ -18,8 +18,6 @@ import skimage.io
 
 import inspect
 
-from disparity_view.util import dummy_pinhole_camera_intrincic
-
 DEPTH_SCALE = 1000.0
 DEPTH_MAX = 10.0
 
