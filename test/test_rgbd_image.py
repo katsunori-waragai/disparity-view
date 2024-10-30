@@ -31,7 +31,6 @@ def test_t_create_from_rgbd_image():
     intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
     rgbd = o3d.t.geometry.RGBDImage(color, depth)
 
-
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic, depth_scale=1000.0, depth_max=10.0)
     assert hasattr(pcd, "project_to_rgbd_image")
 

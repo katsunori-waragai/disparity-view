@@ -86,4 +86,3 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     print(f"saved {color_out}")
     skimage.io.imsave(depth_out, depth_legacy)
     print(f"saved {depth_out}")
-
