@@ -74,11 +74,15 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     scaled_baseline = baseline / DEPTH_SCALE
 
     if axis == 0:
-        extrinsics = [[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        tvec = np.array([[-scaled_baseline, 0.0, 0.0]])
     elif axis == 1:
-        extrinsics = [[1, 0, 0, 0], [0, 1, 0, scaled_baseline], [0, 0, 1, 0], [0, 0, 0, 1]]
+        tvec = np.array([[0.0, scaled_baseline, 0.0]])
     elif axis == 2:
-        extrinsics = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, scaled_baseline], [0, 0, 0, 1]]
+        tvec = np.array([[0.0, 0.0, scaled_baseline]])
+
+    rot_mat = np.eye(3, dtype=float)
+    extrinsics = np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
+    print(f"{extrinsics=}")
 
     rgbd_reproj = pcd.project_to_rgbd_image(
         shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
@@ -102,5 +106,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 0
+    axis = 2
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
