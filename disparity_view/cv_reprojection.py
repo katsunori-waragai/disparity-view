@@ -2,14 +2,13 @@ import numpy as np
 import cv2
 from pathlib import Path
 
-from PIL import Image
 from tqdm import tqdm
 
 from disparity_view.util import dummy_camera_matrix
 from disparity_view.animation_gif import AnimationGif
 
 
-def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
+def cv_generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
     """
     視差マップと左カメラのRGB画像から点群データを生成する関数
 
@@ -42,10 +41,10 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
     return point_cloud, color
 
 
-def reproject_point_cloud(
+def cv_reproject_point_cloud(
     point_cloud: np.ndarray,
     color: np.ndarray,
-    right_camera_intrinsics: np.ndarray,
+    camera_intrinsics: np.ndarray,
     rvec=np.eye(3, dtype=np.float64),
     tvec=np.zeros(3, dtype=np.float64),
 ) -> np.ndarray:
@@ -55,7 +54,7 @@ def reproject_point_cloud(
     Args:
         point_cloud: 点群データ (Nx3 numpy array)
         color: 点の色情報 (Nx3 numpy array)
-        right_camera_intrinsics: 右カメラの内部パラメータ
+        camera_intrinsics: 右カメラの内部パラメータ
         tvec: transfer vector
 
     Returns:
@@ -65,12 +64,12 @@ def reproject_point_cloud(
     # カメラ座標系から画像座標系に変換 (投影)
     dtype = tvec.dtype
     points_2d, _ = cv2.projectPoints(
-        point_cloud, rvec=rvec, tvec=tvec, cameraMatrix=right_camera_intrinsics, distCoeffs=np.zeros(5, dtype=dtype)
+        point_cloud, rvec=rvec, tvec=tvec, cameraMatrix=camera_intrinsics, distCoeffs=np.zeros(5, dtype=dtype)
     )
     points_2d = np.int32(points_2d).reshape(-1, 2)
 
     # 再投影画像の作成
-    img_w, img_h = 2 * right_camera_intrinsics[0][2], 2 * right_camera_intrinsics[1][2]
+    img_w, img_h = 2 * camera_intrinsics[0][2], 2 * camera_intrinsics[1][2]
     reprojected_image = np.zeros((int(img_h), int(img_w), 3), dtype=np.uint8)
 
     assert reprojected_image.shape[2] == 3
@@ -84,7 +83,7 @@ def reproject_point_cloud(
     return reprojected_image
 
 
-def reproject_from_left_and_disparity(
+def cv_reproject_from_left_and_disparity(
     left_image: np.ndarray,
     disparity: np.ndarray,
     camera_matrix: np.ndarray,
@@ -104,13 +103,11 @@ def reproject_from_left_and_disparity(
         reprojected_image: reprojected image
     """
 
-    right_camera_intrinsics = camera_matrix
-
-    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-    return reproject_point_cloud(point_cloud, color, right_camera_intrinsics, rvec=rvec, tvec=tvec)
+    point_cloud, color = cv_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    return cv_reproject_point_cloud(point_cloud, color, camera_matrix, rvec=rvec, tvec=tvec)
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+def cv_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save reproject right image file
 
@@ -131,7 +128,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     elif axis == 2:
         tvec = np.array((0.0, 0.0, -baseline))
 
-    reprojected_image = reproject_from_left_and_disparity(
+    reprojected_image = cv_reproject_from_left_and_disparity(
         left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec
     )
     outname = outdir / f"reproject_{left_name.stem}.png"
@@ -156,7 +153,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
-    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    point_cloud, color = cv_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     maker = AnimationGif()
     n = 16
@@ -168,7 +165,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         elif axis == 2:
             tvec = np.array((0.0, 0.0, baseline * i / n))
 
-        reprojected_image = reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
+        reprojected_image = cv_reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
         maker.append(cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB))
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
