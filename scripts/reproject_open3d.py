@@ -27,9 +27,11 @@ def shape_of(image) -> Tuple[float, float]:
     else:
         return (image.rows, image.columns)
 
+
 def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * focal_length / (disparity + 1e-8)
     return depth
+
 
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
 
@@ -69,13 +71,15 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
 
     print(f"{open3d_right_intrinsic=}")
     if axis == 0:
-        extrinsics =[[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        extrinsics = [[1, 0, 0, -scaled_baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
     elif axis == 1:
-        extrinsics =[[1, 0, 0, 0], [0, 1, 0, scaled_baseline], [0, 0, 1, 0], [0, 0, 0, 1]]
+        extrinsics = [[1, 0, 0, 0], [0, 1, 0, scaled_baseline], [0, 0, 1, 0], [0, 0, 0, 1]]
     elif axis == 2:
-        extrinsics =[[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, scaled_baseline], [0, 0, 0, 1]]
+        extrinsics = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, scaled_baseline], [0, 0, 0, 1]]
 
-    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
+    rgbd_reproj = pcd.project_to_rgbd_image(
+        shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+    )
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     outdir.mkdir(exist_ok=True, parents=True)
@@ -87,8 +91,10 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     skimage.io.imsave(depth_out, depth_legacy)
     print(f"saved {depth_out}")
 
+
 if __name__ == "__main__":
     from pathlib import Path
+
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
