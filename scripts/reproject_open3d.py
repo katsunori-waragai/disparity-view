@@ -58,10 +58,16 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
     # 基線長の設定
     baseline = 120  # カメラ間の距離[mm]
-    print(f"{intrinsics=}")
-    focal_length = np.asarray(intrinsics)[0, 0]
 
-    assert isinstance(focal_length, float)
+    scaled_baseline = baseline / DEPTH_SCALE
+    if axis == 0:
+        tvec = np.array([[-scaled_baseline, 0.0, 0.0]])
+    elif axis == 1:
+        tvec = np.array([[0.0, scaled_baseline, 0.0]])
+    elif axis == 2:
+        tvec = np.array([[0.0, 0.0, scaled_baseline]])
+
+    focal_length = np.asarray(intrinsics)[0, 0]
 
     depth = disparity_to_depth(disparity, baseline, focal_length)
 
@@ -73,15 +79,6 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-
-    scaled_baseline = baseline / DEPTH_SCALE
-
-    if axis == 0:
-        tvec = np.array([[-scaled_baseline, 0.0, 0.0]])
-    elif axis == 1:
-        tvec = np.array([[0.0, scaled_baseline, 0.0]])
-    elif axis == 2:
-        tvec = np.array([[0.0, 0.0, scaled_baseline]])
 
     extrinsics = as_extrinsics(tvec)
     rgbd_reproj = pcd.project_to_rgbd_image(
