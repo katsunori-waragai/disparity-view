@@ -55,9 +55,6 @@ if __name__ == "__main__":
     focal_length = 535.4
 
     depth = disparity_to_depth(disparity, baseline, focal_length)
-
-    print(f"{np.max(depth.flatten())=}")
-
     depth = np.array(depth, dtype=np.uint16)
 
     open3d_img = o3d.t.geometry.Image(left_image)
@@ -75,18 +72,17 @@ if __name__ == "__main__":
 
     assert isinstance(pcd, o3d.geometry.PointCloud) or isinstance(pcd, o3d.t.geometry.PointCloud)
 
-    pcd.project_to_rgbd_image
-
     device = o3d.core.Device("CPU:0")
     baseline = 120.0 / DEPTH_SCALE
-    pcd.transform([[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    # pcd.transform([[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 
     open3d_right_intrinsic = right_camera_intrinsics
 
     print(f"{open3d_right_intrinsic=}")
 
     shape = [left_image.rows, left_image.columns]
-    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
+    extrinsics =[[1, 0, 0, -baseline], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    rgbd_reproj = pcd.project_to_rgbd_image(shape[1], shape[0], intrinsic, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     print(f"{color_legacy.dtype=}")
