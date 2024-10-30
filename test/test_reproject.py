@@ -5,7 +5,7 @@
 import numpy as np
 import cv2
 
-from disparity_view.cv_reprojection import cv_reproject_from_left_and_disparity
+from disparity_view.cv_reprojection import reproject_from_left_and_disparity
 
 
 def dummy_camera_matrix(image_shape) -> np.ndarray:
@@ -30,7 +30,7 @@ def test_cv_reproject_from_left_and_disparity():
 
     baseline = 120.0  # [mm] dummy same to ZED2i
     tvec = np.array((-baseline, 0.0, 0.0))
-    reprojected_image = cv_reproject_from_left_and_disparity(
+    reprojected_image = reproject_from_left_and_disparity(
         left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec
     )
     cv2.imwrite("reprojected.png", reprojected_image)
