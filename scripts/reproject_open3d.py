@@ -9,43 +9,14 @@ depth_max (float, optional, default=3.0) – Truncated at depth_max distance.
 
 """
 
-from typing import Tuple
-
 import open3d as o3d
 import numpy as np
 import skimage.io
 
-
-import inspect
+from disparity_view.o3d_reprojection import disparity_to_depth, dummy_o3d_camera_matrix, as_extrinsics
 
 DEPTH_SCALE = 1000.0
 DEPTH_MAX = 10.0
-
-
-def shape_of(image) -> Tuple[float, float]:
-    if isinstance(image, np.ndarray):
-        return image.shape
-    else:
-        return (image.rows, image.columns)
-
-
-def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
-    depth = baseline * float(focal_length) / (disparity + 1e-8)
-    return depth
-
-
-def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
-    cx = image_shape[1] / 2.0
-    cy = image_shape[0] / 2.0
-
-    fx = focal_length  # [pixel]
-    fy = focal_length  # [pixel]
-
-    return [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
-
-
-def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
-    return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
 
 def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
@@ -107,5 +78,5 @@ if __name__ == "__main__":
     left_name = "../test/test-imgs/left/left_motorcycle.png"
     left_image = skimage.io.imread(left_name)
     outdir = Path("reprojected_open3d")
-    axis = 0
+    axis = 2
     o3d_gen_right_image(disparity, left_image, outdir, left_name, axis)
