@@ -8,7 +8,7 @@ from disparity_view.util import dummy_camera_matrix
 from disparity_view.animation_gif import AnimationGif
 
 
-def cv_generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
+def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
     """
     視差マップと左カメラのRGB画像から点群データを生成する関数
 
@@ -41,7 +41,7 @@ def cv_generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, c
     return point_cloud, color
 
 
-def cv_reproject_point_cloud(
+def reproject_point_cloud(
     point_cloud: np.ndarray,
     color: np.ndarray,
     camera_intrinsics: np.ndarray,
@@ -83,7 +83,7 @@ def cv_reproject_point_cloud(
     return reprojected_image
 
 
-def cv_reproject_from_left_and_disparity(
+def reproject_from_left_and_disparity(
     left_image: np.ndarray,
     disparity: np.ndarray,
     camera_matrix: np.ndarray,
@@ -103,11 +103,11 @@ def cv_reproject_from_left_and_disparity(
         reprojected_image: reprojected image
     """
 
-    point_cloud, color = cv_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-    return cv_reproject_point_cloud(point_cloud, color, camera_matrix, rvec=rvec, tvec=tvec)
+    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    return reproject_point_cloud(point_cloud, color, camera_matrix, rvec=rvec, tvec=tvec)
 
 
-def cv_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save reproject right image file
 
@@ -128,7 +128,7 @@ def cv_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     elif axis == 2:
         tvec = np.array((0.0, 0.0, -baseline))
 
-    reprojected_image = cv_reproject_from_left_and_disparity(
+    reprojected_image = reproject_from_left_and_disparity(
         left_image, disparity, camera_matrix, baseline=baseline, tvec=tvec
     )
     outname = outdir / f"reproject_{left_name.stem}.png"
@@ -153,7 +153,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
-    point_cloud, color = cv_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    point_cloud, color = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     maker = AnimationGif()
     n = 16
@@ -165,7 +165,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         elif axis == 2:
             tvec = np.array((0.0, 0.0, baseline * i / n))
 
-        reprojected_image = cv_reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
+        reprojected_image = reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
         maker.append(cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB))
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
