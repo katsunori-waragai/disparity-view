@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import open3d as o3d
 
-from disparity_view.util import dummy_pihhole_camera_intrincic
+from disparity_view.util import dummy_pinhole_camera_intrincic
 
 
 def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=120.0):
@@ -12,7 +12,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_na
     generate point cloud and save
     """
 
-    left_cam_intrinsic = dummy_pihhole_camera_intrincic(left_image.shape)
+    left_cam_intrinsic = dummy_pinhole_camera_intrincic(left_image.shape)
     focal_length, _ = left_cam_intrinsic.get_focal_length()
     depth = baseline * focal_length / disparity
 

@@ -1,5 +1,8 @@
 """
 library to view disparity npy files.
+
+依存性：
+    3dの可視化にはOpen3Dを用いている。
 """
 
 import argparse
