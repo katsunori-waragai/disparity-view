@@ -13,13 +13,13 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
-from disparity_view.o3d_reprojection import o3d_gen_right_image
+from disparity_view.o3d_reprojection import o3d_gen_right_image, make_animation_gif
 
 import disparity_view
 
 if __name__ == "__main__":
     """
-    python3 reproject.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 reproject_open3d.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
@@ -36,6 +36,6 @@ if __name__ == "__main__":
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     if args.gif:
-        disparity_view.make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
+        make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
     else:
         o3d_gen_right_image(disparity, left_image, Path(args.outdir), left_name, axis=axis)
