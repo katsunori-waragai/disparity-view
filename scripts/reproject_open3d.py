@@ -32,6 +32,14 @@ def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: flo
     depth = baseline * focal_length / (disparity + 1e-8)
     return depth
 
+def dummy_o3d_camera_matrix(image_shape, focal_length: float=535.4):
+    cx = image_shape[1] / 2.0
+    cy = image_shape[0] / 2.0
+
+    fx = focal_length  # [pixel]
+    fy = focal_length  # [pixel]
+
+    return o3d.core.Tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
 
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
 
@@ -41,12 +49,9 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     shape = left_image.shape
 
     # disparityからdepth にする関数を抜き出すこと
-    intrinsics = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
+    intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
     # 基線長の設定
     baseline = 120  # カメラ間の距離[mm]
-
-    right_camera_intrinsics = intrinsics
-
     focal_length = 535.4
 
     depth = disparity_to_depth(disparity, baseline, focal_length)
