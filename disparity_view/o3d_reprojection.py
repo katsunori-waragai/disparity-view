@@ -68,6 +68,17 @@ def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, bas
     return color_legacy, depth_legacy
 
 
+def gen_tvec(scaled_shift: float, axis: int):
+    assert axis in (0, 1, 2)
+    if axis == 0:
+        tvec = np.array([[-scaled_shift, 0.0, 0.0]])
+    elif axis == 1:
+        tvec = np.array([[0.0, scaled_shift, 0.0]])
+    elif axis == 2:
+        tvec = np.array([[0.0, 0.0, scaled_shift]])
+    return tvec
+
+
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
     left_name = Path(left_name)
     shape = left_image.shape
@@ -76,13 +87,8 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     baseline = 120  # カメラ間の距離[mm] 基線長
 
     scaled_baseline = baseline / DEPTH_SCALE
-    if axis == 0:
-        tvec = np.array([[-scaled_baseline, 0.0, 0.0]])
-    elif axis == 1:
-        tvec = np.array([[0.0, scaled_baseline, 0.0]])
-    elif axis == 2:
-        tvec = np.array([[0.0, 0.0, scaled_baseline]])
 
+    tvec = gen_tvec(scaled_baseline, axis)
     color_legacy, depth_legacy = o3d_reproject_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
@@ -118,13 +124,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     n = 16
     for i in tqdm(range(n + 1)):
         scaled_baseline = baseline / DEPTH_SCALE
-        if axis == 0:
-            tvec = np.array([[-scaled_baseline * i / n, 0.0, 0.0]])
-        elif axis == 1:
-            tvec = np.array([[0.0, scaled_baseline * i / n, 0.0]])
-        elif axis == 2:
-            tvec = np.array([[0.0, 0.0, scaled_baseline * i / n]])
-
+        tvec = gen_tvec(scaled_baseline * i / n, axis)
         reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
         color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
         color_img = (color_img * 255).astype(np.uint8)
