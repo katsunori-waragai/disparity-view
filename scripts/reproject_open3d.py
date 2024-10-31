@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
-from disparity_view.o3d_reprojection import o3d_gen_right_image, make_animation_gif
+from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
 
 import disparity_view
 
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     if args.gif:
         make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
     else:
-        o3d_gen_right_image(disparity, left_image, Path(args.outdir), left_name, axis=axis)
+        gen_right_image(disparity, left_image, Path(args.outdir), left_name, axis=axis)

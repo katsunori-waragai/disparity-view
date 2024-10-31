@@ -39,7 +39,7 @@ def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarra
     return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
 
-def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
+def generate_point_cloud(disparity, left_image, intrinsics, baseline):
     depth = depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
     rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
@@ -47,7 +47,7 @@ def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
     )
 
 
-def od3_reproject_point_cloud(pcd, intrinsics, tvec):
+def reproject_point_cloud(pcd, intrinsics, tvec):
     extrinsics = as_extrinsics(tvec)
     img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
     shape = [img_h, img_w]
@@ -57,11 +57,11 @@ def od3_reproject_point_cloud(pcd, intrinsics, tvec):
     )
 
 
-def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
+def reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
     shape = left_image.shape
 
-    pcd = od3_generate_point_cloud(disparity, left_image, intrinsics, baseline)
-    rgbd_reproj = od3_reproject_point_cloud(pcd, intrinsics, tvec=tvec)
+    pcd = generate_point_cloud(disparity, left_image, intrinsics, baseline)
+    rgbd_reproj = reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
 
@@ -79,7 +79,7 @@ def gen_tvec(scaled_shift: float, axis: int):
     return tvec
 
 
-def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
     left_name = Path(left_name)
     shape = left_image.shape
 
@@ -89,7 +89,7 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     scaled_baseline = baseline / DEPTH_SCALE
 
     tvec = gen_tvec(scaled_baseline, axis)
-    color_legacy, depth_legacy = o3d_reproject_from_left_and_disparity(
+    color_legacy, depth_legacy = reproject_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
     outdir.mkdir(exist_ok=True, parents=True)
@@ -118,14 +118,14 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
-    pcd = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    pcd = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     maker = AnimationGif()
     n = 16
     for i in tqdm(range(n + 1)):
         scaled_baseline = baseline / DEPTH_SCALE
         tvec = gen_tvec(scaled_baseline * i / n, axis)
-        reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
+        reprojected_rgbdimage = reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
         color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
         color_img = (color_img * 255).astype(np.uint8)
         maker.append(color_img)
