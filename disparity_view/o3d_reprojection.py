@@ -49,13 +49,11 @@ def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
 
     open3d_img = o3d.t.geometry.Image(left_image)
     open3d_depth = o3d.t.geometry.Image(depth)
-
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
+    return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-    return pcd
 
 
 def od3_reproject_point_cloud(pcd, intrinsics, tvec):
