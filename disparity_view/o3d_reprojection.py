@@ -69,7 +69,6 @@ def od3_reproject_point_cloud(pcd, intrinsics, tvec):
 def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
     shape = left_image.shape
 
-
     pcd = od3_generate_point_cloud(disparity, left_image, intrinsics, baseline)
     rgbd_reproj = od3_reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
@@ -134,8 +133,9 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         elif axis == 2:
             tvec = np.array([[0.0, 0.0, baseline * i / n]])
 
-        reprojected_image = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
-        maker.append(cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB))
+        reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
+        color_img = skimage.img_as_ubyte(np.asarray(reprojected_rgbdimage.color.to_legacy()))
+        maker.append(color_img)
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
     gifname.parent.mkdir(exist_ok=True, parents=True)
