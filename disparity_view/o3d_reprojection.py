@@ -125,19 +125,20 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     maker = AnimationGif()
     n = 16
     for i in tqdm(range(n + 1)):
+        scaled_baseline = baseline / DEPTH_SCALE
         if axis == 0:
-            tvec = np.array([[-baseline * i / n, 0.0, 0.0]])
+            tvec = np.array([[-scaled_baseline * i / n , 0.0, 0.0]])
         elif axis == 1:
-            tvec = np.array([[0.0, baseline * i / n, 0.0]])
+            tvec = np.array([[0.0, scaled_baseline * i / n , 0.0]])
         elif axis == 2:
-            tvec = np.array([[0.0, 0.0, baseline * i / n]])
+            tvec = np.array([[0.0, 0.0, scaled_baseline * i / n ]])
 
         reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
         assert isinstance(reprojected_rgbdimage, o3d.t.geometry.RGBDImage)
         color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
         print(f"{np.max(color_img.flatten())=}")
         if 1:
-            tmpout = outdir / f"debug_{i:4d}.png"
+            tmpout = outdir / f"debug_{i:04d}.png"
             skimage.io.imsave(tmpout, color_img)
         color_img = (color_img * 255).astype(np.uint8)
         maker.append(color_img)
