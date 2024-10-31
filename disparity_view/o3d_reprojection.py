@@ -61,10 +61,9 @@ def od3_reproject_point_cloud(pcd, intrinsics, tvec):
     img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
     shape = [img_h, img_w]
 
-    rgbd_reproj = pcd.project_to_rgbd_image(
+    return pcd.project_to_rgbd_image(
         shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-    return rgbd_reproj
 
 def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
     shape = left_image.shape
@@ -134,7 +133,13 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
             tvec = np.array([[0.0, 0.0, baseline * i / n]])
 
         reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
-        color_img = skimage.img_as_ubyte(np.asarray(reprojected_rgbdimage.color.to_legacy()))
+        assert isinstance(reprojected_rgbdimage, o3d.t.geometry.RGBDImage)
+        color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
+        print(f"{np.max(color_img.flatten())=}")
+        if 1:
+            tmpout = outdir / f"debug_{i:4d}.png"
+            skimage.io.imsave(tmpout, color_img)
+        color_img = (color_img * 255).astype(np.uint8)
         maker.append(color_img)
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
