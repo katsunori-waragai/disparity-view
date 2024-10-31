@@ -7,7 +7,9 @@ from tqdm import tqdm
 from disparity_view.util import dummy_camera_matrix
 from disparity_view.animation_gif import AnimationGif
 
+from typing_extensions import deprecated
 
+@deprecated("replaced by o3d based")
 def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, camera_matrix: np.ndarray, baseline: float):
     """
     視差マップと左カメラのRGB画像から点群データを生成する関数
@@ -41,6 +43,7 @@ def generate_point_cloud(disparity_map: np.ndarray, left_image: np.ndarray, came
     return point_cloud, color
 
 
+@deprecated("replaced by o3d based")
 def reproject_point_cloud(
     point_cloud: np.ndarray,
     color: np.ndarray,
@@ -83,6 +86,7 @@ def reproject_point_cloud(
     return reprojected_image
 
 
+@deprecated("replaced by o3d based")
 def reproject_from_left_and_disparity(
     left_image: np.ndarray,
     disparity: np.ndarray,
@@ -107,6 +111,7 @@ def reproject_from_left_and_disparity(
     return reproject_point_cloud(point_cloud, color, camera_matrix, rvec=rvec, tvec=tvec)
 
 
+@deprecated("replaced by o3d based")
 def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save reproject right image file
@@ -137,6 +142,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     print(f"saved {outname}")
 
 
+@deprecated("replaced by o3d based")
 def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
     """
     save animation gif file
