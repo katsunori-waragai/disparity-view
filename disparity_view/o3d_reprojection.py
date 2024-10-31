@@ -38,10 +38,7 @@ def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
     focal_length = np.asarray(intrinsics)[0, 0]
     depth = disparity_to_depth(disparity, baseline, focal_length)
 
-    open3d_img = o3d.t.geometry.Image(left_image)
-    open3d_depth = o3d.t.geometry.Image(depth)
-    rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
-
+    rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
