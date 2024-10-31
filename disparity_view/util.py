@@ -16,8 +16,7 @@ def dummy_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray
     fx = focal_length  # [pixel]
     fy = focal_length  # [pixel]
 
-    camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
-    return camera_matrix
+    return np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
 
 
 def dummy_pinhole_camera_intrincic(image_shape, focal_length: float = 1070) -> o3d.camera.PinholeCameraIntrinsic:

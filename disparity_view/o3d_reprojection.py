@@ -9,6 +9,7 @@ import cv2
 from tqdm import tqdm
 
 from .animation_gif import AnimationGif
+from .util import dummy_camera_matrix
 
 
 DEPTH_SCALE = 1000.0
@@ -22,19 +23,14 @@ def shape_of(image) -> Tuple[float, float]:
         return (image.rows, image.columns)
 
 
-def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
+def depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
 
 
-def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
-    cx = image_shape[1] / 2.0
-    cy = image_shape[0] / 2.0
-
-    fx = focal_length  # [pixel]
-    fy = focal_length  # [pixel]
-
-    return [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
+def depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics):
+    focal_length = np.asarray(intrinsics)[0, 0]
+    return depth_from_disparity(disparity, baseline, focal_length)
 
 
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
@@ -44,13 +40,8 @@ def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarra
 
 
 def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
-    focal_length = np.asarray(intrinsics)[0, 0]
-    depth = disparity_to_depth(disparity, baseline, focal_length)
-
-    open3d_img = o3d.t.geometry.Image(left_image)
-    open3d_depth = o3d.t.geometry.Image(depth)
-    rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
-
+    depth = depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
+    rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
@@ -77,21 +68,27 @@ def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, bas
     return color_legacy, depth_legacy
 
 
+def gen_tvec(scaled_shift: float, axis: int):
+    assert axis in (0, 1, 2)
+    if axis == 0:
+        tvec = np.array([[-scaled_shift, 0.0, 0.0]])
+    elif axis == 1:
+        tvec = np.array([[0.0, scaled_shift, 0.0]])
+    elif axis == 2:
+        tvec = np.array([[0.0, 0.0, scaled_shift]])
+    return tvec
+
+
 def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
     left_name = Path(left_name)
     shape = left_image.shape
 
-    intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
+    intrinsics = dummy_camera_matrix(shape, focal_length=535.4)
     baseline = 120  # カメラ間の距離[mm] 基線長
 
     scaled_baseline = baseline / DEPTH_SCALE
-    if axis == 0:
-        tvec = np.array([[-scaled_baseline, 0.0, 0.0]])
-    elif axis == 1:
-        tvec = np.array([[0.0, scaled_baseline, 0.0]])
-    elif axis == 2:
-        tvec = np.array([[0.0, 0.0, scaled_baseline]])
 
+    tvec = gen_tvec(scaled_baseline, axis)
     color_legacy, depth_legacy = o3d_reproject_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
@@ -118,7 +115,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         None
     """
     assert axis in (0, 1, 2)
-    camera_matrix = dummy_o3d_camera_matrix(left_image.shape)
+    camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
     pcd = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
@@ -127,13 +124,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     n = 16
     for i in tqdm(range(n + 1)):
         scaled_baseline = baseline / DEPTH_SCALE
-        if axis == 0:
-            tvec = np.array([[-scaled_baseline * i / n, 0.0, 0.0]])
-        elif axis == 1:
-            tvec = np.array([[0.0, scaled_baseline * i / n, 0.0]])
-        elif axis == 2:
-            tvec = np.array([[0.0, 0.0, scaled_baseline * i / n]])
-
+        tvec = gen_tvec(scaled_baseline * i / n, axis)
         reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
         color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
         color_img = (color_img * 255).astype(np.uint8)
