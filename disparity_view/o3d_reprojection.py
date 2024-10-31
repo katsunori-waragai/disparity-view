@@ -28,7 +28,7 @@ def depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: f
     return depth
 
 
-def depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics):
+def depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, intrinsics: np.ndarray) -> np.ndarray:
     focal_length = np.asarray(intrinsics)[0, 0]
     return depth_from_disparity(disparity, baseline, focal_length)
 
@@ -39,7 +39,9 @@ def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarra
     return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
 
-def generate_point_cloud(disparity, left_image, intrinsics, baseline):
+def generate_point_cloud(
+    disparity: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
+) -> o3d.t.geometry.PointCloud:
     depth = depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
     rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
@@ -47,7 +49,9 @@ def generate_point_cloud(disparity, left_image, intrinsics, baseline):
     )
 
 
-def reproject_point_cloud(pcd, intrinsics, tvec):
+def reproject_point_cloud(
+    pcd: o3d.t.geometry.PointCloud, intrinsics: np.ndarray, tvec: np.ndarray
+) -> o3d.t.geometry.RGBDImage:
     extrinsics = as_extrinsics(tvec)
     img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
     shape = [img_h, img_w]
@@ -57,7 +61,9 @@ def reproject_point_cloud(pcd, intrinsics, tvec):
     )
 
 
-def reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
+def reproject_from_left_and_disparity(
+    left_image: np.ndarray, disparity: np.ndarray, intrinsics: np.ndarray, baseline=120.0, tvec=np.array((0, 0, 0))
+) -> Tuple[np.ndarray, np.ndarray]:
     shape = left_image.shape
 
     pcd = generate_point_cloud(disparity, left_image, intrinsics, baseline)
@@ -68,7 +74,7 @@ def reproject_from_left_and_disparity(left_image, disparity, intrinsics, baselin
     return color_legacy, depth_legacy
 
 
-def gen_tvec(scaled_shift: float, axis: int):
+def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
     assert axis in (0, 1, 2)
     if axis == 0:
         tvec = np.array([[-scaled_shift, 0.0, 0.0]])
