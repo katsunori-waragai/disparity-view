@@ -14,6 +14,12 @@ ENV ZED_SDK_INSTALLER=ZED_SDK_Tegra_L4T35.3_v4.1.0.zstd.run
 RUN wget --quiet -O ${ZED_SDK_INSTALLER} https://download.stereolabs.com/zedsdk/4.1/l4t35.2/jetsons
 RUN chmod +x ${ZED_SDK_INSTALLER} && ./${ZED_SDK_INSTALLER} -- silent
 
+RUN cd /root/ && git clone https://github.com/isl-org/Open3D.git
+RUN cd /root/Open3D/ && bash util/install_deps_ubuntu.sh assume-yes
+RUN cd /root/Open3D/ && mkdir build
+RUN cd /root/Open3D/build && cmake -DPYTHON3_ROOT=/usr/bin/ -DBUILD_PYTHON_MODULE=OFF ..
+RUN cd /root/Open3D/build && make
+
 RUN cd /root && mkdir disparity-view/
 RUN cd /root/disparity-view
 WORKDIR /root/disparity-view
