@@ -38,7 +38,10 @@ def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
 
 
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
+    if len(tvec.shape) == 1:
+        tvec = np.ndarray([tvec])
     return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
+
 
 def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
     focal_length = np.asarray(intrinsics)[0, 0]
@@ -46,27 +49,25 @@ def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
 
     open3d_img = o3d.t.geometry.Image(left_image)
     open3d_depth = o3d.t.geometry.Image(depth)
-
     rgbd = o3d.t.geometry.RGBDImage(open3d_img, open3d_depth)
 
-    pcd = o3d.t.geometry.PointCloud.create_from_rgbd_image(
+    return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-    return pcd
+
 
 def od3_reproject_point_cloud(pcd, intrinsics, tvec):
     extrinsics = as_extrinsics(tvec)
     img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
     shape = [img_h, img_w]
 
-    rgbd_reproj = pcd.project_to_rgbd_image(
+    return pcd.project_to_rgbd_image(
         shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-    return rgbd_reproj
+
 
 def o3d_reproject_from_left_and_disparity(left_image, disparity, intrinsics, baseline=120.0, tvec=np.array((0, 0, 0))):
     shape = left_image.shape
-
 
     pcd = od3_generate_point_cloud(disparity, left_image, intrinsics, baseline)
     rgbd_reproj = od3_reproject_point_cloud(pcd, intrinsics, tvec=tvec)
@@ -120,20 +121,23 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     camera_matrix = dummy_o3d_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
-    point_cloud, color = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
+    pcd = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
 
     maker = AnimationGif()
     n = 16
     for i in tqdm(range(n + 1)):
+        scaled_baseline = baseline / DEPTH_SCALE
         if axis == 0:
-            tvec = np.array((-baseline * i / n, 0.0, 0.0))
+            tvec = np.array([[-scaled_baseline * i / n, 0.0, 0.0]])
         elif axis == 1:
-            tvec = np.array((0.0, baseline * i / n, 0.0))
+            tvec = np.array([[0.0, scaled_baseline * i / n, 0.0]])
         elif axis == 2:
-            tvec = np.array((0.0, 0.0, baseline * i / n))
+            tvec = np.array([[0.0, 0.0, scaled_baseline * i / n]])
 
-        reprojected_image = od3_reproject_point_cloud(point_cloud, color, camera_matrix, tvec=tvec)
-        maker.append(cv2.cvtColor(reprojected_image, cv2.COLOR_BGR2RGB))
+        reprojected_rgbdimage = od3_reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
+        color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
+        color_img = (color_img * 255).astype(np.uint8)
+        maker.append(color_img)
 
     gifname = outdir / f"reproject_{left_name.stem}.gif"
     gifname.parent.mkdir(exist_ok=True, parents=True)
