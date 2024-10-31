@@ -6,7 +6,7 @@ based on the derived disparity image
 from pathlib import Path
 
 import numpy as np
-import cv2
+import skimage.io
 
 import disparity_view
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     disparity_name = Path(args.disparity)
     left_name = Path(args.left)
     axis = int(args.axis)
-    left_image = cv2.imread(str(left_name))
+    left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     if args.gif:
         disparity_view.make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
