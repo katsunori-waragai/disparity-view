@@ -9,6 +9,7 @@ import cv2
 from tqdm import tqdm
 
 from .animation_gif import AnimationGif
+from .util import dummy_camera_matrix
 
 
 DEPTH_SCALE = 1000.0
@@ -25,16 +26,6 @@ def shape_of(image) -> Tuple[float, float]:
 def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
-
-
-def dummy_o3d_camera_matrix(image_shape, focal_length: float = 535.4):
-    cx = image_shape[1] / 2.0
-    cy = image_shape[0] / 2.0
-
-    fx = focal_length  # [pixel]
-    fy = focal_length  # [pixel]
-
-    return [[fx, 0, cx], [0, fy, cy], [0, 0, 1]]
 
 
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
@@ -81,7 +72,7 @@ def o3d_gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, l
     left_name = Path(left_name)
     shape = left_image.shape
 
-    intrinsics = dummy_o3d_camera_matrix(shape, focal_length=535.4)
+    intrinsics = dummy_camera_matrix(shape, focal_length=535.4)
     baseline = 120  # カメラ間の距離[mm] 基線長
 
     scaled_baseline = baseline / DEPTH_SCALE
@@ -118,7 +109,7 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
         None
     """
     assert axis in (0, 1, 2)
-    camera_matrix = dummy_o3d_camera_matrix(left_image.shape)
+    camera_matrix = dummy_camera_matrix(left_image.shape)
     baseline = 120.0  # [mm] same to zed2i
 
     pcd = od3_generate_point_cloud(disparity, left_image, camera_matrix, baseline)
