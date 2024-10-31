@@ -23,9 +23,14 @@ def shape_of(image) -> Tuple[float, float]:
         return (image.rows, image.columns)
 
 
-def disparity_to_depth(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
+def depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
+
+
+def depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics):
+    focal_length = np.asarray(intrinsics)[0, 0]
+    return depth_from_disparity(disparity, baseline, focal_length)
 
 
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
@@ -35,9 +40,7 @@ def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarra
 
 
 def od3_generate_point_cloud(disparity, left_image, intrinsics, baseline):
-    focal_length = np.asarray(intrinsics)[0, 0]
-    depth = disparity_to_depth(disparity, baseline, focal_length)
-
+    depth = depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
     rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
