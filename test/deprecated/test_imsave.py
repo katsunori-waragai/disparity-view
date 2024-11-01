@@ -1,3 +1,9 @@
+"""
+skimage.io.imsave() は、バージョンによっては[0, 1.0]の浮動小数点の画像をuint8の画像として
+保存できる。
+このテストは、テスト環境のskimage が浮動小数点画像の保存に対応しているかどうかを判定するためのもの
+"""
+
 from pathlib import Path
 
 import numpy as np
