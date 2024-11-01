@@ -70,7 +70,6 @@ def reproject_from_left_and_disparity(
     rgbd_reproj = reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-
     return color_legacy, depth_legacy
 
 
@@ -98,13 +97,14 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_
     color_legacy, depth_legacy = reproject_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
+
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / f"depth_{left_name.stem}.png"
     color_out = outdir / f"color_{left_name.stem}.png"
 
-    skimage.io.imsave(color_out, color_legacy)
+    skimage.io.imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(depth_out, depth_legacy)
+    skimage.io.imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 

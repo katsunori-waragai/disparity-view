@@ -15,7 +15,7 @@ import open3d as o3d
 import numpy as np
 import skimage.io
 
-
+from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
 import inspect
 
 from disparity_view.util import dummy_pinhole_camera_intrincic
@@ -93,6 +93,9 @@ def test_o3d_reproject():
     assert len(depth_legacy.shape) == 2
     assert depth_legacy.shape == shape
 
+    assert np.max(depth_legacy.flatten()) > 0
+    assert np.max(color_legacy.flatten()) > 0
+
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
     print(f"{np.max(depth_legacy.flatten())=}")
@@ -104,11 +107,33 @@ def test_o3d_reproject():
     depth_out = outdir / "depth.png"
     color_out = outdir / "color.png"
 
-    skimage.io.imsave(color_out, color_legacy)
+    skimage.io.imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(depth_out, depth_legacy)
+    skimage.io.imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 
+def test_gen_right_image():
+    from pathlib import Path
+
+    left_name = Path("../test/test-imgs/left/left_motorcycle.png")
+    disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+
+    assert left_name.is_file()
+    assert left_name.lstat().st_size > 0
+    assert disparity_name.is_file()
+    assert disparity_name.lstat().st_size > 0
+
+    axis = 0
+    left_image = skimage.io.imread(str(left_name))
+    disparity = np.load(str(disparity_name))
+
+    assert len(left_image.shape) == 3
+    assert len(disparity.shape) == 2
+
+    gen_right_image(disparity, left_image, Path("out"), left_name, axis=axis)
+    outfile = Path("out") / "color_left_motorcycle.png"
+    assert outfile.lstat().st_size > 0
 if __name__ == "__main__":
     test_o3d_reproject()
+    test_gen_right_image()

@@ -30,8 +30,8 @@ def read_and_reproject(depth_path: str, color_path: str):
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / "depth.png"
     color_out = outdir / "color.png"
-    skimage.io.imsave(color_out, color_legacy)
-    skimage.io.imsave(depth_out, depth_legacy)
+    skimage.io.imsave(str(color_out), color_legacy)
+    skimage.io.imsave(str(depth_out), depth_legacy)
 
     print(f"saved {color_out} {depth_out}")
 
