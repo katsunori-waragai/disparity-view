@@ -108,9 +108,9 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_
     depth_out = outdir / f"depth_{left_name.stem}.png"
     color_out = outdir / f"color_{left_name.stem}.png"
 
-    skimage.io.imsave(color_out, color_legacy)
+    skimage.io.imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(depth_out, depth_legacy)
+    skimage.io.imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 
