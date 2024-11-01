@@ -15,7 +15,7 @@ import open3d as o3d
 import numpy as np
 import skimage.io
 
-
+from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
 import inspect
 
 from disparity_view.util import dummy_pinhole_camera_intrincic
@@ -110,5 +110,18 @@ def test_o3d_reproject():
     print(f"saved {depth_out}")
 
 
+def test_gen_right_image():
+    from pathlib import Path
+
+    left_name = "../test/test-imgs/left/left_motorcycle.png"
+    disparity_name ="../test/test-imgs/disparity-IGEV/left_motorcycle.npy"
+
+    axis = 0
+    left_image = skimage.io.imread(str(left_name))
+    disparity = np.load(str(disparity_name))
+
+    gen_right_image(disparity, left_image, Path("out"), left_name, axis=axis)
+    outfile = Path("out") / "color_left_motorcycle.png"
+    assert outfile.lstat().st_size > 0
 if __name__ == "__main__":
     test_o3d_reproject()
