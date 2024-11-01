@@ -113,8 +113,13 @@ def test_o3d_reproject():
 def test_gen_right_image():
     from pathlib import Path
 
-    left_name = "../test/test-imgs/left/left_motorcycle.png"
-    disparity_name ="../test/test-imgs/disparity-IGEV/left_motorcycle.npy"
+    left_name = Path("../test/test-imgs/left/left_motorcycle.png")
+    disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+
+    assert left_name.is_file()
+    assert left_name.lstat().st_size > 0
+    assert disparity_name.is_file()
+    assert disparity_name.lstat().st_size > 0
 
     axis = 0
     left_image = skimage.io.imread(str(left_name))
@@ -125,3 +130,4 @@ def test_gen_right_image():
     assert outfile.lstat().st_size > 0
 if __name__ == "__main__":
     test_o3d_reproject()
+    test_gen_right_image()
