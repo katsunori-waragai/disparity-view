@@ -3,8 +3,10 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
+from disparity_view.util import safer_imsave
 
-def test_imsave():
+
+def test_safer_imsave():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     img = skimage.io.imread(str(left_name))
     print(f"{np.max(img.flatten())=}")
@@ -12,12 +14,11 @@ def test_imsave():
     print(f"{np.max(float_img.flatten())=}")
 
     outfile = Path("saved_float.png")
-    skimage.io.imsave(str(outfile), float_img)
+    safer_imsave(str(outfile), float_img)
     assert outfile.lstat().st_size > 0
 
     img2 = skimage.io.imread(str(outfile))
     assert np.max(img2.flatten()) > 0
 
-
 if __name__ == "__main__":
-    test_imsave()
+    test_safer_imsave()
