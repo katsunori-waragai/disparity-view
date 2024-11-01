@@ -18,10 +18,11 @@ dependencies = [
     "dataclasses_json",
     "numpy<2",
     "opencv-python==3.4.18.65",
-    "open3d>=0.18.0",
-    "pillow",
+    "open3d>=0.16.0",
+    "pillow>=10.1.0",
     "scikit-image",
     "tqdm",
+    "typing_extensions>=4.7.1",
 ]
 
 [project.optional-dependencies]
