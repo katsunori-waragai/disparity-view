@@ -9,7 +9,7 @@ import cv2
 from tqdm import tqdm
 
 from .animation_gif import AnimationGif
-from .util import dummy_camera_matrix
+from .util import dummy_camera_matrix, safer_imsave
 
 
 DEPTH_SCALE = 1000.0
@@ -102,9 +102,9 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_
     depth_out = outdir / f"depth_{left_name.stem}.png"
     color_out = outdir / f"color_{left_name.stem}.png"
 
-    skimage.io.imsave(str(color_out), color_legacy)
+    safer_imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(str(depth_out), depth_legacy)
+    safer_imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 
