@@ -15,11 +15,10 @@ import skimage.io
 
 from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
 
-import disparity_view
 
 if __name__ == "__main__":
     """
-    python3 reproject_open3d.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 project_o3d.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
