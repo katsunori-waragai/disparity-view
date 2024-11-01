@@ -3,14 +3,8 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
-def safer_imsave(p: Path, img: np.ndarray):
-    int_type = (np.uint8, np.uint16, np.uint32, np.uint64,
-                np.int8, np.int16, np.int32, np.int64)
-    if img.dtype in int_type:
-        skimage.io.imsave(str(p), img)
-    else:
-        uint8_img = np.array(img * 255, dtype=np.uint8)
-        skimage.io.imsave(str(p), uint8_img)
+from disparity_view.util import safer_imsave
+
 
 def test_imsave():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
@@ -26,6 +20,7 @@ def test_imsave():
     img2 = skimage.io.imread(str(outfile))
     assert np.max(img2.flatten()) > 0
 
+
 def test_safer_imsave():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     img = skimage.io.imread(str(left_name))
@@ -39,6 +34,7 @@ def test_safer_imsave():
 
     img2 = skimage.io.imread(str(outfile))
     assert np.max(img2.flatten()) > 0
+
 
 if __name__ == "__main__":
     test_imsave()

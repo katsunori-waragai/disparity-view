@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import numpy as np
 import open3d as o3d
+import skimage
 
 
 def dummy_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray:
@@ -24,3 +27,12 @@ def dummy_pinhole_camera_intrincic(image_shape, focal_length: float = 1070) -> o
     cx = image_shape[1] / 2.0
     cy = image_shape[0] / 2.0
     return o3d.camera.PinholeCameraIntrinsic(width=width, height=height, fx=focal_length, fy=focal_length, cx=cx, cy=cy)
+
+
+def safer_imsave(p: Path, img: np.ndarray):
+    int_type = (np.uint8, np.uint16, np.uint32, np.uint64, np.int8, np.int16, np.int32, np.int64)
+    if img.dtype in int_type:
+        skimage.io.imsave(str(p), img)
+    else:
+        uint8_img = np.array(img * 255, dtype=np.uint8)
+        skimage.io.imsave(str(p), uint8_img)
