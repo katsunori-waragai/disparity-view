@@ -4,7 +4,7 @@ import numpy as np
 import skimage.io
 
 
-def test_imsave():
+def test_imsave_float_img():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     img = skimage.io.imread(str(left_name))
     print(f"{np.max(img.flatten())=}")
@@ -20,4 +20,4 @@ def test_imsave():
 
 
 if __name__ == "__main__":
-    test_imsave()
+    test_imsave_float_img()
