@@ -70,14 +70,6 @@ def reproject_from_left_and_disparity(
     rgbd_reproj = reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-    assert isinstance(color_legacy, np.ndarray)
-    assert isinstance(depth_legacy, np.ndarray)
-
-    assert color_legacy.shape[:2] == depth_legacy.shape
-
-    assert np.max(color_legacy.flatten()) > 0
-    assert np.max(depth_legacy.flatten()) > 0
-
     return color_legacy, depth_legacy
 
 
@@ -105,14 +97,6 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_
     color_legacy, depth_legacy = reproject_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
-    assert isinstance(color_legacy, np.ndarray)
-    assert isinstance(depth_legacy, np.ndarray)
-    assert color_legacy.shape[:2] == depth_legacy.shape
-    assert np.max(color_legacy.flatten()) > 0
-    assert np.max(depth_legacy.flatten()) > 0
-
-    print(f"{color_legacy.dtype=}")
-    print(f"{depth_legacy.dtype=}")
 
     outdir.mkdir(exist_ok=True, parents=True)
     depth_out = outdir / f"depth_{left_name.stem}.png"
