@@ -18,7 +18,7 @@ import skimage.io
 from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
 import inspect
 
-from disparity_view.util import dummy_pinhole_camera_intrincic
+from disparity_view.util import safer_imsave
 
 
 def shape_of(image) -> Tuple[float, float]:
@@ -107,9 +107,9 @@ def test_o3d_reproject():
     depth_out = outdir / "depth.png"
     color_out = outdir / "color.png"
 
-    skimage.io.imsave(str(color_out), color_legacy)
+    safer_imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(str(depth_out), depth_legacy)
+    safer_imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 
