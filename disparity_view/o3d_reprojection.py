@@ -70,6 +70,12 @@ def reproject_from_left_and_disparity(
     rgbd_reproj = reproject_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
+    assert isinstance(color_legacy, np.ndarray)
+    assert isinstance(depth_legacy, np.ndarray)
+
+    assert color_legacy.shape[:2] == depth_legacy.shape
+
+    assert np.max(color_legacy.flatten()) > 0
 
     return color_legacy, depth_legacy
 
