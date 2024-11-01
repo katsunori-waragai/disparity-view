@@ -125,6 +125,9 @@ def test_gen_right_image():
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
 
+    assert len(left_image.shape) == 3
+    assert len(disparity.shape) == 2
+
     gen_right_image(disparity, left_image, Path("out"), left_name, axis=axis)
     outfile = Path("out") / "color_left_motorcycle.png"
     assert outfile.lstat().st_size > 0
