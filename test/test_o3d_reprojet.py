@@ -104,9 +104,9 @@ def test_o3d_reproject():
     depth_out = outdir / "depth.png"
     color_out = outdir / "color.png"
 
-    skimage.io.imsave(color_out, color_legacy)
+    skimage.io.imsave(str(color_out), color_legacy)
     print(f"saved {color_out}")
-    skimage.io.imsave(depth_out, depth_legacy)
+    skimage.io.imsave(str(depth_out), depth_legacy)
     print(f"saved {depth_out}")
 
 
