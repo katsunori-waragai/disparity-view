@@ -93,6 +93,9 @@ def test_o3d_reproject():
     assert len(depth_legacy.shape) == 2
     assert depth_legacy.shape == shape
 
+    assert np.max(depth_legacy.flatten()) > 0
+    assert np.max(color_legacy.flatten()) > 0
+
     print(f"{color_legacy.dtype=}")
     print(f"{depth_legacy.dtype=}")
     print(f"{np.max(depth_legacy.flatten())=}")
