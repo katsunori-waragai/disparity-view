@@ -59,7 +59,7 @@ def test_o3d_reproject():
 
     depth = np.array(depth, dtype=np.uint16)
 
-    open3d_img = o3d.t.geometry.Image(left_image)
+    open3d_img = o3d.t.geometry.Image(left_image) if isinstance(left_image, np.ndarray) else left_image
     open3d_depth = o3d.t.geometry.Image(depth)
 
     o3d.t.io.write_image("depth_my.png", open3d_depth)
