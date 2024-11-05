@@ -24,9 +24,6 @@ class CameraParameter:
     camera_parameter.save_json(json_file)
     parameter = CameraParameter.load_json(json_file)
 
-    camera_parameter2 = CameraParameter()
-    camera_parameter2.get_current_setting(cam_info)
-
     camera_parameter3 = CameraParameter.create(cam_info)
     """
 
