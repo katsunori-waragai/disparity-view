@@ -10,7 +10,6 @@ import skimage.io
 def test_stereo_camera_class():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-    outdir = Path("out_class")
 
     axis = 0
     left_image = skimage.io.imread(str(left_name))
