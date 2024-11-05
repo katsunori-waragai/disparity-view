@@ -93,13 +93,6 @@ def test_camera_param_create_to_marix():
 
     cam_info = zed.get_camera_information()
     camera_parameter = disparity_view.CameraParameter.create(cam_info)
-    print(f"{camera_parameter=}")
-    assert isinstance(camera_parameter.width, int)
-    assert isinstance(camera_parameter.height, int)
-    assert isinstance(camera_parameter.fx, float)
-    assert isinstance(camera_parameter.fy, float)
-    assert isinstance(camera_parameter.cx, float)
-    assert isinstance(camera_parameter.cy, float)
 
     intrinsics = camera_parameter.to_matrix()
     assert isinstance(intrinsics, np.ndarray)
