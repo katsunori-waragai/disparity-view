@@ -87,10 +87,15 @@ class CameraParameter:
         baseline = get_baseline(cam_info)
         return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
 
-    def to_matix(self) -> np.ndarray:
+    def to_matrix(self) -> np.ndarray:
         """
         return camera intrinsics matrix
         """
-        return np.ndarray([
-            [self.fx, 0, self.cx], [0, self.fy, self.cy], [0, 0, 1]
-        ])
+        assert isinstance(self.fx, float)
+        return np.array(
+            [
+                [self.fx, 0, self.cx],
+                [0, self.fy, self.cy],
+                [0, 0, 1]
+            ]
+        )

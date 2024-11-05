@@ -101,7 +101,7 @@ def test_camera_param_create_to_marix():
     assert isinstance(camera_parameter.cx, float)
     assert isinstance(camera_parameter.cy, float)
 
-    intrinsics = camera_parameter.to_matix()
+    intrinsics = camera_parameter.to_matrix()
     assert isinstance(intrinsics, np.ndarray)
     assert intrinsics.shape == (3, 3)
     assert intrinsics[0, 0] == camera_parameter.fx
