@@ -47,8 +47,9 @@ class StereoCamera:
         assert isinstance(width, int)
         assert isinstance(height, int)
         assert isinstance(self.left_camera_matrix, o3d.core.Tensor)
-        assert isinstance(self.left_camera_matrix, o3d.core.Tensor)
-        extrinsics = self.extrinsics if self.extrinsics else self.right_camera_matrix
+        assert isinstance(self.right_camera_matrix, o3d.core.Tensor)
+        extrinsics = o3d.core.Tensor(np.eye(4, dtype=np.float32))
+        assert isinstance(extrinsics, o3d.core.Tensor)
         return self.pcd.project_to_rgbd_image(
             width, height, intrinsics=self.left_camera_matrix, extrinsics=extrinsics, depth_scale=DEPTH_SCALE,
             depth_max=DEPTH_MAX

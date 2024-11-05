@@ -8,7 +8,7 @@ if __name__ == "__main__":
     import skimage.io
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-    outdir = Path("out")
+    outdir = Path("out_class")
 
     assert left_name.is_file()
     assert left_name.lstat().st_size > 0
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     projected = stereo_camera.project_to_rgbd_image()
     color_legacy = np.asarray(projected.color.to_legacy())
-    outdir.mkdir(exist_ok=True, parents=True)
     outfile = Path("out_class") / "color_left_motorcycle.png"
+    outfile.parent.mkdir(exist_ok=True, parents=True)
     safer_imsave(str(outfile), color_legacy)
     assert outfile.lstat().st_size > 0
