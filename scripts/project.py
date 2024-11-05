@@ -1,6 +1,15 @@
 """
 Sample script to generate a re-projected image with the right camera
 based on the derived disparity image
+
+open3d.t.geometry.PointCloud
+https://www.open3d.org/docs/release/python_api/open3d.t.geometry.PointCloud.html#open3d.t.geometry.PointCloud.create_from_rgbd_image
+depth_scale (float, optional, default=1000.0) – The depth is scaled by 1 / depth_scale.
+    - mm 単位のものを m 単位に変換する効果を持つ。
+
+depth_max (float, optional, default=3.0) – Truncated at depth_max distance.
+    - それより遠方の点を除外する効果を持つ（らしい）。
+
 """
 
 from pathlib import Path
