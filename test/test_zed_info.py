@@ -42,6 +42,7 @@ def test_camera_param_create():
     assert isinstance(camera_parameter.cx, float)
     assert isinstance(camera_parameter.cy, float)
 
+
 @pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create_to_marix():
     cam_info = get_zed_camerainfo()

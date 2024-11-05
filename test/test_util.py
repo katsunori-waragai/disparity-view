@@ -20,5 +20,6 @@ def test_safer_imsave():
     img2 = skimage.io.imread(str(outfile))
     assert np.max(img2.flatten()) > 0
 
+
 if __name__ == "__main__":
     test_safer_imsave()
