@@ -62,7 +62,6 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     print(f"saved {outfile}")
     print(f"saved {depth_file}")
 
-
     maker = AnimationGif()
     n = 16
     for i in tqdm(range(n + 1)):
