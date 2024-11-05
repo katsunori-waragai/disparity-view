@@ -5,7 +5,7 @@
 import numpy as np
 import cv2
 
-from disparity_view.cv_reprojection import reproject_from_left_and_disparity
+from disparity_view.cv_project import reproject_from_left_and_disparity
 
 
 def dummy_camera_matrix(image_shape) -> np.ndarray:

@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
-from disparity_view.o3d_reprojection import gen_right_image, make_animation_gif
+from disparity_view.o3d_project import gen_right_image, make_animation_gif
 
 
 if __name__ == "__main__":
