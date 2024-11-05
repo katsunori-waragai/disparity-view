@@ -134,6 +134,8 @@ def test_gen_right_image():
     gen_right_image(disparity, left_image, Path("out"), left_name, axis=axis)
     outfile = Path("out") / "color_left_motorcycle.png"
     assert outfile.lstat().st_size > 0
+
+
 if __name__ == "__main__":
     test_o3d_reproject()
     test_gen_right_image()
