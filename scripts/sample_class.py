@@ -4,7 +4,7 @@ import numpy as np
 from disparity_view.o3d_project import gen_tvec, DEPTH_SCALE
 from disparity_view.o3d_project import as_extrinsics
 from disparity_view.projection_class import StereoCamera
-from disparity_view.util import  safer_imsave
+from disparity_view.util import safer_imsave
 
 import skimage.io
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     stereo_camera = StereoCamera()
     stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070, baseline=120)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
-    scaled_baseline = stereo_camera.scaled_baseline() # [mm]
+    scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
     extrinsics = as_extrinsics(tvec)
     projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
