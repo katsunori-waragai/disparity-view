@@ -109,5 +109,5 @@ def test_camera_param_create_to_marix():
     assert intrinsics[0, 1] == 0.0
     assert intrinsics[1, 0] == 0.0
 
-    assert intrinsics.dtype == np.float
+    assert intrinsics.dtype in (np.float32, np.float64)
     zed.close()
