@@ -1,12 +1,9 @@
 from pathlib import Path
+
 import numpy as np
-
-from disparity_view.o3d_project import gen_tvec, DEPTH_SCALE
-from disparity_view.o3d_project import as_extrinsics
-from disparity_view.projection_class import StereoCamera
-from disparity_view.util import safer_imsave
-
 import skimage.io
+
+from disparity_view.projection_class import gen_right_image, make_animation_gif
 
 if __name__ == "__main__":
     """
@@ -29,17 +26,7 @@ if __name__ == "__main__":
 
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
-
-    stereo_camera = StereoCamera(baseline=120)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
-    stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
-    scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
-    tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
-    extrinsics = as_extrinsics(tvec)
-    projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
-    color_legacy = np.asarray(projected.color.to_legacy())
-    outfile = outdir / "color_left_motorcycle.png"
-    outfile.parent.mkdir(exist_ok=True, parents=True)
-    safer_imsave(str(outfile), color_legacy)
-    print(f"saved {outfile}")
-    assert outfile.lstat().st_size > 0
+    if args.gif:
+        make_animation_gif(disparity, left_image, outdir, left_name, axis=axis)
+    else:
+        gen_right_image(disparity, left_image, outdir, left_name, axis=axis)
