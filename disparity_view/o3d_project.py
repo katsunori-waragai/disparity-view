@@ -23,6 +23,23 @@ def shape_of(image) -> Tuple[float, float]:
         return (image.rows, image.columns)
 
 
+def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
+    if len(tvec.shape) == 1:
+        tvec = np.ndarray([tvec])
+    return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
+
+
+def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
+    assert axis in (0, 1, 2)
+    if axis == 0:
+        tvec = np.array([[-scaled_shift, 0.0, 0.0]])
+    elif axis == 1:
+        tvec = np.array([[0.0, scaled_shift, 0.0]])
+    elif axis == 2:
+        tvec = np.array([[0.0, 0.0, scaled_shift]])
+    return tvec
+
+
 def depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
@@ -37,12 +54,6 @@ def depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, in
         print(f"{focal_length}")
     assert isinstance(focal_length, float)
     return depth_from_disparity(disparity, baseline, focal_length)
-
-
-def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
-    if len(tvec.shape) == 1:
-        tvec = np.ndarray([tvec])
-    return np.vstack((np.hstack((rot_mat, tvec.T)), [0, 0, 0, 1]))
 
 
 def generate_point_cloud(
@@ -69,7 +80,7 @@ def project_point_cloud(
 
 def project_from_left_and_disparity(
     left_image: np.ndarray, disparity: np.ndarray, intrinsics: np.ndarray, baseline=120.0, tvec=np.array((0, 0, 0))
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray]:  ## replace by class
     shape = left_image.shape
 
     pcd = generate_point_cloud(disparity, left_image, intrinsics, baseline)
@@ -79,18 +90,7 @@ def project_from_left_and_disparity(
     return color_legacy, depth_legacy
 
 
-def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
-    assert axis in (0, 1, 2)
-    if axis == 0:
-        tvec = np.array([[-scaled_shift, 0.0, 0.0]])
-    elif axis == 1:
-        tvec = np.array([[0.0, scaled_shift, 0.0]])
-    elif axis == 2:
-        tvec = np.array([[0.0, 0.0, scaled_shift]])
-    return tvec
-
-
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):  ## replace by class
     left_name = Path(left_name)
     shape = left_image.shape
 
