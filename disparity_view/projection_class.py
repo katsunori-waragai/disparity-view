@@ -54,3 +54,5 @@ class StereoCamera:
             depth_max=DEPTH_MAX
         )
 
+    def scaled_baseline(self):
+        return self.baseline / DEPTH_SCALE

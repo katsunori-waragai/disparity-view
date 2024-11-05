@@ -30,18 +30,16 @@ if __name__ == "__main__":
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
 
-    height, width = disparity[:2]
-
     stereo_camera = StereoCamera()
-    shape = disparity.shape
-    stereo_camera.set_camera_matrix(shape=shape, focal_length=1070)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070, baseline=120)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
-    scaled_baseline = 120 / DEPTH_SCALE # [mm]
-    tvec=gen_tvec(scaled_shift=scaled_baseline, axis=0)
+    scaled_baseline = stereo_camera.scaled_baseline() # [mm]
+    tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
     extrinsics = as_extrinsics(tvec)
     projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
     color_legacy = np.asarray(projected.color.to_legacy())
     outfile = outdir / "color_left_motorcycle.png"
     outfile.parent.mkdir(exist_ok=True, parents=True)
     safer_imsave(str(outfile), color_legacy)
+    print(f"saved {outfile}")
     assert outfile.lstat().st_size > 0
