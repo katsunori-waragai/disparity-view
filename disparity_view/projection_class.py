@@ -31,10 +31,11 @@ class StereoCamera:
         self.left_camera_matrix = CameraParameter.load_json(json).to_matrix()
         self.right_camera_matrix = self.left_camera_matrix
 
-    def set_camera_matrix(self, shape: np.ndarray, focal_length: float = 1070.0):
+    def set_camera_matrix(self, shape: np.ndarray, focal_length: float=1070.0, baseline=120):
         self.shape = shape
         self.left_camera_matrix = o3d.core.Tensor(dummy_camera_matrix(shape, focal_length=focal_length))
         self.right_camera_matrix = self.left_camera_matrix
+        self.baseline = baseline
 
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
         if disparity_map.shape[:2] != left_image.shape[:2]:
