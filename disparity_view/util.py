@@ -33,6 +33,10 @@ def safer_imsave(p: Path, img: np.ndarray):
     int_type = (np.uint8, np.uint16, np.uint32, np.uint64, np.int8, np.int16, np.int32, np.int64)
     if img.dtype in int_type:
         skimage.io.imsave(str(p), img)
+    elif str(p).find("depth") > -1:
+        max_val = np.max(img.flatten())
+        uint8_img = np.array(img * 255 / max_val, dtype=np.uint8)
+        skimage.io.imsave(str(p), uint8_img)
     else:
         uint8_img = np.array(img * 255, dtype=np.uint8)
         skimage.io.imsave(str(p), uint8_img)
