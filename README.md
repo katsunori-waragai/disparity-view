@@ -69,8 +69,8 @@ python3 scripts/view_npy.py -h
 
 ### reproject to 2D
 ```commandline
-$ python3 reproject.py -h
-usage: reproject.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
+$ python3 project.py -h
+usage: project.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
 
 reprojector
 
