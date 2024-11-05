@@ -49,7 +49,7 @@ def generate_point_cloud(
     )
 
 
-def reproject_point_cloud(
+def project_point_cloud(
     pcd: o3d.t.geometry.PointCloud, intrinsics: np.ndarray, tvec: np.ndarray
 ) -> o3d.t.geometry.RGBDImage:
     extrinsics = as_extrinsics(tvec)
@@ -61,13 +61,13 @@ def reproject_point_cloud(
     )
 
 
-def reproject_from_left_and_disparity(
+def project_from_left_and_disparity(
     left_image: np.ndarray, disparity: np.ndarray, intrinsics: np.ndarray, baseline=120.0, tvec=np.array((0, 0, 0))
 ) -> Tuple[np.ndarray, np.ndarray]:
     shape = left_image.shape
 
     pcd = generate_point_cloud(disparity, left_image, intrinsics, baseline)
-    rgbd_reproj = reproject_point_cloud(pcd, intrinsics, tvec=tvec)
+    rgbd_reproj = project_point_cloud(pcd, intrinsics, tvec=tvec)
     color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
     depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
     return color_legacy, depth_legacy
@@ -94,7 +94,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_
     scaled_baseline = baseline / DEPTH_SCALE
 
     tvec = gen_tvec(scaled_baseline, axis)
-    color_legacy, depth_legacy = reproject_from_left_and_disparity(
+    color_legacy, depth_legacy = project_from_left_and_disparity(
         left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
     )
 
@@ -131,8 +131,8 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     for i in tqdm(range(n + 1)):
         scaled_baseline = baseline / DEPTH_SCALE
         tvec = gen_tvec(scaled_baseline * i / n, axis)
-        reprojected_rgbdimage = reproject_point_cloud(pcd, camera_matrix, tvec=tvec)
-        color_img = np.asarray(reprojected_rgbdimage.color.to_legacy())
+        projected_rgbdimage = project_point_cloud(pcd, camera_matrix, tvec=tvec)
+        color_img = np.asarray(projected_rgbdimage.color.to_legacy())
         color_img = (color_img * 255).astype(np.uint8)
         maker.append(color_img)
 
