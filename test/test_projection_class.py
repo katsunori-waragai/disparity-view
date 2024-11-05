@@ -1,10 +1,11 @@
 from pathlib import Path
-import numpy as np
 
-from disparity_view.o3d_project import gen_tvec, DEPTH_SCALE, StereoCamera
+import numpy as np
+import skimage.io
+
+from disparity_view.o3d_project import gen_tvec, StereoCamera
 from disparity_view.o3d_project import as_extrinsics
 from disparity_view.util import safer_imsave
-import skimage.io
 
 
 def test_stereo_camera_class():
