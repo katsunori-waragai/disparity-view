@@ -42,10 +42,15 @@ class StereoCamera:
         assert disparity_map.shape[:2] == left_image.shape[:2]
         return generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
-    def project_to_rgbd_image(self, width: int, height: int,
-       ):
+    def project_to_rgbd_image(self):
+        height, width = self.shape[:2]
+        assert isinstance(width, int)
+        assert isinstance(height, int)
+        assert isinstance(self.left_camera_matrix, o3d.core.Tensor)
+        assert isinstance(self.left_camera_matrix, o3d.core.Tensor)
+        extrinsics = self.extrinsics if self.extrinsics else self.right_camera_matrix
         return self.pcd.project_to_rgbd_image(
-            width, height, intrinsics=self.left_camera_matrix, extrinsics=self.extrinsics, depth_scale=DEPTH_SCALE,
+            width, height, intrinsics=self.left_camera_matrix, extrinsics=extrinsics, depth_scale=DEPTH_SCALE,
             depth_max=DEPTH_MAX
         )
 

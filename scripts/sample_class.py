@@ -27,7 +27,7 @@ if __name__ == "__main__":
     shape = disparity.shape
     stereo_camera.set_camera_matrix(shape=shape, focal_length=1070)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
-    projected = stereo_camera.project_to_rgbd_image(width, height)
+    projected = stereo_camera.project_to_rgbd_image()
     color_legacy = np.asarray(projected.color.to_legacy())
     outdir.mkdir(exist_ok=True, parents=True)
     outfile = Path("out_class") / "color_left_motorcycle.png"
