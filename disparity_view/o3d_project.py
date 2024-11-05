@@ -4,14 +4,12 @@ from typing import Tuple
 
 import numpy as np
 import open3d as o3d
-import skimage.io
-import cv2
 
 from tqdm import tqdm
 
-from . import CameraParameter
 from .animation_gif import AnimationGif
 from .util import dummy_camera_matrix, safer_imsave
+from .zed_info import CameraParameter
 
 
 DEPTH_SCALE = 1000.0
