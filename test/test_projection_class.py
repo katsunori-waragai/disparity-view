@@ -16,10 +16,10 @@ def test_stereo_camera_class():
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
 
-    stereo_camera = StereoCamera()
+    stereo_camera = StereoCamera(baseline=120)
     shape = disparity.shape
     stereo_camera.set_camera_matrix(shape=shape, focal_length=1070)
-    scaled_baseline = 120 / DEPTH_SCALE  # [mm]
+    scaled_baseline = stereo_camera.scaled_baseline()  # [mm] to [m]
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
     extrinsics = as_extrinsics(tvec)

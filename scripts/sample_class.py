@@ -30,8 +30,8 @@ if __name__ == "__main__":
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
 
-    stereo_camera = StereoCamera()
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070, baseline=120)
+    stereo_camera = StereoCamera(baseline=120)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
