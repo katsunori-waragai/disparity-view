@@ -13,8 +13,7 @@ import numpy as np
 import disparity_view
 
 
-@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
-def test_get_baseline():
+def get_zed_camerainfo():
     zed = sl.Camera()
 
     init_params = sl.InitParameters()
@@ -25,22 +24,20 @@ def test_get_baseline():
         sys.exit(1)
 
     cam_info = zed.get_camera_information()
+    zed.close()
+    return cam_info
+
+
+@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
+def test_get_baseline():
+    cam_info = get_zed_camerainfo()
     baseline = disparity_view.get_baseline(cam_info)
     assert 110 < baseline < 130
-    zed.close()
 
 
 @pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_get_fx_fy_cx_cy():
-    zed = sl.Camera()
-
-    init_params = sl.InitParameters()
-    status = zed.open(init_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f"Error opening camera: {status}")
-        sys.exit(1)
-
-    cam_info = zed.get_camera_information()
+    cam_info = get_zed_camerainfo()
 
     left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
 
@@ -58,20 +55,11 @@ def test_get_fx_fy_cx_cy():
     assert cx > 0
     assert cy > 0
 
-    zed.close()
-
 
 @pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create():
-    zed = sl.Camera()
+    cam_info = get_zed_camerainfo()
 
-    init_params = sl.InitParameters()
-    status = zed.open(init_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f"Error opening camera: {status}")
-        sys.exit(1)
-
-    cam_info = zed.get_camera_information()
     camera_parameter = disparity_view.CameraParameter.create(cam_info)
     print(f"{camera_parameter=}")
     assert isinstance(camera_parameter.width, int)
@@ -80,18 +68,10 @@ def test_camera_param_create():
     assert isinstance(camera_parameter.fy, float)
     assert isinstance(camera_parameter.cx, float)
     assert isinstance(camera_parameter.cy, float)
-    zed.close()
 
 def test_camera_param_create_to_marix():
-    zed = sl.Camera()
+    cam_info = get_zed_camerainfo()
 
-    init_params = sl.InitParameters()
-    status = zed.open(init_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f"Error opening camera: {status}")
-        sys.exit(1)
-
-    cam_info = zed.get_camera_information()
     camera_parameter = disparity_view.CameraParameter.create(cam_info)
 
     intrinsics = camera_parameter.to_matrix()
@@ -103,4 +83,3 @@ def test_camera_param_create_to_marix():
     assert intrinsics[1, 0] == 0.0
 
     assert intrinsics.dtype in (np.float32, np.float64)
-    zed.close()
