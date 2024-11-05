@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from pathlib import Path
 
+import numpy as np
 
 def get_width_height_fx_fy_cx_cy(left_cam_params):
     """
@@ -85,3 +86,16 @@ class CameraParameter:
         width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
         baseline = get_baseline(cam_info)
         return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
+
+    def to_matrix(self) -> np.ndarray:
+        """
+        return camera intrinsics matrix
+        """
+        assert isinstance(self.fx, float)
+        return np.array(
+            [
+                [self.fx, 0, self.cx],
+                [0, self.fy, self.cy],
+                [0, 0, 1]
+            ]
+        )
