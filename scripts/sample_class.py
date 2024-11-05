@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import skimage.io
 
-from disparity_view.projection_class import gen_right_image, make_animation_gif
+from disparity_view import gen_right_image, make_animation_gif
 
 if __name__ == "__main__":
     """
