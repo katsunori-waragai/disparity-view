@@ -60,15 +60,6 @@ class CameraParameter:
     cy: float = 0.0  # [pixel]
     baseline: float = 0.0
 
-    def get_current_setting(self, cam_info):
-        """
-        Note:
-            cam_info = zed.get_camera_information()
-        """
-        left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
-        self.width, self.height, self.fx, self.fy, self.cx, self.cy = get_width_height_fx_fy_cx_cy(left_cam_params)
-        self.baseline = get_baseline(cam_info)
-
     def save_json(self, name: Path):
         open(name, "wt").write(self.to_json())
 
@@ -83,8 +74,15 @@ class CameraParameter:
             cam_info = zed.get_camera_information()
         """
         left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
-        width, height, fx, fy, cx, cy = get_width_height_fx_fy_cx_cy(left_cam_params)
-        baseline = get_baseline(cam_info)
+        width, height, fx, fy, cx, cy = (
+            left_cam_params.image_size.width,
+            left_cam_params.image_size.height,
+            left_cam_params.fx,
+            left_cam_params.fy,
+            left_cam_params.cx,
+            left_cam_params.cy,
+        )
+        baseline = left_cam_params.get_camera_baseline()
         return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
 
     def to_matrix(self) -> np.ndarray:
