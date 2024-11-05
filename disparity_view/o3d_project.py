@@ -90,63 +90,6 @@ def project_from_left_and_disparity(
     return color_legacy, depth_legacy
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir, left_name, axis):  ## replace by class
-    left_name = Path(left_name)
-    shape = left_image.shape
-
-    intrinsics = dummy_camera_matrix(shape, focal_length=535.4)
-    baseline = 120  # カメラ間の距離[mm] 基線長
-
-    scaled_baseline = baseline / DEPTH_SCALE
-
-    tvec = gen_tvec(scaled_baseline, axis)
-    color_legacy, depth_legacy = project_from_left_and_disparity(
-        left_image, disparity, intrinsics, baseline=baseline, tvec=tvec
-    )
-
-    outdir.mkdir(exist_ok=True, parents=True)
-    depth_out = outdir / f"depth_{left_name.stem}.png"
-    color_out = outdir / f"color_{left_name.stem}.png"
-
-    safer_imsave(str(color_out), color_legacy)
-    print(f"saved {color_out}")
-    safer_imsave(str(depth_out), depth_legacy)
-    print(f"saved {depth_out}")
-
-
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
-    """
-    save animation gif file
-
-    Args:
-        disparity: disparity image
-        left_image:left camera image
-        outdir: destination directory
-        left_name: file name of the left camera image
-    Returns：
-        None
-    """
-    assert axis in (0, 1, 2)
-    camera_matrix = dummy_camera_matrix(left_image.shape)
-    baseline = 120.0  # [mm] same to zed2i
-
-    pcd = generate_point_cloud(disparity, left_image, camera_matrix, baseline)
-
-    maker = AnimationGif()
-    n = 16
-    for i in tqdm(range(n + 1)):
-        scaled_baseline = baseline / DEPTH_SCALE
-        tvec = gen_tvec(scaled_baseline * i / n, axis)
-        projected_rgbdimage = project_point_cloud(pcd, camera_matrix, tvec=tvec)
-        color_img = np.asarray(projected_rgbdimage.color.to_legacy())
-        color_img = (color_img * 255).astype(np.uint8)
-        maker.append(color_img)
-
-    gifname = outdir / f"reproject_{left_name.stem}.gif"
-    gifname.parent.mkdir(exist_ok=True, parents=True)
-    maker.save(gifname)
-
-
 @dataclass
 class StereoCamera:
     baseline: float = field(default=120.0)  # [mm]
@@ -196,3 +139,73 @@ class StereoCamera:
 
     def scaled_baseline(self):
         return self.baseline / DEPTH_SCALE
+
+
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+    stereo_camera = StereoCamera(baseline=120)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+    stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
+    scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
+    tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
+    extrinsics = as_extrinsics(tvec)
+    projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
+    color_legacy = np.asarray(projected.color.to_legacy())
+    outfile = outdir / f"color_{left_name.stem}.png"
+    outfile.parent.mkdir(exist_ok=True, parents=True)
+    safer_imsave(str(outfile), color_legacy)
+    depth_legacy = np.asarray(projected.depth.to_legacy())
+    depth_file = outdir / f"depth_{left_name.stem}.png"
+    depth_file.parent.mkdir(exist_ok=True, parents=True)
+    safer_imsave(str(depth_file), depth_legacy)
+    print(f"saved {outfile}")
+    print(f"saved {depth_file}")
+
+    assert outfile.lstat().st_size > 0
+
+
+def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+    """
+    save animation gif file
+
+    Args:
+        disparity: disparity image
+        left_image:left camera image
+        outdir: destination directory
+        left_name: file name of the left camera image
+    Returns：
+        None
+    """
+    assert axis in (0, 1, 2)
+
+    stereo_camera = StereoCamera(baseline=120)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+    stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
+    scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
+    tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
+    extrinsics = as_extrinsics(tvec)
+    projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
+    color_legacy = np.asarray(projected.color.to_legacy())
+    outfile = outdir / f"color_{left_name.stem}.png"
+    outfile.parent.mkdir(exist_ok=True, parents=True)
+    safer_imsave(str(outfile), color_legacy)
+    depth_legacy = np.asarray(projected.depth.to_legacy())
+    depth_file = outdir / f"depth_{left_name.stem}.png"
+    depth_file.parent.mkdir(exist_ok=True, parents=True)
+    safer_imsave(str(depth_file), depth_legacy)
+    print(f"saved {outfile}")
+    print(f"saved {depth_file}")
+
+    maker = AnimationGif()
+    n = 16
+    for i in tqdm(range(n + 1)):
+        scaled_baseline = stereo_camera.scaled_baseline()
+        tvec = gen_tvec(scaled_baseline * i / n, axis)
+        extrinsics = as_extrinsics(tvec)
+        projected = stereo_camera.project_to_rgbd_image(extrinsics=extrinsics)
+        color_img = np.asarray(projected.color.to_legacy())
+        color_img = (color_img * 255).astype(np.uint8)
+        maker.append(color_img)
+
+    gifname = outdir / f"reproject_{left_name.stem}.gif"
+    gifname.parent.mkdir(exist_ok=True, parents=True)
+    maker.save(gifname)
