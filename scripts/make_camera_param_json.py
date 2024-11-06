@@ -3,7 +3,11 @@ from pathlib import Path
 from disparity_view.zed_info import CameraParameter
 
 if __name__ == "__main__":
+    """
+    カメラパラメータのjsonファイルを作成するためのスクリプト
+    """
     import argparse
+
     parser = argparse.ArgumentParser("create camera param json file")
     parser.add_argument("--width", type=int, required=True, help="width")
     parser.add_argument("--height", type=int, required=True, help="height")
