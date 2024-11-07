@@ -141,9 +141,9 @@ class StereoCamera:
         return self.baseline / DEPTH_SCALE
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
-    stereo_camera = StereoCamera(baseline=120)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, axis=0):
+    stereo_camera = StereoCamera(baseline=cam_param.baseline)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
