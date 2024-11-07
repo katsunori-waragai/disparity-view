@@ -28,6 +28,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="reprojector")
     parser.add_argument("disparity", help="disparity npy file")
     parser.add_argument("left", help="left image file")
+    parser.add_argument("json", help="json file for camera parameter")
     parser.add_argument("--axis", default=0, help="axis to shift(0: to right, 1: to upper, 2: to far)")
     parser.add_argument("--gif", action="store_true", help="git animation")
     parser.add_argument("--outdir", default="output", help="output folder")
@@ -37,7 +38,8 @@ if __name__ == "__main__":
     axis = int(args.axis)
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
+    cam_param = disparity_view.CameraParameter.load_json(args.json)
     if args.gif:
-        disparity_view.make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
+        disparity_view.make_animation_gif(disparity, left_image, cam_param, Path(args.outdir), left_name, axis=axis)
     else:
-        disparity_view.gen_right_image(disparity, left_image, Path(args.outdir), left_name, axis=axis)
+        disparity_view.gen_right_image(disparity, left_image, cam_param, Path(args.outdir), left_name, axis=axis)

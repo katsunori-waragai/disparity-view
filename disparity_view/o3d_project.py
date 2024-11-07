@@ -119,6 +119,15 @@ class StereoCamera:
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
+        height, width = disparity_map.shape[:2]
+        cx = self.left_camera_matrix[0, 2].numpy()
+        cy = self.left_camera_matrix[1, 2].numpy()
+        if abs(width / 2.0 - cx) > 1.0:
+            print(f"Warn: mismatched image width and fx: {width=} {cx}=")
+            self.left_camera_matrix[0, 2] = width / 2.0
+        if abs(height / 2.0 - cy) > 1.0:
+            print(f"Warn: mismatched image height and fy: {height=} {cy=}")
+            self.left_camera_matrix[1, 2] = height / 2.0
         return generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
@@ -141,9 +150,9 @@ class StereoCamera:
         return self.baseline / DEPTH_SCALE
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
-    stereo_camera = StereoCamera(baseline=120)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, axis=0):
+    stereo_camera = StereoCamera(baseline=cam_param.baseline)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
@@ -163,7 +172,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, outdir: Path,
     assert outfile.lstat().st_size > 0
 
 
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, axis=0):
+def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, axis=0):
     """
     save animation gif file
 
@@ -177,8 +186,8 @@ def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, outdir: Pa
     """
     assert axis in (0, 1, 2)
 
-    stereo_camera = StereoCamera(baseline=120)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+    stereo_camera = StereoCamera(baseline=cam_param.baseline)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
