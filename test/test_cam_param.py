@@ -7,6 +7,7 @@ except ImportError:
 
 import sys
 import pytest
+from pathlib import Path
 
 import numpy as np
 
@@ -29,6 +30,31 @@ def get_zed_camerainfo():
     return cam_info
 
 
+def test_camera_param_load():
+    json_file = Path("zed-imgs/camera_param.json")
+    param = disparity_view.CameraParameter.load_json(json_file)
+    assert isinstance(param, disparity_view.CameraParameter)
+
+
+def test_camera_param_load_and_save():
+    json_file = Path("zed-imgs/camera_param.json")
+    param = disparity_view.CameraParameter.load_json(json_file)
+    assert isinstance(param, disparity_view.CameraParameter)
+
+    out_json_file = Path("zed-imgs/camera_param_test.json")
+    param.save_json(out_json_file)
+
+    reloaded_param = disparity_view.CameraParameter.load_json(out_json_file)
+
+    assert reloaded_param.width == param.width
+    assert reloaded_param.height == param.height
+    assert reloaded_param.fx == param.fx
+    assert reloaded_param.fy == param.fy
+    assert reloaded_param.cx == param.cx
+    assert reloaded_param.cy == param.cy
+    assert reloaded_param.baseline == param.baseline
+
+
 @pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create():
     cam_info = get_zed_camerainfo()
@@ -43,11 +69,9 @@ def test_camera_param_create():
     assert isinstance(camera_parameter.cy, float)
 
 
-@pytest.mark.skipif(no_zed_sdk, reason="ZED SDK(StereoLabs) is not installed.")
 def test_camera_param_create_to_marix():
-    cam_info = get_zed_camerainfo()
-
-    camera_parameter = disparity_view.CameraParameter.create(cam_info)
+    json_file = Path("zed-imgs/camera_param.json")
+    camera_parameter = disparity_view.CameraParameter.load_json(json_file)
 
     intrinsics = camera_parameter.to_matrix()
     assert isinstance(intrinsics, np.ndarray)
