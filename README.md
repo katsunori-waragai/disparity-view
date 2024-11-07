@@ -70,20 +70,20 @@ python3 scripts/view_npy.py -h
 ### reproject to 2D
 ```commandline
 $ python3 project.py -h
-usage: project.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
+usage: project.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left json
 
 reprojector
 
 positional arguments:
   disparity        disparity npy file
   left             left image file
+  json             json file for camera parameter
 
 optional arguments:
   -h, --help       show this help message and exit
   --axis AXIS      axis to shift(0: to right, 1: to upper, 2: to far)
   --gif            git animation
   --outdir OUTDIR  output folder
-
 ```
 ### depth_to_normal
 - Depth image is not easy to recognize fine structure.
