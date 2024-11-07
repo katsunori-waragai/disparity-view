@@ -139,7 +139,9 @@ def test_gen_right_image():
     focal_length = 1070
     baseline = 120  # [mm]
 
-    cam_param = disparity_view.CameraParameter(width=width, height=height, cx=cx, cy=cy, fx=focal_length, fy=focal_length, baseline=baseline)
+    cam_param = disparity_view.CameraParameter(
+        width=width, height=height, cx=cx, cy=cy, fx=focal_length, fy=focal_length, baseline=baseline
+    )
     gen_right_image(disparity, left_image, cam_param, Path("out"), left_name, axis=axis)
     outfile = Path("out") / "color_left_motorcycle.png"
     assert outfile.lstat().st_size > 0
