@@ -3,6 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import open3d as o3d
+import skimage.io
 
 import disparity_view
 
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     disparity_name = Path(args.disparity)
     left_name = Path(args.left)
-    left_image = cv2.imread(str(left_name))
+    left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     cam_param = disparity_view.CameraParameter.load_json(args.json)
     gen_ply(disparity, left_image, cam_param, Path(args.outdir), left_name)
