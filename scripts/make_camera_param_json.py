@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from disparity_view.zed_info import CameraParameter
+from disparity_view.cam_param import CameraParameter
 
 if __name__ == "__main__":
     """

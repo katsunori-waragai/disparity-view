@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from .animation_gif import AnimationGif
 from .util import dummy_camera_matrix, safer_imsave
-from .zed_info import CameraParameter
+from .cam_param import CameraParameter
 
 
 DEPTH_SCALE = 1000.0
