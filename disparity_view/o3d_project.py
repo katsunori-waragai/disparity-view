@@ -123,9 +123,11 @@ class StereoCamera:
         cx = self.left_camera_matrix[0, 2].numpy()
         cy = self.left_camera_matrix[1, 2].numpy()
         if abs(width / 2.0 - cx) > 1.0:
-            print(f"Warn: mismatched width and fx: {width=} {cx}=")
-        if abs(height - cy) > 1.0:
-            print(f"Warn: mismatched height and fy: {width=} {cy}=")
+            print(f"Warn: mismatched image width and fx: {width=} {cx}=")
+            self.left_camera_matrix[0, 2] = width / 2.0
+        if abs(height / 2.0 - cy) > 1.0:
+            print(f"Warn: mismatched image height and fy: {height=} {cy=}")
+            self.left_camera_matrix[1, 2] = height / 2.0
         return generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
