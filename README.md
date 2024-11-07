@@ -70,20 +70,20 @@ python3 scripts/view_npy.py -h
 ### reproject to 2D
 ```commandline
 $ python3 project.py -h
-usage: project.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left
+usage: project.py [-h] [--axis AXIS] [--gif] [--outdir OUTDIR] disparity left json
 
 reprojector
 
 positional arguments:
   disparity        disparity npy file
   left             left image file
+  json             json file for camera parameter
 
 optional arguments:
   -h, --help       show this help message and exit
   --axis AXIS      axis to shift(0: to right, 1: to upper, 2: to far)
   --gif            git animation
   --outdir OUTDIR  output folder
-
 ```
 ### depth_to_normal
 - Depth image is not easy to recognize fine structure.
@@ -127,20 +127,19 @@ colormap:
 
 ### generate ply file
 ```commandline
-$ python3 gen_ply.py -h 
+$ python3 gen_ply.py -h
+usage: gen_ply.py [-h] [--outdir OUTDIR] disparity left json
 
-usage: gen_ply.py [-h] [--outdir OUTDIR] disparity left
-
-genarate ply file
+generate ply file
 
 positional arguments:
   disparity        disparity npy file
   left             left image file
+  json             json file for camera parameter
 
 optional arguments:
   -h, --help       show this help message and exit
   --outdir OUTDIR  output folder
-
 ```
 
 ### optional tool (with ZED SDK)
