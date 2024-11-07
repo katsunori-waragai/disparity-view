@@ -5,31 +5,29 @@ import numpy as np
 import open3d as o3d
 
 from disparity_view.util import dummy_pinhole_camera_intrincic
-
+from disparity_view.o3d_project import StereoCamera
 
 def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=120.0):
     """
     generate point cloud and save
     """
 
-    left_cam_intrinsic = dummy_pinhole_camera_intrincic(left_image.shape)
-    focal_length, _ = left_cam_intrinsic.get_focal_length()
-    depth = baseline * focal_length / disparity
-
-    rgb = o3d.io.read_image(str(left_name))
-    open3d_depth = o3d.geometry.Image(depth)
-    rgbd_image = o3d.geometry.RGBDImage.create_from_color_and_depth(rgb, open3d_depth)
-
-    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image, left_cam_intrinsic)
+    stereo_camera = StereoCamera(baseline=120)
+    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=1070)
+    stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
+    assert isinstance(stereo_camera.pcd, o3d.t.geometry.PointCloud)
+    print(f"{stereo_camera.pcd=}")
     outdir.mkdir(exist_ok=True, parents=True)
-    plyname = outdir / f"{left_name.stem}.ply"
-    o3d.io.write_point_cloud(str(plyname), pcd)
+    plyname = outdir / f"{left_name.stem}_remake.ply"
+    print(f"{plyname=}")
+    pcd = stereo_camera.pcd.to_legacy()
+    o3d.io.write_point_cloud(str(plyname), pcd, format='auto', write_ascii=False, compressed=False, print_progress=True)
     print(f"saved {plyname}")
 
 
 if __name__ == "__main__":
     """
-    python3 gen_ply_.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
