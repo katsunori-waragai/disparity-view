@@ -57,7 +57,7 @@ class CameraParameter:
             left_cam_params.cx,
             left_cam_params.cy,
         )
-        baseline = left_cam_params.get_camera_baseline()
+        baseline = cam_info.camera_configuration.calibration_parameters.get_camera_baseline()
         return cls(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy, baseline=baseline)
 
     def to_matrix(self) -> np.ndarray:
