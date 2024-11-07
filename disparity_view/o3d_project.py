@@ -119,6 +119,13 @@ class StereoCamera:
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
+        height, width = disparity_map.shape[:2]
+        fx = self.left_camera_matrix[0, 2].numpy()
+        fy = self.left_camera_matrix[1, 2].numpy()
+        if abs(width / 2.0 - fx) > 1.0:
+            print(f"Warn: mismatched width and fx: {width=} {fx}=")
+        if abs(height - fy) > 1.0:
+            print(f"Warn: mismatched height and fy: {width=} {fy}=")
         return generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
