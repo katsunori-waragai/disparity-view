@@ -8,7 +8,7 @@ import skimage.io
 import disparity_view
 
 
-def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path):
+def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, remove_outlier=False):
     """
     generate point cloud and save
     """
@@ -21,7 +21,11 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Pa
     outdir.mkdir(exist_ok=True, parents=True)
     plyname = outdir / f"{left_name.stem}.ply"
     print(f"{plyname=}")
-    pcd = stereo_camera.pcd.to_legacy()
+    if remove_outlier:
+        outlier_removed_pcd, _ = stereo_camera.pcd.remove_radius_outliers(nb_points=5, search_radius=0.02)  #
+        pcd = outlier_removed_pcd.to_legacy()
+    else:
+        pcd = stereo_camera.pcd.to_legacy()
     o3d.io.write_point_cloud(str(plyname), pcd, write_ascii=False, compressed=False, print_progress=True)
     print(f"saved {plyname}")
 
