@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import open3d as o3d
 
-from disparity_view.o3d_project import StereoCamera
 import disparity_view
 
 
@@ -13,13 +12,13 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Pa
     generate point cloud and save
     """
 
-    stereo_camera = StereoCamera(baseline=cam_param.baseline)
+    stereo_camera = disparity_view.StereoCamera(baseline=cam_param.baseline)
     stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     assert isinstance(stereo_camera.pcd, o3d.t.geometry.PointCloud)
     print(f"{stereo_camera.pcd=}")
     outdir.mkdir(exist_ok=True, parents=True)
-    plyname = outdir / f"{left_name.stem}_remake.ply"
+    plyname = outdir / f"{left_name.stem}.ply"
     print(f"{plyname=}")
     pcd = stereo_camera.pcd.to_legacy()
     o3d.io.write_point_cloud(str(plyname), pcd, format="auto", write_ascii=False, compressed=False, print_progress=True)
@@ -28,7 +27,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Pa
 
 if __name__ == "__main__":
     """
-    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/zed-imgs/camera_param.json
     """
     import argparse
 
