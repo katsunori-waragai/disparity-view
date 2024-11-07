@@ -8,7 +8,7 @@ import open3d as o3d
 from tqdm import tqdm
 
 from .animation_gif import AnimationGif
-from .util import dummy_camera_matrix, safer_imsave
+from .util import create_camera_matrix, safer_imsave
 from .cam_param import CameraParameter
 
 
@@ -109,7 +109,7 @@ class StereoCamera:
 
     def set_camera_matrix(self, shape: np.ndarray, focal_length: float = 1070.0):
         self.shape = shape
-        self.left_camera_matrix = o3d.core.Tensor(dummy_camera_matrix(shape, focal_length=focal_length))
+        self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
         self.right_camera_matrix = self.left_camera_matrix
 
     def set_baseline(self, baseline=120):

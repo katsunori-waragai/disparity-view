@@ -4,10 +4,9 @@ import numpy as np
 import open3d as o3d
 import skimage
 
-
-def dummy_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray:
+def create_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray:
     """
-    return dummy camera matrix
+    return camera matrix
 
     Note:
         If you change camera resolution, camera parameters also changes.

@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import open3d as o3d
 
-from disparity_view.util import dummy_pinhole_camera_intrincic
 from disparity_view.o3d_project import StereoCamera
 
 def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_name: Path, baseline=120.0):
