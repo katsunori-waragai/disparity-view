@@ -40,6 +40,6 @@ if __name__ == "__main__":
     disparity = np.load(str(disparity_name))
     cam_param = disparity_view.CameraParameter.load_json(args.json)
     if args.gif:
-        disparity_view.make_animation_gif(disparity, left_image, Path(args.outdir), left_name, axis=axis)
+        disparity_view.make_animation_gif(disparity, left_image, cam_param, Path(args.outdir), left_name, axis=axis)
     else:
         disparity_view.gen_right_image(disparity, left_image, cam_param, Path(args.outdir), left_name, axis=axis)
