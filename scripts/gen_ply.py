@@ -7,6 +7,7 @@ import open3d as o3d
 from disparity_view.o3d_project import StereoCamera
 import disparity_view
 
+
 def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path):
     """
     generate point cloud and save
@@ -21,7 +22,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Pa
     plyname = outdir / f"{left_name.stem}_remake.ply"
     print(f"{plyname=}")
     pcd = stereo_camera.pcd.to_legacy()
-    o3d.io.write_point_cloud(str(plyname), pcd, format='auto', write_ascii=False, compressed=False, print_progress=True)
+    o3d.io.write_point_cloud(str(plyname), pcd, format="auto", write_ascii=False, compressed=False, print_progress=True)
     print(f"saved {plyname}")
 
 
