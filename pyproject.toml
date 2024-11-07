@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "disparity_view"
 description = "depth npy file viewer"
 readme = "README.md"
-version = "0.0.14"
+version = "0.0.15"
 authors = [
     {name = "katsunori-waragai", email="huyuhiko1128@gmail.com"},
     {name = "zhang chao", email = "zhang.chao@borgroid.co.jp"},
