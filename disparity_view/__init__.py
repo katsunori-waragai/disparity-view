@@ -6,3 +6,5 @@ from .o3d_project import make_animation_gif
 from .o3d_project import StereoCamera
 
 from .cam_param import CameraParameter
+
+__version__ = "0.0.16"
