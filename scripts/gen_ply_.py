@@ -29,7 +29,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, outdir: Path, left_na
 
 if __name__ == "__main__":
     """
-    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
+    python3 gen_ply_.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png
     """
     import argparse
 
