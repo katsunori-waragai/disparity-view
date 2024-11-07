@@ -16,13 +16,6 @@ DEPTH_SCALE = 1000.0
 DEPTH_MAX = 10.0
 
 
-def shape_of(image) -> Tuple[float, float]:
-    if isinstance(image, np.ndarray):
-        return image.shape
-    else:
-        return (image.rows, image.columns)
-
-
 def as_extrinsics(tvec: np.ndarray, rot_mat=np.eye(3, dtype=float)) -> np.ndarray:
     if len(tvec.shape) == 1:
         tvec = np.ndarray([tvec])
@@ -150,7 +143,7 @@ class StereoCamera:
         return self.baseline / DEPTH_SCALE
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, axis=0):
+def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
     stereo_camera = StereoCamera(baseline=cam_param.baseline)
     stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
@@ -172,7 +165,7 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param, ou
     assert outfile.lstat().st_size > 0
 
 
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, axis=0):
+def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
     """
     save animation gif file
 
