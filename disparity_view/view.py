@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 
 from .depth_to_normal import DepthToNormalMap
-from .zed_info import CameraParameter
+from .cam_param import CameraParameter
 
 
 def finitemax(depth: np.ndarray) -> float:

@@ -18,7 +18,7 @@ import cv2
 import numpy as np
 
 from disparity_view.view import as_colorimage, get_dirs, resize_image
-from disparity_view.zed_info import CameraParameter
+from disparity_view.cam_param import CameraParameter
 
 
 def parse_args_to_params(args, init_params):
