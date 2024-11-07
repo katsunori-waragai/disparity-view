@@ -40,3 +40,4 @@ if __name__ == "__main__":
     outname = Path("out") / f"zed_{width}_{height}.json"
     outname.parent.mkdir(exist_ok=True, parents=True)
     camera_parameter.save_json(outname)
+    print(f"saved {outname}")
