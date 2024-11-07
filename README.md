@@ -127,20 +127,19 @@ colormap:
 
 ### generate ply file
 ```commandline
-$ python3 gen_ply.py -h 
+$ python3 gen_ply.py -h
+usage: gen_ply.py [-h] [--outdir OUTDIR] disparity left json
 
-usage: gen_ply.py [-h] [--outdir OUTDIR] disparity left
-
-genarate ply file
+generate ply file
 
 positional arguments:
   disparity        disparity npy file
   left             left image file
+  json             json file for camera parameter
 
 optional arguments:
   -h, --help       show this help message and exit
   --outdir OUTDIR  output folder
-
 ```
 
 ### optional tool (with ZED SDK)
