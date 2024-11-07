@@ -21,7 +21,7 @@ def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Pa
     plyname = outdir / f"{left_name.stem}.ply"
     print(f"{plyname=}")
     pcd = stereo_camera.pcd.to_legacy()
-    o3d.io.write_point_cloud(str(plyname), pcd, format="auto", write_ascii=False, compressed=False, print_progress=True)
+    o3d.io.write_point_cloud(str(plyname), pcd, write_ascii=False, compressed=False, print_progress=True)
     print(f"saved {plyname}")
 
 
