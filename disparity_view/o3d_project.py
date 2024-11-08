@@ -33,17 +33,6 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
     return tvec
 
 
-def _generate_point_cloud(
-    disparity: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
-) -> o3d.t.geometry.PointCloud:
-    focal_length = intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else np.asarray(intrinsics)[0, 0]
-    depth = baseline * float(focal_length) / (disparity + 1e-8)
-    rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
-    return o3d.t.geometry.PointCloud.create_from_rgbd_image(
-        rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-    )
-
-
 @dataclass
 class StereoCamera:
     baseline: float = field(default=120.0)  # [mm]
@@ -63,17 +52,26 @@ class StereoCamera:
         self.right_camera_matrix = self.left_camera_matrix
         self.baseline = camera_param.baseline
 
-    def set_camera_matrix(self, shape: np.ndarray, focal_length: float = 1070.0):
+    def set_camera_matrix(self, shape: np.ndarray, focal_length: float):
         self.shape = shape
         self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
         self.right_camera_matrix = self.left_camera_matrix
 
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
+        def get_fx(intrinsics):
+            return intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else intrinsics[0, 0]
+
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
         self._fix_camera_param_if_needed(disparity_map)
-        return _generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
+
+        focal_length = get_fx(self.left_camera_matrix)
+        depth = self.baseline * float(focal_length) / (disparity_map + 1e-8)
+        rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
+        return o3d.t.geometry.PointCloud.create_from_rgbd_image(
+            rgbd, intrinsics=self.left_camera_matrix, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+        )
 
     def _fix_camera_param_if_needed(self, disparity_map):
         height, width = disparity_map.shape[:2]
@@ -106,7 +104,9 @@ class StereoCamera:
         return self.baseline / DEPTH_SCALE
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
+def gen_right_image(
+    disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0
+):
     stereo_camera = StereoCamera(baseline=cam_param.baseline)
     stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
@@ -128,7 +128,9 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param: Ca
     assert outfile.lstat().st_size > 0
 
 
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
+def make_animation_gif(
+    disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0
+):
     """
     save animation gif file
 
