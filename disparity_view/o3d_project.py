@@ -52,7 +52,7 @@ class StereoCamera:
         self.right_camera_matrix = self.left_camera_matrix
         self.baseline = camera_param.baseline
 
-    def set_camera_matrix(self, shape: np.ndarray, focal_length: float = 1070.0):
+    def set_camera_matrix(self, shape: np.ndarray, focal_length: float):
         self.shape = shape
         self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
         self.right_camera_matrix = self.left_camera_matrix
