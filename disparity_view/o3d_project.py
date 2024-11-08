@@ -33,11 +33,6 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
     return tvec
 
 
-def _depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
-    depth = baseline * float(focal_length) / (disparity + 1e-8)
-    return depth
-
-
 def _depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, intrinsics: np.ndarray) -> np.ndarray:
     if not isinstance(intrinsics, np.ndarray):
         focal_length = intrinsics.numpy()[0, 0]
@@ -46,8 +41,8 @@ def _depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, i
     if not isinstance(focal_length, float):
         print(f"{focal_length}")
     assert isinstance(focal_length, float)
-    return _depth_from_disparity(disparity, baseline, focal_length)
-
+    depth = baseline * float(focal_length) / (disparity + 1e-8)
+    return depth
 
 def _generate_point_cloud(
     disparity: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
