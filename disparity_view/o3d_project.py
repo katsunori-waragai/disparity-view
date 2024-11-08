@@ -80,9 +80,6 @@ class StereoCamera:
         self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
         self.right_camera_matrix = self.left_camera_matrix
 
-    def set_baseline(self, baseline=120):
-        self.baseline = baseline
-
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
