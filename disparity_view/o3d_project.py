@@ -104,7 +104,9 @@ class StereoCamera:
         return self.baseline / DEPTH_SCALE
 
 
-def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
+def gen_right_image(
+    disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0
+):
     stereo_camera = StereoCamera(baseline=cam_param.baseline)
     stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
@@ -126,7 +128,9 @@ def gen_right_image(disparity: np.ndarray, left_image: np.ndarray, cam_param: Ca
     assert outfile.lstat().st_size > 0
 
 
-def make_animation_gif(disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0):
+def make_animation_gif(
+    disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0
+):
     """
     save animation gif file
 
