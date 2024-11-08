@@ -4,7 +4,8 @@ from .depth_to_normal import DepthToNormalMap
 from .o3d_project import gen_right_image
 from .o3d_project import make_animation_gif
 from .o3d_project import StereoCamera
-
+from .o3d_project import gen_tvec
+from .o3d_project import as_extrinsics
 from .cam_param import CameraParameter
 
 __version__ = "0.0.17"
