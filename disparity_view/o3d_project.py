@@ -33,12 +33,12 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
     return tvec
 
 
-def depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
+def _depth_from_disparity(disparity: np.ndarray, baseline: float, focal_length: float) -> np.ndarray:
     depth = baseline * float(focal_length) / (disparity + 1e-8)
     return depth
 
 
-def depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, intrinsics: np.ndarray) -> np.ndarray:
+def _depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, intrinsics: np.ndarray) -> np.ndarray:
     if not isinstance(intrinsics, np.ndarray):
         focal_length = intrinsics.numpy()[0, 0]
     else:
@@ -46,13 +46,13 @@ def depth_by_disparity_and_intrinsics(disparity: np.ndarray, baseline: float, in
     if not isinstance(focal_length, float):
         print(f"{focal_length}")
     assert isinstance(focal_length, float)
-    return depth_from_disparity(disparity, baseline, focal_length)
+    return _depth_from_disparity(disparity, baseline, focal_length)
 
 
-def generate_point_cloud(
+def _generate_point_cloud(
     disparity: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
 ) -> o3d.t.geometry.PointCloud:
-    depth = depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
+    depth = _depth_by_disparity_and_intrinsics(disparity, baseline, intrinsics)
     rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
@@ -69,18 +69,6 @@ def project_point_cloud(
     return pcd.project_to_rgbd_image(
         shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
     )
-
-
-def project_from_left_and_disparity(
-    left_image: np.ndarray, disparity: np.ndarray, intrinsics: np.ndarray, baseline=120.0, tvec=np.array((0, 0, 0))
-) -> Tuple[np.ndarray, np.ndarray]:  ## replace by class
-    shape = left_image.shape
-
-    pcd = generate_point_cloud(disparity, left_image, intrinsics, baseline)
-    rgbd_reproj = project_point_cloud(pcd, intrinsics, tvec=tvec)
-    color_legacy = np.asarray(rgbd_reproj.color.to_legacy())
-    depth_legacy = np.asarray(rgbd_reproj.depth.to_legacy())
-    return color_legacy, depth_legacy
 
 
 @dataclass
@@ -123,7 +111,7 @@ class StereoCamera:
         if abs(height / 2.0 - cy) > 1.0:
             print(f"Warn: mismatched image height and fy: {height=} {cy=}")
             self.left_camera_matrix[1, 2] = height / 2.0
-        return generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
+        return _generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
         height, width = self.shape[:2]
