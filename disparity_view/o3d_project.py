@@ -87,6 +87,10 @@ class StereoCamera:
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
+        self._fix_camera_param_if_needed(disparity_map)
+        return _generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
+
+    def _fix_camera_param_if_needed(self, disparity_map):
         height, width = disparity_map.shape[:2]
         cx = self.left_camera_matrix[0, 2].numpy()
         cy = self.left_camera_matrix[1, 2].numpy()
@@ -96,7 +100,6 @@ class StereoCamera:
         if abs(height / 2.0 - cy) > 1.0:
             print(f"Warn: mismatched image height and fy: {height=} {cy=}")
             self.left_camera_matrix[1, 2] = height / 2.0
-        return _generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
         height, width = self.shape[:2]
