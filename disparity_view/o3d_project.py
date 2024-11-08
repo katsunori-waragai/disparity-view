@@ -34,10 +34,10 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
 
 
 def _generate_point_cloud(
-    disparity: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
+    disparity_map: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
 ) -> o3d.t.geometry.PointCloud:
     focal_length = intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else np.asarray(intrinsics)[0, 0]
-    depth = baseline * float(focal_length) / (disparity + 1e-8)
+    depth = baseline * float(focal_length) / (disparity_map + 1e-8)
     rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
     return o3d.t.geometry.PointCloud.create_from_rgbd_image(
         rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
@@ -69,11 +69,20 @@ class StereoCamera:
         self.right_camera_matrix = self.left_camera_matrix
 
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
+        def get_fx(intrinsics):
+            return intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else intrinsics[0, 0]
+
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
         self._fix_camera_param_if_needed(disparity_map)
-        return _generate_point_cloud(disparity_map, left_image, self.left_camera_matrix, self.baseline)
+
+        focal_length = get_fx(self.left_camera_matrix)
+        depth = self.baseline * float(focal_length) / (disparity_map + 1e-8)
+        rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
+        return o3d.t.geometry.PointCloud.create_from_rgbd_image(
+            rgbd, intrinsics=self.left_camera_matrix, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
+        )
 
     def _fix_camera_param_if_needed(self, disparity_map):
         height, width = disparity_map.shape[:2]
