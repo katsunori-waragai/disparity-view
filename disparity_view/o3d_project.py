@@ -33,17 +33,6 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
     return tvec
 
 
-def _generate_point_cloud(
-    disparity_map: np.ndarray, left_image: np.ndarray, intrinsics: np.ndarray, baseline: float
-) -> o3d.t.geometry.PointCloud:
-    focal_length = intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else np.asarray(intrinsics)[0, 0]
-    depth = baseline * float(focal_length) / (disparity_map + 1e-8)
-    rgbd = o3d.t.geometry.RGBDImage(o3d.t.geometry.Image(left_image), o3d.t.geometry.Image(depth))
-    return o3d.t.geometry.PointCloud.create_from_rgbd_image(
-        rgbd, intrinsics=intrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-    )
-
-
 @dataclass
 class StereoCamera:
     baseline: float = field(default=120.0)  # [mm]
