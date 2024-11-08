@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from disparity_view.cam_param import CameraParameter
+import disparity_view
 
 if __name__ == "__main__":
     """
@@ -20,6 +20,8 @@ if __name__ == "__main__":
     height = args.height
     focal_length = args.focal_length
     baseline = args.baseline
-    camera_parameter = CameraParameter(width=width, height=height, fx=focal_length, fy=focal_length, baseline=baseline)
+    camera_parameter = disparity_view.CameraParameter(
+        width=width, height=height, fx=focal_length, fy=focal_length, baseline=baseline
+    )
     json = Path(args.output) / f"dummy_{width}_{height}.json"
     camera_parameter.save_json(json)

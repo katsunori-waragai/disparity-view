@@ -1,6 +1,7 @@
 import numpy as np
 import open3d as o3d
 
+import disparity_view
 from disparity_view.util import dummy_pinhole_camera_intrincic
 
 tum_data = o3d.data.SampleTUMRGBDImage()

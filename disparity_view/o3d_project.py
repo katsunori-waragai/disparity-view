@@ -97,8 +97,10 @@ class StereoCamera:
 
     def load_camera_parameter(self, json: Path):
         """ """
-        self.left_camera_matrix = CameraParameter.load_json(json).to_matrix()
+        camera_param = CameraParameter.load_json(json)
+        self.left_camera_matrix = camera_param.to_matrix()
         self.right_camera_matrix = self.left_camera_matrix
+        self.baseline = camera_param.baseline
 
     def set_camera_matrix(self, shape: np.ndarray, focal_length: float = 1070.0):
         self.shape = shape

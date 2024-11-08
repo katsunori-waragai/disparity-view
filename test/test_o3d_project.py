@@ -16,8 +16,6 @@ import numpy as np
 import skimage.io
 
 import disparity_view
-from disparity_view.o3d_project import gen_right_image, make_animation_gif
-import inspect
 
 from disparity_view.util import safer_imsave
 
@@ -142,7 +140,7 @@ def test_gen_right_image():
     cam_param = disparity_view.CameraParameter(
         width=width, height=height, cx=cx, cy=cy, fx=focal_length, fy=focal_length, baseline=baseline
     )
-    gen_right_image(disparity, left_image, cam_param, Path("out"), left_name, axis=axis)
+    disparity_view.gen_right_image(disparity, left_image, cam_param, Path("out"), left_name, axis=axis)
     outfile = Path("out") / "color_left_motorcycle.png"
     assert outfile.lstat().st_size > 0
 
