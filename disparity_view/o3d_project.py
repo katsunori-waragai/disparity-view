@@ -44,18 +44,6 @@ def _generate_point_cloud(
     )
 
 
-def project_point_cloud(
-    pcd: o3d.t.geometry.PointCloud, intrinsics: np.ndarray, tvec: np.ndarray
-) -> o3d.t.geometry.RGBDImage:
-    extrinsics = as_extrinsics(tvec)
-    img_w, img_h = int(2 * intrinsics[0][2]), int(2 * intrinsics[1][2])
-    shape = [img_h, img_w]
-
-    return pcd.project_to_rgbd_image(
-        shape[1], shape[0], intrinsics=intrinsics, extrinsics=extrinsics, depth_scale=DEPTH_SCALE, depth_max=DEPTH_MAX
-    )
-
-
 @dataclass
 class StereoCamera:
     baseline: float = field(default=120.0)  # [mm]
