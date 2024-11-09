@@ -18,8 +18,6 @@ def test_stereo_camera_class():
 
     camera_param = disparity_view.CameraParameter.load_json(json_file)
     stereo_camera = disparity_view.StereoCamera.create_from_camera_param(camera_param)
-    shape = disparity.shape
-    stereo_camera.set_camera_matrix(shape=shape, focal_length=1070)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm] to [m]
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     tvec = disparity_view.gen_tvec(scaled_shift=scaled_baseline, axis=axis)
