@@ -46,6 +46,15 @@ class StereoCamera:
     rgbd: o3d.t.geometry.RGBDImage = field(default=None)
     shape: Tuple[float] = field(default=None)
 
+    @classmethod
+    def create_from_camera_param(cls, camera_param):
+        shape=(camera_param.height, camera_param.width)
+        return cls(left_camera_matrix=o3d.core.Tensor(camera_param.to_matrix()),
+                   right_camera_matrix=o3d.core.Tensor(camera_param.to_matrix()),
+                   baseline=camera_param.baseline,
+                   shape=shape
+                   )
+
     def load_camera_parameter(self, json: Path):
         """ """
         camera_param = CameraParameter.load_json(json)
