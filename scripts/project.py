@@ -21,7 +21,7 @@ import disparity_view
 
 if __name__ == "__main__":
     """
-    python3 project.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/zed-imgs/camera_param.json
+    python3 project.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/test-imgs/dummy_1482_994.json
     """
     import argparse
 

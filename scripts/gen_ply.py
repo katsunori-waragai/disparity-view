@@ -8,7 +8,7 @@ from disparity_view.o3d_project import gen_ply
 
 if __name__ == "__main__":
     """
-    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/zed-imgs/camera_param.json
+    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/test-imgs/dummy_1482_994.json
     """
     import argparse
 
