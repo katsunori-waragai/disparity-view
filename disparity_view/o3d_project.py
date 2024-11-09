@@ -47,7 +47,8 @@ class StereoCamera:
     shape: Tuple[float] = field(default=None)
 
     @classmethod
-    def create_from_camera_param(cls, camera_param):
+    def create_from_camera_param(cls, camera_param: CameraParameter):
+        assert isinstance(camera_param, CameraParameter)
         shape = (camera_param.height, camera_param.width)
         return cls(
             left_camera_matrix=o3d.core.Tensor(camera_param.to_matrix()),
