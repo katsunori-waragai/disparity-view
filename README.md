@@ -179,17 +179,6 @@ After `zed_capture` execution, you will have following folders.
 - You can get stereo rectified left, right image pairs with timestamp.
 - You can retrieve depth data and point cloud by zed sdk.
 
-## how to make whl file
-inside docker environment if you are using docker
-```commandline
-make whl
-```
-
-will generate
-```commandline
-dist/disparity_view-0.0.1-py3-none-any.whl
-dist/disparity_view-0.0.1.tar.gz
-```
 
 ## THANKS
 https://github.com/cobanov/depth2normal.git
