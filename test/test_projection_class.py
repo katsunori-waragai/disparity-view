@@ -10,12 +10,14 @@ from disparity_view.util import safer_imsave
 def test_stereo_camera_class():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
+    json_file = Path("../test/zed-imgs/camera_param.json")
 
     axis = 0
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
 
-    stereo_camera = disparity_view.StereoCamera(baseline=120)
+    camera_param = disparity_view.CameraParameter.load_json(json_file)
+    stereo_camera = disparity_view.StereoCamera.create_from_camera_param(camera_param)
     shape = disparity.shape
     stereo_camera.set_camera_matrix(shape=shape, focal_length=1070)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm] to [m]
