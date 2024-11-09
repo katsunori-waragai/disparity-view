@@ -36,9 +36,9 @@ def gen_tvec(scaled_shift: float, axis: int) -> np.ndarray:
 @dataclass
 class StereoCamera:
     baseline: float = field(default=120.0)  # [mm]
-    left_camera_matrix: np.ndarray = field(default=None)
-    right_camera_matrix: np.ndarray = field(default=None)
-    extrinsics: np.ndarray = field(default=None)
+    left_camera_matrix: o3d.core.Tensor = field(default=None)
+    right_camera_matrix: o3d.core.Tensor = field(default=None)
+    extrinsics: o3d.core.Tensor = field(default=None)
     depth_scale: float = DEPTH_SCALE
     depth_max: float = DEPTH_MAX
     pcd: o3d.t.geometry.PointCloud = field(default=None)
@@ -48,7 +48,7 @@ class StereoCamera:
     def load_camera_parameter(self, json: Path):
         """ """
         camera_param = CameraParameter.load_json(json)
-        self.left_camera_matrix = camera_param.to_matrix()
+        self.left_camera_matrix = o3d.core.Tensor(camera_param.to_matrix())
         self.right_camera_matrix = self.left_camera_matrix
         self.baseline = camera_param.baseline
 
