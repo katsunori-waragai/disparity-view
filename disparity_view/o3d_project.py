@@ -56,18 +56,6 @@ class StereoCamera:
             shape=shape,
         )
 
-    def load_camera_parameter(self, json: Path):
-        """ """
-        camera_param = CameraParameter.load_json(json)
-        self.left_camera_matrix = o3d.core.Tensor(camera_param.to_matrix())
-        self.right_camera_matrix = self.left_camera_matrix
-        self.baseline = camera_param.baseline
-
-    def set_camera_matrix(self, shape: np.ndarray, focal_length: float):
-        self.shape = shape
-        self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
-        self.right_camera_matrix = self.left_camera_matrix
-
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
         def get_fx(intrinsics):
             return intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else intrinsics[0, 0]
