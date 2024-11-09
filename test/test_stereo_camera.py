@@ -7,7 +7,7 @@ def _test_stereo_camera_create_from_camera_param():
     """
     python3で実行させてテストします。
     """
-    json_file = Path("../test/zed-imgs/camera_param.json")
+    json_file = Path("../test/test-imgs/dummy_1482_994.json")
     cam_param = disparity_view.CameraParameter.load_json(json_file)
 
     assert hasattr(disparity_view, "StereoCamera")
