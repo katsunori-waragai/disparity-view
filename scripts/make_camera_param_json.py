@@ -25,3 +25,4 @@ if __name__ == "__main__":
     )
     json = Path(args.output) / f"dummy_{width}_{height}.json"
     camera_parameter.save_json(json)
+    print(f"saved {json}")

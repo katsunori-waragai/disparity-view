@@ -46,21 +46,22 @@ class StereoCamera:
     rgbd: o3d.t.geometry.RGBDImage = field(default=None)
     shape: Tuple[float] = field(default=None)
 
-    def load_camera_parameter(self, json: Path):
-        """ """
-        camera_param = CameraParameter.load_json(json)
-        self.left_camera_matrix = o3d.core.Tensor(camera_param.to_matrix())
-        self.right_camera_matrix = self.left_camera_matrix
-        self.baseline = camera_param.baseline
-
-    def set_camera_matrix(self, shape: np.ndarray, focal_length: float):
-        self.shape = shape
-        self.left_camera_matrix = o3d.core.Tensor(create_camera_matrix(shape, focal_length=focal_length))
-        self.right_camera_matrix = self.left_camera_matrix
+    @classmethod
+    def create_from_camera_param(cls, camera_param: CameraParameter):
+        assert isinstance(camera_param, CameraParameter)
+        shape = (camera_param.height, camera_param.width)
+        return cls(
+            left_camera_matrix=o3d.core.Tensor(camera_param.to_matrix()),
+            right_camera_matrix=o3d.core.Tensor(camera_param.to_matrix()),
+            baseline=camera_param.baseline,
+            shape=shape,
+        )
 
     def generate_point_cloud(self, disparity_map: np.ndarray, left_image: np.ndarray):
         def get_fx(intrinsics):
             return intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else intrinsics[0, 0]
+
+        assert disparity_map.shape == self.shape
 
         if disparity_map.shape[:2] != left_image.shape[:2]:
             print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
@@ -76,14 +77,8 @@ class StereoCamera:
 
     def _fix_camera_param_if_needed(self, disparity_map):
         height, width = disparity_map.shape[:2]
-        cx = self.left_camera_matrix[0, 2].numpy()
-        cy = self.left_camera_matrix[1, 2].numpy()
-        if abs(width / 2.0 - cx) > 1.0:
-            print(f"Warn: mismatched image width and fx: {width=} {cx}=")
-            self.left_camera_matrix[0, 2] = width / 2.0
-        if abs(height / 2.0 - cy) > 1.0:
-            print(f"Warn: mismatched image height and fy: {height=} {cy=}")
-            self.left_camera_matrix[1, 2] = height / 2.0
+        assert height == self.shape[0]
+        assert width == self.shape[1]
 
     def project_to_rgbd_image(self, extrinsics=o3d.core.Tensor(np.eye(4, dtype=np.float32))):
         height, width = self.shape[:2]
@@ -108,8 +103,7 @@ class StereoCamera:
 def gen_right_image(
     disparity: np.ndarray, left_image: np.ndarray, cam_param: CameraParameter, outdir: Path, left_name: Path, axis=0
 ):
-    stereo_camera = StereoCamera(baseline=cam_param.baseline)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
+    stereo_camera = StereoCamera.create_from_camera_param(cam_param)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
@@ -145,8 +139,7 @@ def make_animation_gif(
     """
     assert axis in (0, 1, 2)
 
-    stereo_camera = StereoCamera(baseline=cam_param.baseline)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
+    stereo_camera = StereoCamera.create_from_camera_param(cam_param)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     scaled_baseline = stereo_camera.scaled_baseline()  # [mm]
     tvec = gen_tvec(scaled_shift=scaled_baseline, axis=axis)
@@ -179,13 +172,14 @@ def make_animation_gif(
     maker.save(gifname)
 
 
-def gen_ply(disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, remove_outlier=False):
+def gen_ply(
+    disparity: np.ndarray, left_image: np.ndarray, cam_param, outdir: Path, left_name: Path, remove_outlier=False
+):
     """
     generate point cloud and save
     """
 
-    stereo_camera = disparity_view.StereoCamera(baseline=cam_param.baseline)
-    stereo_camera.set_camera_matrix(shape=disparity.shape, focal_length=cam_param.fx)
+    stereo_camera = disparity_view.StereoCamera.create_from_camera_param(cam_param)
     stereo_camera.pcd = stereo_camera.generate_point_cloud(disparity, left_image)
     assert isinstance(stereo_camera.pcd, o3d.t.geometry.PointCloud)
     print(f"{stereo_camera.pcd=}")

@@ -4,11 +4,10 @@ import numpy as np
 import skimage.io
 
 import disparity_view
-from disparity_view.o3d_project import gen_ply
 
 if __name__ == "__main__":
     """
-    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/zed-imgs/camera_param.json
+    python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/test-imgs/dummy_1482_994.json
     """
     import argparse
 
@@ -23,4 +22,4 @@ if __name__ == "__main__":
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
     cam_param = disparity_view.CameraParameter.load_json(args.json)
-    gen_ply(disparity, left_image, cam_param, Path(args.outdir), left_name)
+    disparity_view.gen_ply(disparity, left_image, cam_param, Path(args.outdir), left_name)
