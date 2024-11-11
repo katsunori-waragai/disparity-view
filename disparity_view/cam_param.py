@@ -66,7 +66,6 @@ class CameraParameter:
         """
         return camera intrinsics matrix
         """
-        assert isinstance(self.fx, float)
         return np.array([[self.fx, 0, self.cx], [0, self.fy, self.cy], [0, 0, 1]])
 
     def get_baseline(self):

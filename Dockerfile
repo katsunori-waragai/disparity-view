@@ -21,6 +21,6 @@ RUN mkdir disparity_view/
 RUN mkdir ./scripts
 COPY disparity_view/* disparity_view/
 COPY scripts/* ./scripts/
-COPY pyproject.toml Makefile *.py ./
+COPY pyproject.toml Makefile *.py pytest.ini ./
 RUN python3 -m pip install .[dev]
 
