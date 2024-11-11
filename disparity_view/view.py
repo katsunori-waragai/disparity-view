@@ -126,7 +126,7 @@ def view3d(args):
     left_images = sorted(leftdir.glob("**/*.png"))
     disparity_npys = sorted(disparity_dir.glob("**/*.npy"))
 
-    json_file = captured_dir / "camera_param.json"
+    json_file = list(captured_dir / "*.json")[0]
     camera_parameter = CameraParameter.load_json(json_file)
 
     width = camera_parameter.width
