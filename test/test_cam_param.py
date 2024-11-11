@@ -31,17 +31,17 @@ def get_zed_camerainfo():
 
 
 def test_camera_param_load():
-    json_file = Path("zed-imgs/camera_param.json")
+    json_file = Path("zed-imgs/zed_camera_param.json")
     param = disparity_view.CameraParameter.load_json(json_file)
     assert isinstance(param, disparity_view.CameraParameter)
 
 
 def test_camera_param_load_and_save():
-    json_file = Path("zed-imgs/camera_param.json")
+    json_file = Path("zed-imgs/zed_camera_param.json")
     param = disparity_view.CameraParameter.load_json(json_file)
     assert isinstance(param, disparity_view.CameraParameter)
 
-    out_json_file = Path("zed-imgs/camera_param_test.json")
+    out_json_file = Path("zed-imgs/zed_camera_param_test.json")
     param.save_json(out_json_file)
 
     reloaded_param = disparity_view.CameraParameter.load_json(out_json_file)
@@ -70,7 +70,7 @@ def test_camera_param_create():
 
 
 def test_camera_param_create_to_marix():
-    json_file = Path("zed-imgs/camera_param.json")
+    json_file = Path("zed-imgs/zed_camera_param.json")
     camera_parameter = disparity_view.CameraParameter.load_json(json_file)
 
     intrinsics = camera_parameter.to_matrix()

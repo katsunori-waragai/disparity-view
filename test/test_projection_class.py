@@ -10,7 +10,7 @@ from disparity_view.util import safer_imsave
 def test_stereo_camera_class():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-    json_file = Path("../test/zed-imgs/camera_param.json")
+    json_file = Path("../test/test-imgs/dummy_1482_994.json")
 
     axis = 0
     left_image = skimage.io.imread(str(left_name))
