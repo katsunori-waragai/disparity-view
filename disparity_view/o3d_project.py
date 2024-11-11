@@ -61,10 +61,12 @@ class StereoCamera:
         def get_fx(intrinsics):
             return intrinsics.numpy()[0, 0] if not isinstance(intrinsics, np.ndarray) else intrinsics[0, 0]
 
+        if disparity_map.shape != self.shape:
+            print(f"{disparity_map.shape=} {self.shape=}")
         assert disparity_map.shape == self.shape
 
         if disparity_map.shape[:2] != left_image.shape[:2]:
-            print(f"{disparity_map.shape=} {left_image.shape[:2]=}")
+            print(f"warning: {disparity_map.shape=} {left_image.shape[:2]=}")
         assert disparity_map.shape[:2] == left_image.shape[:2]
         self._fix_camera_param_if_needed(disparity_map)
 
