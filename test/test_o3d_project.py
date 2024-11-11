@@ -16,6 +16,7 @@ import numpy as np
 import skimage.io
 
 import disparity_view
+from disparity_view import CameraParameter
 
 from disparity_view.util import safer_imsave
 
@@ -38,26 +39,21 @@ def test_o3d_reproject():
     device = o3d.core.Device("CPU:0")
     imfile1 = "../test/test-imgs/left/left_motorcycle.png"
     left_image = o3d.t.io.read_image(str(imfile1)).to(device)
-
     disparity = np.load("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
-
+    json_name = "../test/test-imgs/dummy_1482_994.json"
     shape = (left_image.rows, left_image.columns)
-
+    cam_param = CameraParameter.load_json(json_name)
     # disparityからdepth にする関数を抜き出すこと
-    intrinsic = o3d.core.Tensor([[535.4, 0, 320.1], [0, 539.2, 247.6], [0, 0, 1]])
+    intrinsic = cam_param.to_matrix()
+    intrinsic = o3d.core.Tensor(intrinsic)
     # 基線長の設定
-    baseline = 120  # カメラ間の距離[mm]
-
+    baseline = cam_param.baseline  # カメラ間の距離[mm]
     right_camera_intrinsics = intrinsic
-
-    focal_length = 535.4
-
+    focal_length = cam_param.fx
     depth = disparity_to_depth(disparity, baseline, focal_length)
 
     print(f"{np.max(depth.flatten())=}")
-
     depth = np.array(depth, dtype=np.uint16)
-
     open3d_img = o3d.t.geometry.Image(left_image) if isinstance(left_image, np.ndarray) else left_image
     open3d_depth = o3d.t.geometry.Image(depth)
 
