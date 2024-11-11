@@ -100,7 +100,7 @@ def capture_main(args):
 
     cam_info = zed.get_camera_information()
     camera_parameter = CameraParameter.create(cam_info)
-    json_name = outdir / "camera_param.json"
+    json_name = outdir / "zed_camera_param.json"
     camera_parameter.save_json(json_name)
 
     counter = 0
