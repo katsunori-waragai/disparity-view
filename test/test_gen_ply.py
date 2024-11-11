@@ -17,7 +17,7 @@ def test_gen_ply():
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
     left_image = skimage.io.imread(str(left_name))
     disparity = np.load(str(disparity_name))
-    cam_param = disparity_view.CameraParameter.load_json("../test/zed-imgs/camera_param.json")
+    cam_param = disparity_view.CameraParameter.load_json("../test/zed-imgs/zed_camera_param.json")
     gen_ply(disparity, left_image, cam_param, Path("output"), left_name)
     plyname = Path("output") / f"{left_name.stem}.ply"
     assert plyname.is_file()
