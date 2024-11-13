@@ -50,6 +50,7 @@ if __name__ == "__main__":
     ZED SDKのインストール済みのマシンから、ZED2iにUSB接続していること。
     """
     import argparse
+    import inspect
     from pathlib import Path
 
     parser = argparse.ArgumentParser("save zed camera parameter")
@@ -58,8 +59,8 @@ if __name__ == "__main__":
     parser.add_argument("--new_resolution", help="change to new resolution")
     args = parser.parse_args()
 
+    cam_info = get_zed_camerainfo()
     if args.save:
-        cam_info = get_zed_camerainfo()
         camera_parameter = disparity_view.CameraParameter.create(cam_info)
         width, height = get_width_height(cam_info)
         outname = Path("out") / f"zed_{width}_{height}.json"
@@ -72,6 +73,11 @@ if __name__ == "__main__":
     if args.list:
         for k, v in resolutions.items():
             print(k, v)
+
+        width = cam_info.camera_configuration.resolution.width
+        height = cam_info.camera_configuration.resolution.height
+        print("## current resolution")
+        print(f"{width=} {height=}")
         exit()
     elif args.new_resolution:
         if args.new_resolution in resolutions.keys():
