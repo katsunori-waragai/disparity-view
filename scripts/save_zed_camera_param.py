@@ -8,6 +8,7 @@ import disparity_view
 def get_zed_camerainfo():
     zed = sl.Camera()
     init_params = sl.InitParameters()
+    init_params.camera_resolution = sl.RESOLUTION.LAST
     status = zed.open(init_params)
     if status != sl.ERROR_CODE.SUCCESS:
         print(f"Error opening camera: {status}")
