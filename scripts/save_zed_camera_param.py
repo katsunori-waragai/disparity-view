@@ -26,6 +26,10 @@ def get_width_height(cam_info):
     height = left_cam_params.image_size.height
     return width, height
 
+def zed_camera_resolutions():
+    import inspect
+    return {k: v for k, v in inspect.getmembers(sl.RESOLUTION) if str(v).find("RESOLUTION") > -1 and k.find("__") == -1
+    }
 
 if __name__ == "__main__":
     """
@@ -41,3 +45,6 @@ if __name__ == "__main__":
     outname.parent.mkdir(exist_ok=True, parents=True)
     camera_parameter.save_json(outname)
     print(f"saved {outname}")
+
+    for k, v in zed_camera_resolutions().items():
+        print(k, v)
