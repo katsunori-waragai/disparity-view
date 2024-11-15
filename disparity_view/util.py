@@ -4,6 +4,7 @@ import numpy as np
 import open3d as o3d
 import skimage
 
+
 def create_camera_matrix(image_shape, focal_length: float = 1070.0) -> np.ndarray:
     """
     return camera matrix

@@ -12,6 +12,7 @@ if __name__ == "__main__":
     python3 gen_ply.py ../test/test-imgs/disparity-IGEV/left_motorcycle.npy ../test/test-imgs/left/left_motorcycle.png ../test/zed-imgs/camera_param.json
     """
 
+
 def test_gen_ply():
     disparity_name = Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy")
     left_name = Path("../test/test-imgs/left/left_motorcycle.png")
