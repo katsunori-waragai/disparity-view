@@ -1,28 +1,6 @@
-import sys
-
 import pyzed.sl as sl
 
-import inspect
-
 import disparity_view
-
-def zed_camera_resolutions():
-
-    return {k: v for k, v in inspect.getmembers(sl.RESOLUTION) if str(v).find("RESOLUTION") > -1 and k.find("__") == -1}
-def get_zed_camerainfo():
-    zed = sl.Camera()
-
-    init_params = sl.InitParameters()
-
-    status = zed.open(init_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f"Error opening camera: {status}")
-        sys.exit(1)
-
-    cam_info = zed.get_camera_information()
-    zed.close()
-    return cam_info
-
 
 def get_width_height(cam_info):
     left_cam_params = cam_info.camera_configuration.calibration_parameters.left_cam
@@ -38,14 +16,31 @@ if __name__ == "__main__":
     """
     from pathlib import Path
 
-    for k, v in inspect.getmembers(sl.RESOLUTION):
-        if str(v).find("RESOLUTION") > -1 and str(k).find("__") == -1:
-            print(k, v)
-    print("These are candidate for resolution setting")
-    cam_info = get_zed_camerainfo()
-    camera_parameter = disparity_view.CameraParameter.create(cam_info)
-    width, height = get_width_height(cam_info)
-    outname = Path("out") / f"zed_{width}_{height}.json"
-    outname.parent.mkdir(exist_ok=True, parents=True)
-    camera_parameter.save_json(outname)
-    print(f"saved {outname}")
+    resolutions = [
+        sl.RESOLUTION.HD1080,
+        sl.RESOLUTION.HD1200,
+        sl.RESOLUTION.HD2K,
+        sl.RESOLUTION.HD720,
+        sl.RESOLUTION.SVGA,
+        sl.RESOLUTION.VGA,
+    ]
+
+    zed = sl.Camera()
+
+    init_params = sl.InitParameters()
+
+    for resolution in resolutions:
+        init_params.camera_resolution = resolution
+        status = zed.open(init_params)
+        if status != sl.ERROR_CODE.SUCCESS:
+            print(f"Error opening camera {resolution}: {status}")
+            continue
+
+        cam_info = zed.get_camera_information()
+        zed.close()
+        camera_parameter = disparity_view.CameraParameter.create(cam_info)
+        width, height = get_width_height(cam_info)
+        outname = Path("out") / f"zed_{width}_{height}.json"
+        outname.parent.mkdir(exist_ok=True, parents=True)
+        camera_parameter.save_json(outname)
+        print(f"saved {outname}")
