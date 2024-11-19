@@ -2,9 +2,13 @@ import sys
 
 import pyzed.sl as sl
 
+import inspect
+
 import disparity_view
 
+def zed_camera_resolutions():
 
+    return {k: v for k, v in inspect.getmembers(sl.RESOLUTION) if str(v).find("RESOLUTION") > -1 and k.find("__") == -1}
 def get_zed_camerainfo():
     zed = sl.Camera()
 
@@ -34,6 +38,10 @@ if __name__ == "__main__":
     """
     from pathlib import Path
 
+    for k, v in inspect.getmembers(sl.RESOLUTION):
+        if str(v).find("RESOLUTION") > -1 and str(k).find("__") == -1:
+            print(k, v)
+    print("These are candidate for resolution setting")
     cam_info = get_zed_camerainfo()
     camera_parameter = disparity_view.CameraParameter.create(cam_info)
     width, height = get_width_height(cam_info)
