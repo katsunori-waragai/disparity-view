@@ -1,21 +1,24 @@
 import sys
+import inspect
 
 import pyzed.sl as sl
 
 import disparity_view
 
+global zed
+zed = sl.Camera()
+for k, v in inspect.getmembers(zed):
+    print(k, v)
+
+init_params = sl.InitParameters()
+init_params.camera_resolution = sl.RESOLUTION.LAST
+status = zed.open(init_params)
+if status != sl.ERROR_CODE.SUCCESS:
+    print(f"Error opening camera: {status}")
+    sys.exit(1)
 
 def get_zed_camerainfo():
-    zed = sl.Camera()
-    init_params = sl.InitParameters()
-    init_params.camera_resolution = sl.RESOLUTION.LAST
-    status = zed.open(init_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f"Error opening camera: {status}")
-        sys.exit(1)
-
     cam_info = zed.get_camera_information()
-    zed.close()
     return cam_info
 
 
@@ -33,7 +36,8 @@ def zed_camera_resolutions():
 
 
 def change_camera_resolution(new_resolution):
-    zed = sl.Camera()
+    if zed.is_opend():
+        zed.close()
     init_params = sl.InitParameters()
     init_params.camera_resolution = resolutions[new_resolution]
     status = zed.open(init_params)
@@ -52,7 +56,6 @@ if __name__ == "__main__":
     ZED SDKのインストール済みのマシンから、ZED2iにUSB接続していること。
     """
     import argparse
-    import inspect
     from pathlib import Path
 
     parser = argparse.ArgumentParser("save zed camera parameter")
@@ -84,3 +87,5 @@ if __name__ == "__main__":
     elif args.new_resolution:
         if args.new_resolution in resolutions.keys():
             change_camera_resolution(args.new_resolution)
+
+    zed.close()
