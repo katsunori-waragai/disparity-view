@@ -176,6 +176,7 @@ After `zed_capture` execution, you will have following folders.
 ```
 
 ## troubleshooting
+#### circular import case
 If you encounter any of the following errors, run the following shell script.
 ```commandline
 bash reinstall-opencv.sh
@@ -204,6 +205,8 @@ cv._registerMatType(Mat)
 AttributeError: partially initialized module 'cv2' has no attribute '_registerMatType' (most likely due to a circular import)
 ```
 
+#### If you need a newer version of opencv
+- Edit pyproject.toml [dependencies] for opencv.
 
 ## Note on StereoLabs ZED2i Camera
 - You can get stereo rectified left, right image pairs with timestamp.
