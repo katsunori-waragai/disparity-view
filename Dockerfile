@@ -23,4 +23,6 @@ COPY disparity_view/* disparity_view/
 COPY scripts/* ./scripts/
 COPY pyproject.toml Makefile *.py pytest.ini ./
 RUN python3 -m pip install .[dev]
+RUN python3 -m pip uninstall --yes opencv-python-headless opencv-contrib-python opencv-python
+RUN python3 -m pip install opencv-python==3.4.18.65
 
