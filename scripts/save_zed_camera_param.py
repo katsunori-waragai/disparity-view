@@ -42,10 +42,31 @@ if __name__ == "__main__":
         if str(v).find("RESOLUTION") > -1 and str(k).find("__") == -1:
             print(k, v)
     print("These are candidate for resolution setting")
-    cam_info = get_zed_camerainfo()
-    camera_parameter = disparity_view.CameraParameter.create(cam_info)
-    width, height = get_width_height(cam_info)
-    outname = Path("out") / f"zed_{width}_{height}.json"
-    outname.parent.mkdir(exist_ok=True, parents=True)
-    camera_parameter.save_json(outname)
-    print(f"saved {outname}")
+    resolutions = [
+        sl.RESOLUTION.HD1080,
+        sl.RESOLUTION.HD1200,
+        sl.RESOLUTION.HD2K,
+        sl.RESOLUTION.HD720,
+        sl.RESOLUTION.SVGA,
+        sl.RESOLUTION.VGA,
+    ]
+
+    zed = sl.Camera()
+
+    init_params = sl.InitParameters()
+
+    for resolution in resolutions:
+        init_params.camera_resoluion = resolution
+        status = zed.open(init_params)
+        if status != sl.ERROR_CODE.SUCCESS:
+            print(f"Error opening camera {resolution}: {status}")
+            continue
+
+        cam_info = zed.get_camera_information()
+        zed.close()
+        camera_parameter = disparity_view.CameraParameter.create(cam_info)
+        width, height = get_width_height(cam_info)
+        outname = Path("out") / f"zed_{width}_{height}.json"
+        outname.parent.mkdir(exist_ok=True, parents=True)
+        camera_parameter.save_json(outname)
+        print(f"saved {outname}")
