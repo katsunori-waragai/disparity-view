@@ -175,10 +175,39 @@ After `zed_capture` execution, you will have following folders.
 ./outdir/zed-disparity
 ```
 
+## troubleshooting
+If you encounter any of the following errors, run the following shell script.
+```commandline
+bash reinstall-opencv.sh
+```
+
+Error log
+```commandline
+root@xxx-orin:~/disparity-view# view_npy -h
+Traceback (most recent call last):
+File "/usr/local/bin/view_npy", line 5, in
+from disparity_view.view import view_npy_main
+File "/usr/local/lib/python3.8/dist-packages/disparity_view/init.py", line 1, in
+from .view import as_colorimage, depth_overlay, view_npy
+File "/usr/local/lib/python3.8/dist-packages/disparity_view/view.py", line 13, in
+import cv2
+File "/usr/local/lib/python3.8/dist-packages/cv2/init.py", line 181, in
+bootstrap()
+File "/usr/local/lib/python3.8/dist-packages/cv2/init.py", line 175, in bootstrap
+if __load_extra_py_code_for_module("cv2", submodule, DEBUG):
+File "/usr/local/lib/python3.8/dist-packages/cv2/init.py", line 28, in __load_extra_py_code_for_module
+py_module = importlib.import_module(module_name)
+File "/usr/lib/python3.8/importlib/init.py", line 127, in import_module
+return _bootstrap._gcd_import(name[level:], package, level)
+File "/usr/local/lib/python3.8/dist-packages/cv2/mat_wrapper/init.py", line 40, in
+cv._registerMatType(Mat)
+AttributeError: partially initialized module 'cv2' has no attribute '_registerMatType' (most likely due to a circular import)
+```
+
+
 ## Note on StereoLabs ZED2i Camera
 - You can get stereo rectified left, right image pairs with timestamp.
 - You can retrieve depth data and point cloud by zed sdk.
-
 
 ## THANKS
 https://github.com/cobanov/depth2normal.git

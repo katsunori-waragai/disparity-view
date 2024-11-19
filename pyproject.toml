@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "disparity_view"
 description = "disparity npy file viewer"
 readme = "README.md"
-version = "0.0.18"
+version = "0.1.0"
 authors = [
     {name = "katsunori-waragai", email="huyuhiko1128@gmail.com"},
     {name = "zhang chao", email = "zhang.chao@borgroid.co.jp"},
@@ -17,7 +17,7 @@ requires-python = ">= 3.8"
 dependencies = [
     "dataclasses_json",
     "numpy<2",
-    "opencv-python==3.4.18.65",
+    "opencv-python>=3.4.18.65",
     "open3d>=0.16.0",
     "pillow>=10.1.0",
     "scikit-image",
