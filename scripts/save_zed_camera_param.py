@@ -56,7 +56,7 @@ if __name__ == "__main__":
     init_params = sl.InitParameters()
 
     for resolution in resolutions:
-        init_params.camera_resoluion = resolution
+        init_params.camera_resolution = resolution
         status = zed.open(init_params)
         if status != sl.ERROR_CODE.SUCCESS:
             print(f"Error opening camera {resolution}: {status}")
