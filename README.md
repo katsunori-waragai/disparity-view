@@ -175,6 +175,20 @@ After `zed_capture` execution, you will have following folders.
 ./outdir/zed-disparity
 ```
 
+## how to get camera parameter in json format (ZED2 camera is required)
+```commandline
+cd scripts
+python3 save_zed_camera_param.py 
+(Abbreviation)
+saved out/zed_1920_1080.json
+(Abbreviation)
+saved out/zed_2208_1242.json
+(abbreviation)
+saved out/zed_1280_720.json
+(Abbreviations)
+saved out/zed_672_376.json
+```
+
 ## troubleshooting
 #### circular import case
 If you encounter any of the following errors, run the following shell script.
