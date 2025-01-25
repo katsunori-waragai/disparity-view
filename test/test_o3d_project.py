@@ -9,7 +9,6 @@ depth_max (float, optional, default=3.0) – Truncated at depth_max distance.
 
 """
 
-from typing import Tuple
 
 import open3d as o3d
 import numpy as np
@@ -21,7 +20,7 @@ from disparity_view import CameraParameter
 from disparity_view.util import safer_imsave
 
 
-def shape_of(image) -> Tuple[float, float]:
+def shape_of(image) -> tuple[float, float]:
     if isinstance(image, np.ndarray):
         return image.shape
     else:

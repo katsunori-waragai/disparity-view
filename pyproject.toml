@@ -12,7 +12,7 @@ authors = [
     {name = "zhang chao", email = "zhang.chao@borgroid.co.jp"},
 ]
 
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 
 dependencies = [
     "dataclasses_json",
