@@ -1,3 +1,10 @@
+"""
+Vision Banana に即発された、深度をRGBに変換するライブラリ
+
+See Also:
+Image Generators are Generalist Vision Learners
+https://arxiv.org/html/2604.20329v1
+"""
 import numpy as np
 
 # -----------------------------
@@ -64,42 +71,27 @@ def depth_to_rgb(depth: np.ndarray) -> np.ndarray:
     t = depth_to_unit(depth)
     return unit_to_rgb(t)
 
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import numpy as np
 
-import matplotlib.pyplot as plt
-import numpy as np
+    from pathlib import Path
 
-from pathlib import Path
-# -----------------------------
-# デモ用 depth（擬似データ）
-# -----------------------------
-# h, w = 240, 320
-# y = np.linspace(0, 5, h)\
-# depth = np.tile(y[:, None], (1, w))
+    disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
 
-disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
+    depth = 1 / disparity
+    depth *= 10.0
+    rgb = depth_to_rgb(depth)
 
-depth = 1 / disparity
+    plt.figure(figsize=(10,4))
+    plt.subplot(1,2,1)
+    plt.title("Depth (raw)")
+    plt.imshow(depth, cmap='gray')
+    plt.colorbar()
 
-depth *= 10.0
+    plt.subplot(1,2,2)
+    plt.title("Depth -> RGB (Vision Banana style)")
+    plt.imshow(rgb)
 
-# -----------------------------
-# 変換
-# -----------------------------
-rgb = depth_to_rgb(depth)
-
-# -----------------------------
-# 可視化
-# -----------------------------
-plt.figure(figsize=(10,4))
-
-plt.subplot(1,2,1)
-plt.title("Depth (raw)")
-plt.imshow(depth, cmap='gray')
-plt.colorbar()
-
-plt.subplot(1,2,2)
-plt.title("Depth -> RGB (Vision Banana style)")
-plt.imshow(rgb)
-
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
