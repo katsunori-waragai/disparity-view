@@ -7,20 +7,20 @@ https://arxiv.org/html/2604.20329v1
 """
 import numpy as np
 
-# -----------------------------
-# 1. depth -> [0,1) 圧縮
-# -----------------------------
 def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
+    # -----------------------------
+    # 1. depth -> [0,1) 圧縮
+    # -----------------------------
     assert d.ndim == 2, f"{d.ndim} is not 2nd dimension"
     assert d.dtype in (np.float32, np.float64)
     d = np.maximum(d, 1e-8)
     return 1.0 - (1.0 + d)**lam   # Barron風の単調変換
 
 
-# -----------------------------
-# 2. [0,1) -> RGB（キューブエッジ）
-# -----------------------------
 def unit_to_rgb(t: np.ndarray) -> np.ndarray:
+    # -----------------------------
+    # 2. [0,1) -> RGB（キューブエッジ）
+    # -----------------------------
     """
     RGBキューブのエッジを辿るpiecewise線形マッピング
     """
@@ -64,9 +64,6 @@ def unit_to_rgb(t: np.ndarray) -> np.ndarray:
     return rgb
 
 
-# -----------------------------
-# フル変換
-# -----------------------------
 def depth_to_rgb(depth: np.ndarray) -> np.ndarray:
     t = depth_to_unit(depth)
     return unit_to_rgb(t)
