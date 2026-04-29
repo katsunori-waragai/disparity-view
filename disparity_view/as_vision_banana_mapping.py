@@ -55,6 +55,46 @@ def unit_to_rgb(t):
 # -----------------------------
 # フル変換
 # -----------------------------
-def depth_to_rgb(depth):
+def depth_to_rgb(depth: np.ndarray):
     t = depth_to_unit(depth)
     return unit_to_rgb(t)
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from pathlib import Path
+# -----------------------------
+# デモ用 depth（擬似データ）
+# -----------------------------
+# h, w = 240, 320
+# y = np.linspace(0, 5, h)\
+# depth = np.tile(y[:, None], (1, w))
+
+disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
+
+depth = 1 / disparity
+
+depth *= 10.0
+
+# -----------------------------
+# 変換
+# -----------------------------
+rgb = depth_to_rgb(depth)
+
+# -----------------------------
+# 可視化
+# -----------------------------
+plt.figure(figsize=(10,4))
+
+plt.subplot(1,2,1)
+plt.title("Depth (raw)")
+plt.imshow(depth, cmap='gray')
+plt.colorbar()
+
+plt.subplot(1,2,2)
+plt.title("Depth -> RGB (Vision Banana style)")
+plt.imshow(rgb)
+
+plt.tight_layout()
+plt.show()
