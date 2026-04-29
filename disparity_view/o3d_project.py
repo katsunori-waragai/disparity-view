@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 import open3d as o3d
@@ -44,7 +43,7 @@ class StereoCamera:
     depth_max: float = DEPTH_MAX
     pcd: o3d.t.geometry.PointCloud = field(default=None)
     rgbd: o3d.t.geometry.RGBDImage = field(default=None)
-    shape: Tuple[float] = field(default=None)
+    shape: tuple[float] = field(default=None)
 
     @classmethod
     def create_from_camera_param(cls, camera_param: CameraParameter):

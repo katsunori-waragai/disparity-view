@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
 
 import numpy as np
 from PIL import Image
@@ -15,7 +14,7 @@ class AnimationGif:
     maker.save(gifname)
     """
 
-    images: List = field(default_factory=list)
+    images: list = field(default_factory=list)
 
     def append(self, image: np.ndarray):
         "append image to list for animation gif"

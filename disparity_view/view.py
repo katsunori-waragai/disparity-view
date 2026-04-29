@@ -8,7 +8,7 @@ library to view disparity npy files.
 import argparse
 import time
 from pathlib import Path
-from typing import Tuple
+
 
 import cv2
 import numpy as np
@@ -62,7 +62,7 @@ def as_matrix(chw_array: np.ndarray) -> np.ndarray:
     return np.reshape(chw_array, (H_, W_))
 
 
-def get_dirs(captured_dir: Path) -> Tuple[Path, Path, Path]:
+def get_dirs(captured_dir: Path) -> tuple[Path, Path, Path]:
     leftdir = captured_dir / "left"
     rightdir = captured_dir / "right"
     disparity_dir = captured_dir / "zed-disparity"
