@@ -1,9 +1,9 @@
 """
-Vision Banana に即発された、深度をRGBに変換するライブラリ
+A module for converting depth data to RGB, inspired by Vision Banana
 
-重要なポイント：
-深度からRGB画像、RGB画像から深度への再変換を可能にするためには、
-極力floatのまま画像を保持することである。
+Key point:
+To enable conversion from depth to RGB images and back from RGB images to depth,
+it is essential to keep the images in float format as much as possible.
 
 
 See Also:
@@ -14,12 +14,12 @@ import numpy as np
 
 def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
     # -----------------------------
-    # 1. depth -> [0,1) 圧縮
+    # 1. depth -> [0,1)  compression
     # -----------------------------
     assert d.ndim == 2, f"{d.ndim} is not 2nd dimension"
     assert d.dtype in (np.float32, np.float64)
     d = np.maximum(d, 1e-8)
-    return 1.0 - (1.0 + d)**lam   # Barron風の単調変換
+    return 1.0 - (1.0 + d)**lam
 
 
 def color_cube_mapping(t: np.ndarray) -> np.ndarray:
@@ -32,7 +32,7 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     assert t.dtype in (np.float32, np.float64)
     t = np.maximum(t, 0)
 
-    # 7区間（RGB cube edges）
+    # 7 edgs on cube edges（RGB cube edges）
     segment = (t * 7).astype(int)
     local_t = t * 7 - segment
 
@@ -40,7 +40,7 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     g = np.zeros_like(t)
     b = np.zeros_like(t)
 
-    # 各エッジ
+    # each edge
     mask = segment == 0  # (0,0,0) -> (1,0,0)
     r[mask] = local_t[mask]
 
@@ -74,6 +74,7 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
 
     rgb = np.stack([r, g, b], axis=-1)
     assert rgb.ndim == 3, f"{rgb.ndim} is not 3nd dimension"
+    assert rgb.dtype in (np.float32, np.float64)
     return rgb
 
 
