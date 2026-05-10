@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     depth = 1 / disparity
     depth -= 0.9*depth.min()
-    depth *= 20.0
+    depth *= 100.0
     rgb = depth_to_rgb(depth)
 
     plt.figure(figsize=(10,4))
