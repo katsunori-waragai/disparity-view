@@ -1,6 +1,11 @@
 """
 Vision Banana に即発された、深度をRGBに変換するライブラリ
 
+重要なポイント：
+深度からRGB画像、RGB画像から深度への再変換を可能にするためには、
+極力floatのまま画像を保持することである。
+
+
 See Also:
 Image Generators are Generalist Vision Learners
 https://arxiv.org/html/2604.20329v1
@@ -77,7 +82,8 @@ if __name__ == "__main__":
     disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
 
     depth = 1 / disparity
-    depth *= 10.0
+    depth -= 0.9*depth.min()
+    depth *= 20.0
     rgb = depth_to_rgb(depth)
 
     plt.figure(figsize=(10,4))
@@ -91,4 +97,4 @@ if __name__ == "__main__":
     plt.imshow(rgb)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig("depth_image.png")
