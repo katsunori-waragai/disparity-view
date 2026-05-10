@@ -31,11 +31,11 @@ def unit_to_rgb(t: np.ndarray) -> np.ndarray:
     """
     assert t.ndim == 2, f"{t.ndim} is not 2nd dimension"
     assert t.dtype in (np.float32, np.float64)
-    t = np.clip(t, 0, 1 - 1e-8)
+    t = np.maximum(t, 0)
 
     # 6区間（RGB cube edges）
-    segment = (t * 6).astype(int)
-    local_t = t * 6 - segment
+    segment = (t * 7).astype(int)
+    local_t = t * 7 - segment
 
     r = np.zeros_like(t)
     g = np.zeros_like(t)
@@ -50,19 +50,28 @@ def unit_to_rgb(t: np.ndarray) -> np.ndarray:
     g[mask] = local_t[mask]
 
     mask = segment == 2  # (1,1,0) -> (0,1,0)
-    r[mask] = 1 - local_t[mask]
     g[mask] = 1
+    r[mask] = 1 - local_t[mask]
 
     mask = segment == 3  # (0,1,0) -> (0,1,1)
+    r[mask] = 0
     g[mask] = 1
     b[mask] = local_t[mask]
 
     mask = segment == 4  # (0,1,1) -> (0,0,1)
+    r[mask] = 0
+    b[mask] = 1
     g[mask] = 1 - local_t[mask]
+
+    mask = segment == 5  # (0,0,1) -> (1,0,1)
+    r[mask] = local_t[mask]
+    g[mask] = 0
     b[mask] = 1
 
-    mask = segment == 5  # (0,0,1) -> (0,0,0)
-    b[mask] = 1 - local_t[mask]
+    mask = segment == 6  # (1,0,1) -> (1,1,1)
+    g[mask] = local_t[mask]
+    b[mask] = 1
+    r[mask] = 1
 
     rgb = np.stack([r, g, b], axis=-1)
     assert rgb.ndim == 3, f"{rgb.ndim} is not 3nd dimension"
@@ -70,7 +79,7 @@ def unit_to_rgb(t: np.ndarray) -> np.ndarray:
 
 
 def depth_to_rgb(depth: np.ndarray) -> np.ndarray:
-    t = depth_to_unit(depth)
+    t = depth_to_unit(depth, lam=-2)
     return unit_to_rgb(t)
 
 if __name__ == "__main__":
@@ -82,8 +91,12 @@ if __name__ == "__main__":
     disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
 
     depth = 1 / disparity
-    depth -= 0.9*depth.min()
-    depth *= 100.0
+    depth = depth**2
+    depth -= 0.999 *depth.min()
+    depth *= 10000.0
+
+    print(f"{np.min(depth)=}")
+    print(f"{np.max(depth)=}")
     rgb = depth_to_rgb(depth)
 
     plt.figure(figsize=(10,4))
@@ -98,3 +111,15 @@ if __name__ == "__main__":
 
     plt.tight_layout()
     plt.savefig("depth_image.png")
+
+    data= np.zeros((700, 700), dtype=np.float32)
+    for i in range(700):
+        data[:, i] = 1e-2 * i
+    print(f"{np.max(data.flatten())=}")
+    rgb2 = unit_to_rgb(data)
+    plt.figure(figsize=(10,4))
+    plt.subplot(1,1,1)
+
+    plt.title("RGB (Vision Banana style)")
+    plt.imshow(rgb2)
+    plt.savefig("junk.png")
