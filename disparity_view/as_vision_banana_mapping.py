@@ -22,18 +22,17 @@ def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
     return 1.0 - (1.0 + d)**lam   # Barron風の単調変換
 
 
-def unit_to_rgb(t: np.ndarray) -> np.ndarray:
+def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     # -----------------------------
-    # 2. [0,1) -> RGB（キューブエッジ）
+    #	Color mapping that maps continuous values in the range [0.0, 1.0]
+    #	to the seven consecutive faces of a cube using a color cube.
+    #	2. [0,1) -> RGB（cube edge）
     # -----------------------------
-    """
-    RGBキューブのエッジを辿るpiecewise線形マッピング
-    """
     assert t.ndim == 2, f"{t.ndim} is not 2nd dimension"
     assert t.dtype in (np.float32, np.float64)
     t = np.maximum(t, 0)
 
-    # 6区間（RGB cube edges）
+    # 7区間（RGB cube edges）
     segment = (t * 7).astype(int)
     local_t = t * 7 - segment
 
@@ -80,7 +79,8 @@ def unit_to_rgb(t: np.ndarray) -> np.ndarray:
 
 def depth_to_rgb(depth: np.ndarray) -> np.ndarray:
     t = depth_to_unit(depth, lam=-2)
-    return unit_to_rgb(t)
+    return color_cube_mapping(t)
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
@@ -88,12 +88,33 @@ if __name__ == "__main__":
 
     from pathlib import Path
 
-    disparity=np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
 
-    depth = 1 / disparity
-    depth = depth**2
-    depth -= 0.999 *depth.min()
-    depth *= 10000.0
+    def dummy_depth_image():
+        disparity = np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
+
+        depth = 1 / disparity
+        depth = depth ** 2
+        depth -= 0.999 * depth.min()
+        depth *= 10000.0
+        return depth
+
+
+    def show_colormap():
+        data = np.zeros((700, 700), dtype=np.float32)
+        for i in range(700):
+            data[i, :] = i / 700.0
+        print(f"{np.max(data.flatten())=}")
+        rgb2 = color_cube_mapping(data)
+        plt.figure(figsize=(10, 4))
+        plt.subplot(1, 1, 1)
+
+        plt.title("RGB (Vision Banana style)")
+        plt.imshow(rgb2)
+        plt.ylim([700, 0])
+        plt.savefig("color_cube_mapping.png")
+
+    show_colormap()
+    depth = dummy_depth_image()
 
     print(f"{np.min(depth)=}")
     print(f"{np.max(depth)=}")
@@ -112,14 +133,3 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("depth_image.png")
 
-    data= np.zeros((700, 700), dtype=np.float32)
-    for i in range(700):
-        data[:, i] = 1e-2 * i
-    print(f"{np.max(data.flatten())=}")
-    rgb2 = unit_to_rgb(data)
-    plt.figure(figsize=(10,4))
-    plt.subplot(1,1,1)
-
-    plt.title("RGB (Vision Banana style)")
-    plt.imshow(rgb2)
-    plt.savefig("junk.png")
