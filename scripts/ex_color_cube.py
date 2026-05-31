@@ -3,7 +3,7 @@ import numpy as np
 
 from pathlib import Path
 
-from color_cube import color_cube_mapping, depth_to_rgbcube
+from disparity_view import color_cube_mapping, depth_to_rgbcube
 
 
 def dummy_depth_image(npy_path : Path) -> np.ndarray:
