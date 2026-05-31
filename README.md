@@ -131,7 +131,7 @@ colormap:
 
 ![](docs/figure/depth_to_rgbcube.png)
 
-<img src="docs/figure/color_cube.png" width="640">
+<img src="docs/figure/color_cube.png" width="320">
 
 see script/ex_color_cube.py for the module use.
 
