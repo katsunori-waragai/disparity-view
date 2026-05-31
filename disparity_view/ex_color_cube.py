@@ -21,6 +21,9 @@ def dummy_depth_image():
 
 
 def show_colormap(outdir: Path):
+    """
+    [0.0, 1.0]の範囲の画像をマッピングする例
+    """
     data = np.zeros((700, 700), dtype=np.float32)
     for i in range(700):
         data[i, :] = i / 700.0
@@ -41,21 +44,26 @@ if __name__ == "__main__":
     output_dir = repo_root / "output"
     show_colormap(outdir=output_dir)
 
-    # depth = dummy_depth_image()
+    depth = dummy_depth_image()
 
-    # print(f"{np.min(depth)=}")
-    # print(f"{np.max(depth)=}")
-    # rgb = depth_to_rgbcube(depth)
+    print(f"{np.min(depth)=}")
+    print(f"{np.max(depth)=}")
 
-    # assert rgb.ndim==3
-    # assert rgb.dtype in (np.float32, np.float64)
-    # print(np.max(rgb.flatten()))
+    plt.figure()
+    plt.imshow(depth)
+    plt.show()
 
-    # plt.figure(figsize=(10,4))
-    # plt.title("Depth -> RGB (Vision Banana style)")
-    # plt.imshow(rgb)
+    rgb = depth_to_rgbcube(depth)
 
-    # plt.tight_layout()
-    # png_name = output_dir / "depth_to_rgbcube.png"
-    # plt.savefig(png_name)
-    # print(f"Saved: {png_name}")
+    assert rgb.ndim==3
+    assert rgb.dtype in (np.float32, np.float64)
+    print(np.max(rgb.flatten()))
+
+    plt.figure(figsize=(10,4))
+    plt.title("Depth -> RGB (Vision Banana style)")
+    plt.imshow(rgb)
+
+    plt.tight_layout()
+    png_name = output_dir / "depth_to_rgbcube.png"
+    plt.savefig(png_name)
+    print(f"Saved: {png_name}")
