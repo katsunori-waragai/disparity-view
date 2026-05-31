@@ -132,6 +132,8 @@ colormap:
 ![](docs/figure/depth_to_rgbcube.png)
 
 <img src="docs/figure/color_cube.png" width="320">
+Figure: Color mapping shown in Vision Banana. The color changes continuously across the six faces of the cube.
+
 
 see script/ex_color_cube.py for the module use.
 
