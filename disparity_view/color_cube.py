@@ -9,10 +9,14 @@ it is essential to keep the images in float format as much as possible.
 See Also:
 Image Generators are Generalist Vision Learners
 https://arxiv.org/html/2604.20329v1
+
+
+Power transform of Barron
+https://arxiv.org/abs/2502.10647
 """
 import numpy as np
 
-def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
+def depth_to_unit(d: np.ndarray, lam=-3.0, c=10/3.0) -> np.ndarray:
     # -----------------------------
     # 1. depth -> [0,1)  compression
     # -----------------------------
@@ -20,8 +24,7 @@ def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
     assert d.ndim == 2, f"{d.ndim} is not 2nd dimension"
     assert d.dtype in (np.float32, np.float64)
     d = np.maximum(d, 1e-8)
-    return 1.0 - (1.0 + d/(lam))**lam
-
+    return 1.0 - (1.0 + d/(np.abs(lam)**c))**(lam+1.0)
 
 def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     # -----------------------------
@@ -30,7 +33,7 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     #	2. [0,1) -> RGB（cube edge）
     # -----------------------------
     assert t.ndim == 2, f"{t.ndim} is not 2nd dimension"
-    assert t.dtype in (np.float32, np.float64)
+    assert t.dtype in (np.float32, np.float64, np.float16), f"{t.dtype} is not float32, float64 or float16"
     t = np.maximum(t, 0)
 
     # 7 edgs on cube edges（RGB cube edges）
@@ -75,12 +78,16 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
 
     rgb = np.stack([r, g, b], axis=-1)
     assert rgb.ndim == 3, f"{rgb.ndim} is not 3nd dimension"
-    assert rgb.dtype in (np.float32, np.float64)
+    assert rgb.dtype in (np.float32, np.float64), f"{rgb.dtype=} is not float32 or float64"
     return rgb
 
 
 def depth_to_rgbcube(depth: np.ndarray) -> np.ndarray:
-    t = depth_to_unit(depth, lam=-2)
+    t = depth_to_unit(depth, lam=-3.0, c=10/3.0)
+    assert t.ndim == 2, f"{t.ndim} is not 2nd dimension"
+    assert t.dtype in (np.float32, np.float64), f"{t.dtype} is not float32 or float64"
+    assert np.min(t) >= 0, f"{np.min(t)} is less than 0"
+    assert np.max(t) < 1, f"{np.max(t)} is greater than or equal to 1"
     return color_cube_mapping(t)
 
 
