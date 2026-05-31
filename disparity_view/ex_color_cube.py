@@ -20,7 +20,7 @@ def dummy_depth_image():
     return depth
 
 
-def show_colormap():
+def show_colormap(outdir: Path):
     data = np.zeros((700, 700), dtype=np.float32)
     for i in range(700):
         data[i, :] = i / 700.0
@@ -32,30 +32,30 @@ def show_colormap():
     plt.title("RGB (Vision Banana style)")
     plt.imshow(rgb2)
     plt.ylim([700, 0])
-    plt.savefig("color_cube_mapping.png")
+    pngname = outdir/ "color_cube_mapping.png"
+    plt.savefig(pngname)
 
 
 if __name__ == "__main__":
     repo_root = Path(__file__).resolve().parent.parent
     output_dir = repo_root / "output"
-    show_colormap()
-    depth = dummy_depth_image()
+    show_colormap(outdir=output_dir)
 
-    print(f"{np.min(depth)=}")
-    print(f"{np.max(depth)=}")
-    rgb = depth_to_rgbcube(depth)
+    # depth = dummy_depth_image()
 
-    plt.figure(figsize=(10,4))
-    plt.subplot(1,2,1)
-    plt.title("Depth (raw)")
-    plt.imshow(depth, cmap='gray')
-    plt.colorbar()
+    # print(f"{np.min(depth)=}")
+    # print(f"{np.max(depth)=}")
+    # rgb = depth_to_rgbcube(depth)
 
-    plt.subplot(1,2,2)
-    plt.title("Depth -> RGB (Vision Banana style)")
-    plt.imshow(rgb)
+    # assert rgb.ndim==3
+    # assert rgb.dtype in (np.float32, np.float64)
+    # print(np.max(rgb.flatten()))
 
-    plt.tight_layout()
-    png_name = output_dir / "depth_to_rgbcube.png"
-    plt.savefig(png_name)
+    # plt.figure(figsize=(10,4))
+    # plt.title("Depth -> RGB (Vision Banana style)")
+    # plt.imshow(rgb)
 
+    # plt.tight_layout()
+    # png_name = output_dir / "depth_to_rgbcube.png"
+    # plt.savefig(png_name)
+    # print(f"Saved: {png_name}")
