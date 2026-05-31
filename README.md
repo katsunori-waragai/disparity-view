@@ -125,6 +125,14 @@ colormap:
   --inferno        inferno colormap
 ```
 
+### depth viewer with far region
+- In traditonal depth viewer cannot handle far region.
+- Now we can handle depth image including [0, +infinity] with newer mapping as shown in Vision Banana.
+
+![](docs/figure/depth_to_rgbcube.png)
+
+see script/ex_color_cube.py for the module use.
+
 ### generate ply file
 ```commandline
 $ python3 gen_ply.py -h
