@@ -16,10 +16,11 @@ def depth_to_unit(d: np.ndarray, lam=-3.0) -> np.ndarray:
     # -----------------------------
     # 1. depth -> [0,1)  compression
     # -----------------------------
+    # d in [m]
     assert d.ndim == 2, f"{d.ndim} is not 2nd dimension"
     assert d.dtype in (np.float32, np.float64)
     d = np.maximum(d, 1e-8)
-    return 1.0 - (1.0 + d)**lam
+    return 1.0 - (1.0 + d/(lam))**lam
 
 
 def color_cube_mapping(t: np.ndarray) -> np.ndarray:
@@ -78,59 +79,8 @@ def color_cube_mapping(t: np.ndarray) -> np.ndarray:
     return rgb
 
 
-def depth_to_rgb(depth: np.ndarray) -> np.ndarray:
+def depth_to_rgbcube(depth: np.ndarray) -> np.ndarray:
     t = depth_to_unit(depth, lam=-2)
     return color_cube_mapping(t)
 
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    from pathlib import Path
-
-
-    def dummy_depth_image():
-        disparity = np.load(Path("../test/test-imgs/disparity-IGEV/left_motorcycle.npy"))
-
-        depth = 1 / disparity
-        depth = depth ** 2
-        depth -= 0.999 * depth.min()
-        depth *= 10000.0
-        return depth
-
-
-    def show_colormap():
-        data = np.zeros((700, 700), dtype=np.float32)
-        for i in range(700):
-            data[i, :] = i / 700.0
-        print(f"{np.max(data.flatten())=}")
-        rgb2 = color_cube_mapping(data)
-        plt.figure(figsize=(10, 4))
-        plt.subplot(1, 1, 1)
-
-        plt.title("RGB (Vision Banana style)")
-        plt.imshow(rgb2)
-        plt.ylim([700, 0])
-        plt.savefig("color_cube_mapping.png")
-
-    show_colormap()
-    depth = dummy_depth_image()
-
-    print(f"{np.min(depth)=}")
-    print(f"{np.max(depth)=}")
-    rgb = depth_to_rgb(depth)
-
-    plt.figure(figsize=(10,4))
-    plt.subplot(1,2,1)
-    plt.title("Depth (raw)")
-    plt.imshow(depth, cmap='gray')
-    plt.colorbar()
-
-    plt.subplot(1,2,2)
-    plt.title("Depth -> RGB (Vision Banana style)")
-    plt.imshow(rgb)
-
-    plt.tight_layout()
-    plt.savefig("depth_image.png")
 
