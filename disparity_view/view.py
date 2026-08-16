@@ -18,6 +18,7 @@ from tqdm import tqdm
 
 from .depth_to_normal import DepthToNormalMap
 from .cam_param import CameraParameter
+from .color_cube import depth_to_rgbcube
 
 
 def finitemax(depth: np.ndarray) -> float:
@@ -104,6 +105,11 @@ def view_by_colormap(args):
             colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
         elif args.inferno:
             colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_INFERNO)
+        elif getattr(args, 'cube', False):
+            # depth_to_rgbcube returns float RGB in [0,1). Convert to uint8 BGR for OpenCV
+            rgb = depth_to_rgbcube(disparity)
+            rgb8 = (rgb * 255.0).astype(np.uint8)
+            colored = cv2.cvtColor(rgb8, cv2.COLOR_RGB2BGR)
         else:
             colored = as_colorimage(disparity, vmax=vmax, vmin=vmin, colormap=cv2.COLORMAP_JET)
 
@@ -174,6 +180,10 @@ def view_npy(disparity: np.ndarray, args, npy=None):
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
     elif args.inferno:
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_INFERNO)
+    elif getattr(args, 'cube', False):
+        rgb = depth_to_rgbcube(disparity)
+        rgb8 = (rgb * 255.0).astype(np.uint8)
+        colored = cv2.cvtColor(rgb8, cv2.COLOR_RGB2BGR)
     else:
         colored = as_colorimage(disparity, vmax=None, vmin=None, colormap=cv2.COLORMAP_JET)
 
