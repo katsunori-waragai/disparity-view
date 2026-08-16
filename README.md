@@ -28,7 +28,7 @@ python3 -m pip install .[dev]
 
 ```
 $ view_npy -h
-usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--outdir OUTDIR] [--gray] [--jet] [--inferno] [--normal] npy_file
+usage: view_npy [-h] [--vmax VMAX] [--vmin VMIN] [--disp3d] [--outdir OUTDIR] [--gray] [--jet] [--inferno] [--cube] [--normal] npy_file
 
 np file viewer
 
@@ -46,6 +46,7 @@ colormap:
   --gray           gray colormap
   --jet            jet colormap
   --inferno        inferno colormap
+  --cube           Vision Banana cube mapping
   --normal         normal mapping
 ```
 
@@ -57,15 +58,24 @@ colormap:
 ![reproject_left_motorcycle.gif](test/test-imgs/gif/reproject_left_motorcycle.gif)
 
 ```commandline
-view_npy --normal  --outdir normal test/test-imgs/disparity-IGEV/left_motorcycle.npy
-view_npy --jet  --outdir jet test/test-imgs/disparity-IGEV/left_motorcycle.npy
-
+view_npy --normal --outdir normal test/test-imgs/disparity-IGEV/left_motorcycle.npy
+view_npy --jet --outdir jet test/test-imgs/disparity-IGEV/left_motorcycle.npy
+view_npy --cube --outdir cube test/test-imgs/disparity-IGEV/left_motorcycle.npy
 ```
+
+The `--cube` option uses the Vision Banana-style color cube mapping, which is useful for depth ranges that are hard to read with a standard Jet/Inferno palette.
+
+### When to use `--cube`
+- Use `--cube` when the depth value distribution is strongly skewed and the standard `--jet` palette compresses meaningful variation into a narrow range.
+- This mapping keeps the color transitions continuous across the cube edges and is especially helpful for visualizing large depth ranges or far/near transitions more clearly.
+- For ordinary contrast checks, `--jet` or `--inferno` remains a good default; `--cube` is intended as an alternative view for depth interpretation.
+
 ## script version
 ```commandline
 python3 scripts/view_npy.py -h
-
 ```
+
+The script version supports the same colormap options as the package entry point, including `--cube` for the Vision Banana color cube mapping.
 
 ### reproject to 2D
 ```commandline
